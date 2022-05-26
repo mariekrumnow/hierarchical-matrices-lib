@@ -12,9 +12,15 @@ protected:
 
 public:
       /// Copies a matrix to be stored in a block
+      ///
+      /// \param originalBlock
+      /// \param I
+      /// \param J
       EntrywiseBlock(datatype originalBlock[dim][dim], int I, int J);
 
+      /// 
       ///
+      /// \return
       Block<datatype, dim>& coarse() final;
 
       //Verrechnungfkten

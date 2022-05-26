@@ -7,7 +7,7 @@
 // #include "HierarchicalMatrix.hpp"
 
 // #include "EntrywiseBlock.cpp"
-// #include "OuterProductBlock.cpp"
+#include "OuterProductBlock.cpp"
 
 // #include "functions/addition.cpp"
 // #include "functions/coarse.cpp"
