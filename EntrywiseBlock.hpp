@@ -3,12 +3,17 @@
 
 #include "Block.hpp"
 
+
+template <class datatype, unsigned int dim> class HierarchicalMatrix;
+template <class datatype, unsigned int xDim, unsigned int yDim> class OuterProductBlock;
+
+
 /// Depicts a non-admissible part
-template <class datatype, unsigned int dim>
-class EntrywiseBlock: public Block<datatype, dim>{
+template <class datatype, unsigned int xDim, unsigned int yDim>
+class EntrywiseBlock: public Block<datatype, xDim, yDim>{
 
 protected:
-      datatype block[dim][dim]; ///<
+      datatype block[xDim][yDim]; ///<
 
 public:
       /// Copies a matrix to be stored in a block
@@ -16,14 +21,22 @@ public:
       /// \param originalBlock
       /// \param I
       /// \param J
-      EntrywiseBlock(datatype originalBlock[dim][dim], int I, int J);
+      EntrywiseBlock(datatype originalBlock[xDim][yDim], int I, int J);
 
-      /// 
+      ///
       ///
       /// \return
-      Block<datatype, dim>& coarse() final;
+      Block<datatype, xDim, yDim>& coarse() final;
 
-      //Verrechnungfkten
+      //---------------------------------------------------------------------------------------
+
+      EntrywiseBlock& operator+( const EntrywiseBlock& addedBlock );
+      EntrywiseBlock& operator+( const OuterProductBlock<datatype, xDim, yDim>& addedBlock );
+      EntrywiseBlock& operator+( const HierarchicalMatrix<datatype, xDim>& addedBlock );
+
+      EntrywiseBlock& operator*( const EntrywiseBlock& multBlock );
+      EntrywiseBlock& operator*( const OuterProductBlock<datatype, xDim, yDim>& multBlock );
+      EntrywiseBlock& operator*( const HierarchicalMatrix<datatype, xDim>& multBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_ENTRYWISEBLOCK_H

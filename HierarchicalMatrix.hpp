@@ -2,14 +2,17 @@
 #define HIERARCHICAL_MATRICES_HIERARCHICALMATRIX_H
 
 #include "Block.hpp"
+#include "EntrywiseBlock.hpp"
+#include "OuterProductBlock.hpp"
+
 #include <array>
 
 /// Transforms an entrywise matrix into a hierarchical matrix to be calculated with
 template <class datatype, unsigned int dim>
-class HierarchicalMatrix: public Block<datatype, dim> {
+class HierarchicalMatrix: public Block<datatype, dim, dim> {
 
 protected:
-      Block<datatype, dim>* matrix[2][2]; ///< Hierarchical matrix, recursively divided into quadrants, [0][0] = top left, [0][1] = bottom left, [1][0] = top right, [1][1] = bottom right
+      Block<datatype, dim, dim>* matrix[2][2]; ///< Hierarchical matrix, recursively divided into quadrants, [0][0] = top left, [0][1] = bottom left, [1][0] = top right, [1][1] = bottom right
 
 public:
       /// Transforms an entrywise matrix into a hierarchical matrix
@@ -20,7 +23,7 @@ public:
       ///
       ///
       /// \return
-      Block<datatype, dim>& coarse() final;
+      Block<datatype, dim, dim>& coarse() final;
 
       /// Rounded addition of two Hierarchical Matrices
       ///
@@ -49,11 +52,17 @@ public:
       HierarchicalMatrix& invert();
 
       /// LU-decomposition
-      /// 
+      ///
       /// \return
       std::array<HierarchicalMatrix*,2> luDecomposition();
 
-      //Verrechnungfkten
+      //---------------------------------------------------------------------------------------
+
+      HierarchicalMatrix& operator+( const EntrywiseBlock<datatype, dim, dim>& addedBlock );
+      HierarchicalMatrix& operator+( const OuterProductBlock<datatype, dim, dim>& addedBlock );
+      
+      HierarchicalMatrix& operator*( const EntrywiseBlock<datatype, dim, dim>& multBlock );
+      HierarchicalMatrix& operator*( const OuterProductBlock<datatype, dim, dim>& multBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_HIERARCHICALMATRIX_H

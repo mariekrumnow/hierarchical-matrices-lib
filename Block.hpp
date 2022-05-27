@@ -2,7 +2,7 @@
 #define HIERARCHICAL_MATRICES_BLOCK_H
 
 /// Abstract class to depict all parts of the matrix
-template <class datatype, unsigned int dim>
+template <class datatype, unsigned int xDim, unsigned int yDim>
 class Block {
 
 protected:

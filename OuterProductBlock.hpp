@@ -3,14 +3,19 @@
 
 #include "Block.hpp"
 
+
+template <class datatype, unsigned int dim> class HierarchicalMatrix;
+template <class datatype, unsigned int xDim, unsigned int yDim> class EntrywiseBlock;
+
+
 /// Depicts an admissible part
-template <class datatype, unsigned int dim>
-class OuterProductBlock: public Block<datatype, dim> {
+template <class datatype, unsigned int xDim, unsigned int yDim>
+class OuterProductBlock: public Block<datatype, xDim, yDim> {
 
 protected:
       unsigned int k; ///<
-      datatype u[][dim]; ///<
-      datatype v[][dim]; ///<
+      datatype u[][xDim]; ///<
+      datatype v[][yDim]; ///<
 
 public:
       /// Transforms an entrywise matrix into it's outer product form
@@ -18,14 +23,22 @@ public:
       /// \param originalBlock
       /// \param I
       /// \param J
-      OuterProductBlock(const datatype originalBlock[dim][dim], int I, int J);
+      OuterProductBlock(const datatype originalBlock[xDim][yDim], int I, int J);
 
       ///
-      /// 
+      ///
       /// \return
-      Block<datatype, dim>& coarse() final;
+      Block<datatype, xDim, yDim>& coarse() final;
 
-      //Verrechnungfkten
+      //---------------------------------------------------------------------------------------
+
+      OuterProductBlock& operator+( const OuterProductBlock& addedBlock );
+      OuterProductBlock& operator+( const EntrywiseBlock<datatype, xDim, yDim>& addedBlock );
+      OuterProductBlock& operator+( const HierarchicalMatrix<datatype, xDim>& addedBlock );
+
+      OuterProductBlock& operator*( const OuterProductBlock& multBlock );
+      OuterProductBlock& operator*( const EntrywiseBlock<datatype, xDim, yDim>& multBlock );
+      OuterProductBlock& operator*( const HierarchicalMatrix<datatype, xDim>& multBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_OUTERPRODUCTBLOCK_H

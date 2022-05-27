@@ -2,12 +2,12 @@
 
 // #include "Exceptions.hpp"
 
-// #include "EntrywiseBlock.hpp"
-// #include "OuterProductBlock.hpp"
-// #include "HierarchicalMatrix.hpp"
+#include "EntrywiseBlock.hpp"
+#include "OuterProductBlock.hpp"
+#include "HierarchicalMatrix.hpp"
 
 // #include "EntrywiseBlock.cpp"
-#include "OuterProductBlock.cpp"
+// #include "OuterProductBlock.cpp"
 
 // #include "functions/addition.cpp"
 // #include "functions/coarse.cpp"

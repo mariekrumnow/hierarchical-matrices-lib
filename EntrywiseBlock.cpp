@@ -1,14 +1,14 @@
 #include "EntrywiseBlock.hpp"
 
-template <class datatype, unsigned int dim>
-EntrywiseBlock<datatype, dim>::EntrywiseBlock(datatype originalBlock[dim][dim], int I, int J)
+template <class datatype, unsigned int xDim, unsigned int yDim>
+EntrywiseBlock<datatype, xDim, yDim>::EntrywiseBlock(datatype originalBlock[xDim][yDim], int I, int J)
       :block(originalBlock)
 {
 
 }
 
-template <class datatype, unsigned int dim>
-Block<datatype, dim>& EntrywiseBlock<datatype, dim>::coarse(){
+template <class datatype, unsigned int xDim, unsigned int yDim>
+Block<datatype, xDim, yDim>& EntrywiseBlock<datatype, xDim, yDim>::coarse(){
 
 }
 

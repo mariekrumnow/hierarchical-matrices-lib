@@ -1,13 +1,13 @@
 #include "OuterProductBlock.hpp"
 
-template <class datatype, unsigned int dim>
-OuterProductBlock<datatype, dim>::OuterProductBlock(const datatype originalBlock[dim][dim], int I, int J)
+template <class datatype, unsigned int xDim, unsigned int yDim>
+OuterProductBlock<datatype, xDim, yDim>::OuterProductBlock(const datatype originalBlock[xDim][yDim], int I, int J)
 {
 
 }
 
-template <class datatype, unsigned int dim>
-Block<datatype, dim>& OuterProductBlock<datatype, dim>::coarse(){
+template <class datatype, unsigned int xDim, unsigned int yDim>
+Block<datatype, xDim, yDim>& OuterProductBlock<datatype, xDim, yDim>::coarse(){
 
 }
 
