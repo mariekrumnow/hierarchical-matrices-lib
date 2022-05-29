@@ -14,8 +14,8 @@ class OuterProductBlock: public Block<datatype, xDim, yDim> {
 
 protected:
       unsigned int k; ///<
-      datatype u[][xDim]; ///< Erste Dimension muss k groß sein!
-      datatype v[][yDim]; ///< Erste Dimension muss k groß sein!
+      datatype * u[xDim]; ///< Erste Dimension muss k groß sein!
+      datatype * v[yDim]; ///< Erste Dimension muss k groß sein!
 
 public:
       /// Transforms an entrywise matrix into it's outer product form

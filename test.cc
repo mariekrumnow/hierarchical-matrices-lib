@@ -1,5 +1,3 @@
-//Per strg+Slash die gewünschten Dateien am besten EINZELN wieder aktivieren und kompilieren, um den Code auf Fehler zu prüfen
-
 #include "Exceptions.hpp"
 
 #include "EntrywiseBlock.hpp"
@@ -20,19 +18,10 @@
 #include <iostream>
 
 int main(int argc, char** argv){
-      // Funktioniert, aber gibt Warning, dass exampleBlock unbenutzt ist!
-      // 
-      // double daten[2][2] = { {1.1, 2.2}, {3.3, 4.4} };
-      // EntrywiseBlock<double, 2, 2> * exampleBlock = new EntrywiseBlock<double, 2, 2>(daten, 1, 1);
+      double daten[2][2] = { {1.1, 2.2}, {3.3, 4.4} };
+      HierarchicalMatrix<double, 2> * exampleBlock = new HierarchicalMatrix<double, 2>(daten);
 
-      // Kann nur ausgegeben werden, wenn die Attribute temporär public sind!
-      //
-      // std::cout << exampleBlock->indiceI << exampleBlock->indiceJ << '\n';
-      // for(int i=0; i<2; i++){
-      //       for(int j=0; j<2; j++){
-      //             std::cout << exampleBlock->block[i][j] << std::endl;
-      //       }
-      // }
+      std::cout << sizeof(exampleBlock); // Vermeidet Warning, dass exampleBlock unbenutzt ist
 
-    return 0;
+      return 0;
 }

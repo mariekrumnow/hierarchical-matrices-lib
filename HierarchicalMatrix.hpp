@@ -18,7 +18,7 @@ public:
       /// Transforms an entrywise matrix into a hierarchical matrix
       ///
       /// \param originalMatrix The entrywise matrix to be transformed and calculated with
-      HierarchicalMatrix(datatype originalMatrix[dim][dim]);
+      HierarchicalMatrix(datatype (&originalMatrix)[dim][dim], unsigned int I=1, unsigned int J=1);
 
       ///
       ///
@@ -60,7 +60,7 @@ public:
 
       HierarchicalMatrix& operator+( const EntrywiseBlock<datatype, dim, dim>& addedBlock );
       HierarchicalMatrix& operator+( const OuterProductBlock<datatype, dim, dim>& addedBlock );
-      
+
       HierarchicalMatrix& operator*( const EntrywiseBlock<datatype, dim, dim>& multBlock );
       HierarchicalMatrix& operator*( const OuterProductBlock<datatype, dim, dim>& multBlock );
 };
