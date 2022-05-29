@@ -13,7 +13,7 @@ template <class datatype, unsigned int xDim, unsigned int yDim>
 class EntrywiseBlock: public Block<datatype, xDim, yDim>{
 
 protected:
-      datatype block[xDim][yDim]; ///<
+      datatype (&block)[xDim][yDim]; ///< Exact part of the original matrix
 
 public:
       /// Copies a matrix to be stored in a block
@@ -21,7 +21,7 @@ public:
       /// \param originalBlock
       /// \param I
       /// \param J
-      EntrywiseBlock(datatype originalBlock[xDim][yDim], int I, int J);
+      EntrywiseBlock(datatype ( &originalBlock)[xDim][yDim], unsigned int I, unsigned int J);
 
       ///
       ///

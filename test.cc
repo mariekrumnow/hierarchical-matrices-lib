@@ -17,9 +17,22 @@
 #include "functions/matrixMatrixMult.cpp"
 #include "functions/matrixVectorMult.cpp"
 
-int main(int argc, char** argv){
+#include <iostream>
 
-    //Put testing code here
+int main(int argc, char** argv){
+      // Funktioniert, aber gibt Warning, dass exampleBlock unbenutzt ist!
+      // 
+      // double daten[2][2] = { {1.1, 2.2}, {3.3, 4.4} };
+      // EntrywiseBlock<double, 2, 2> * exampleBlock = new EntrywiseBlock<double, 2, 2>(daten, 1, 1);
+
+      // Kann nur ausgegeben werden, wenn die Attribute temporär public sind!
+      //
+      // std::cout << exampleBlock->indiceI << exampleBlock->indiceJ << '\n';
+      // for(int i=0; i<2; i++){
+      //       for(int j=0; j<2; j++){
+      //             std::cout << exampleBlock->block[i][j] << std::endl;
+      //       }
+      // }
 
     return 0;
 }

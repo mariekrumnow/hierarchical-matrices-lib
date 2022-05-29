@@ -1,9 +1,9 @@
 #include "OuterProductBlock.hpp"
 
 template <class datatype, unsigned int xDim, unsigned int yDim>
-OuterProductBlock<datatype, xDim, yDim>::OuterProductBlock(const datatype originalBlock[xDim][yDim], int I, int J)
+OuterProductBlock<datatype, xDim, yDim>::OuterProductBlock(const datatype originalBlock[xDim][yDim], unsigned int I, unsigned int J)
 {
-
+      
 }
 
 template <class datatype, unsigned int xDim, unsigned int yDim>

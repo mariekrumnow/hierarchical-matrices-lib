@@ -1,10 +1,10 @@
 #include "EntrywiseBlock.hpp"
 
 template <class datatype, unsigned int xDim, unsigned int yDim>
-EntrywiseBlock<datatype, xDim, yDim>::EntrywiseBlock(datatype originalBlock[xDim][yDim], int I, int J)
-      :block(originalBlock)
+EntrywiseBlock<datatype, xDim, yDim>::EntrywiseBlock(datatype( &originalBlock)[xDim][yDim], unsigned int I, unsigned int J)
+      :Block<datatype, xDim, yDim>::Block(I, J), block(originalBlock)
 {
-
+      // Sonst nix mehr nötig zu machen, muss ja nur 1:1 eingespeichert werden
 }
 
 template <class datatype, unsigned int xDim, unsigned int yDim>
