@@ -21,7 +21,7 @@ int main(int argc, char** argv){
       double daten[2][2] = { {1.1, 2.2}, {3.3, 4.4} };
       HierarchicalMatrix<double, 2> * exampleBlock = new HierarchicalMatrix<double, 2>(daten);
 
-      std::cout << sizeof(exampleBlock); // Vermeidet Warning, dass exampleBlock unbenutzt ist
+      std::cout << "Warnungsvermeider: " << sizeof(exampleBlock); // Vermeidet Warning, dass exampleBlock unbenutzt ist
 
       return 0;
 }
