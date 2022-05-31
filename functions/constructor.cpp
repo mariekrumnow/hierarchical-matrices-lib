@@ -11,26 +11,34 @@ HierarchicalMatrix<datatype,dim>::HierarchicalMatrix(datatype (&originalMatrix)[
       // Wenn minimal cluster size erreicht: OP-Darstellung nutzen?
 
 
-      // Schauen, ob sich Clusterbaum weiter aufbauen lässt --> minimal cluster size beachten
+      // Für ersten Aufruf schauen, ob sich algebraischen Clusterbaum überhaupt aufbauen lässt --> minimal cluster size beachten
       // = ob sich I und J weiter aufteilen lassen
-      // Falls ja: 4x HierarchicalMatrix-Konstruktor mit neuer Dim/Startspalten usw
-      // if( /*Clusterbaum weiter aufteilbar*/ ) {
-      //       matrix
-      // }
+      // (Attr dass dafür true gesetzt, sonst default =false)
+      // Falls nein: Fehler, müsste eigentlich als OP/EW gespeichert werden
 
-      // k = Rang der Matrix? Weil Rang = Maximale Anzahl linear unabhängiger Zeilen/Spalten = k (S.10)
-      // Wenn k(xDim+yDim) < xDim*yDim: OuterProduct-Form benutzen
-      // Sonst: Entrywise benutzen
+      // Nächstes Level im algebraischen ermitteln (aktuelle Range von Zeilen/Spalten je einmal aufteilen)
+      // Für jede entstehende neue Aufteilungen prüfen, ob sich diese weiter aufteilen lassen --> minimal cluster size beachten
+      // Falls ja: matrix für den Quadranten = HierarchicalMatrix-Konstruktor mit neuer Dim/Startspalten usw
+      // Falls nein: matrix für den Quadranten = OP(ad) oder EW-Konstruktor(non) je nach Admissibilty?
 
-      /*
-      Clusterbaum simulieren, um Partitionierung der Blöcke rauszufinden
-      --> Algebraisches Clustern + Admissibility condition (reicht immer selbe) + SVD (LA-Pack einbinden?)
 
-      Als Baum in matrix-Attribut speichern
+    for (int i=0; i<2; i++) {
+        for (int j=0; j<2; j++) {
+            if (/*aufteilbar*/) {
+                matrix[i][j] = new HierarchicalMatrix<datatype, /*neue dim*/>(/*abgekappte Daten*/);
+            }
+            else {
+                // k = Rang der Matrix? Weil Rang = Maximale Anzahl linear unabhängiger Zeilen/Spalten = k (S.10)
+                // Wenn k(xDim+yDim) < xDim*yDim: OuterProduct-Form benutzen
+                
+                if (/*admissible*/) {
+                    matrix[i][j] = new OuterProductBlock<datatype, /*neue dim x2*/>(/*abgekappte Daten*/);
+                }
+                else {
+                    matrix[i][j] = new EntrywiseBlock<datatype, /*neue dim x2*/>(/*abgekappte Daten*/);
+                }
+            }
+        }
+    }
 
-      Konstruktoren der OuterProduct (Admissible) und Entrywise (non-admissible) Blöcke aufrufen
-      */
-
-      // matrix[0][1] = new EntrywiseBlock<datatype, 2, 2>(originalMatrix, 1, 1);
-      // matrix[0][2] = new OuterProductBlock<datatype, 2, 2>(originalMatrix, 1, 1);
 }
