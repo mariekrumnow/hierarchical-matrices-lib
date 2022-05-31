@@ -18,6 +18,9 @@ HierarchicalMatrix<datatype,dim>::HierarchicalMatrix(datatype (&originalMatrix)[
       //       matrix
       // }
 
+      // k = Rang der Matrix? Weil Rang = Maximale Anzahl linear unabhängiger Zeilen/Spalten = k (S.10)
+      // Wenn k(xDim+yDim) < xDim*yDim: OuterProduct-Form benutzen
+      // Sonst: Entrywise benutzen
 
       /*
       Clusterbaum simulieren, um Partitionierung der Blöcke rauszufinden
