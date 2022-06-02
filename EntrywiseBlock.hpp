@@ -3,6 +3,8 @@
 
 #include "Block.hpp"
 
+#include <list>
+#include <vector>
 
 template <class datatype> class HierarchicalMatrix;
 template <class datatype> class OuterProductBlock;
@@ -15,13 +17,16 @@ class EntrywiseBlock: public Block<datatype>{
 protected:
       datatype ** block; ///< xDim * yDim array / Exact part of the original matrix
 
+      std::vector<unsigned int> xIndices;
+      std::vector<unsigned int> yIndices;
+
 public:
       /// Copies a matrix to be stored in a block
       ///
       /// \param originalBlock
       /// \param I
       /// \param J
-      EntrywiseBlock(datatype ** originalBlock, unsigned int yDim, unsigned int xDim /*, List-container*/);
+      EntrywiseBlock(datatype ** originalBlock, unsigned int yDim, unsigned int xDim, std::vector<unsigned int> xInd, std::vector<unsigned int> yInd);
 
       ///
       ///

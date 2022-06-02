@@ -8,7 +8,6 @@ class Block {
 protected:
       unsigned int xDim;
       unsigned int yDim;
-      // Liste mit abgedekten Indizes?
 
 public:
       /// Initialization of attributes from subclasses
@@ -16,7 +15,7 @@ public:
 
       /// Abstract functions
       virtual Block& coarse() =0;
-      
+
       virtual Block& operator+(const Block& addedBlock) =0;
       virtual Block& operator*(const Block& multBlock) =0;
 };

@@ -6,6 +6,8 @@
 #include "OuterProductBlock.hpp"
 
 #include <array>
+#include <list>
+#include <vector>
 
 /// Transforms an entrywise matrix into a hierarchical matrix to be calculated with
 template <class datatype>
@@ -19,7 +21,7 @@ public:
       /// Transforms an entrywise matrix into a hierarchical matrix
       ///
       /// \param originalMatrix The entrywise matrix to be transformed and calculated with
-      HierarchicalMatrix(datatype ** originalMatrix, unsigned int yDim, unsigned int xDim /*, List-container*/);
+      HierarchicalMatrix(datatype ** originalMatrix, unsigned int yDim, unsigned int xDim, std::list<std::vector<unsigned int>> indices);
 
       ///
       ///

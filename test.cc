@@ -13,6 +13,8 @@
 #include "functions/matrixVectorMult.cpp"
 
 #include <iostream>
+#include <list>
+#include <vector>
 
 int main(int argc, char** argv){
       double daten1[2][2]= { {0.0, 0.1},
@@ -26,7 +28,12 @@ int main(int argc, char** argv){
                   std::cout << daten[i][j] << " ";
             }
       }
-      HierarchicalMatrix<double> * exampleBlock = new HierarchicalMatrix<double>(daten, 2, 2);
+      std::vector<unsigned int> indice1 (0,0);
+      std::vector<unsigned int> indice2 (1,1);
+      // Mag er net
+      // std::list<std::vector<unsigned int>> indices (indice1);
+
+      HierarchicalMatrix<double> * exampleBlock = new HierarchicalMatrix<double>(daten, 2, 2, indices);
 
       std::cout << "Warnungsvermeider: " << sizeof(exampleBlock); // Vermeidet Warning, dass exampleBlock unbenutzt ist
 

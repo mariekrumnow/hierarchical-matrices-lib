@@ -2,9 +2,12 @@
 #include "../OuterProductBlock.hpp"
 #include "../EntrywiseBlock.hpp"
 
+// https://www.cplusplus.com/reference/stl/
+// splice & size (anz elemente in liste) wichtig
+
 // HierarchicalMatrix
 template <class datatype>
-HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, unsigned int yDim, unsigned int xDim)
+HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, unsigned int yDim, unsigned int xDim, std::list<std::vector<unsigned int>> indices)
       :Block<datatype>::Block(xDim, yDim)
 {
       // Wenn Liste nur einen Vektor enthält:
@@ -43,8 +46,8 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, uns
 
 // OuterProductBlock
 template <class datatype>
-OuterProductBlock<datatype>::OuterProductBlock(const datatype ** originalBlock, unsigned int xDim, unsigned int yDim /*, List-container*/, unsigned int rank)
-      :Block<datatype>::Block(xDim, yDim), k(rank)
+OuterProductBlock<datatype>::OuterProductBlock(const datatype ** originalBlock, unsigned int xDim, unsigned int yDim, std::vector<unsigned int> xInd, std::vector<unsigned int> yInd, unsigned int rank)
+      :Block<datatype>::Block(xDim, yDim), xIndices(xInd), yIndices(yInd), k(rank)
 {
       // Block raussuchen und als Matrix abspeichern?
       // SVD mit Block aufrufen
@@ -112,8 +115,8 @@ OuterProductBlock<datatype>::OuterProductBlock(const datatype ** originalBlock, 
 
 // EntrywiseBlock
 template <class datatype>
-EntrywiseBlock<datatype>::EntrywiseBlock(datatype ** originalBlock, unsigned int yDim, unsigned int xDim /*, List-container*/)
-      :Block<datatype>::Block(xDim, yDim), block(originalBlock)
+EntrywiseBlock<datatype>::EntrywiseBlock(datatype ** originalBlock, unsigned int yDim, unsigned int xDim, std::vector<unsigned int> xInd, std::vector<unsigned int> yInd)
+      :Block<datatype>::Block(xDim, yDim), xIndices(xInd), yIndices(yInd), block(originalBlock)
 {
       // Sonst nix mehr nötig zu machen, muss ja nur 1:1 eingespeichert werden
 }

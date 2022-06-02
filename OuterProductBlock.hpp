@@ -2,6 +2,8 @@
 #define HIERARCHICAL_MATRICES_OUTERPRODUCTBLOCK_H
 
 #include "Block.hpp"
+#include <list>
+#include <vector>
 
 
 template <class datatype> class HierarchicalMatrix;
@@ -18,13 +20,16 @@ protected:
       datatype ** x; ///< k * k array
       datatype * v[Block<datatype>::yDim]; ///< k * xDim array
 
+      std::vector<unsigned int> xIndices;
+      std::vector<unsigned int> yIndices;
+
 public:
       /// Transforms an entrywise matrix into it's outer product form
       ///
       /// \param originalBlock
       /// \param I
       /// \param J
-      OuterProductBlock(const datatype ** originalBlock, unsigned int xDim, unsigned int yDim /*, List-container*/, unsigned int rank);
+      OuterProductBlock(const datatype ** originalBlock, unsigned int xDim, unsigned int yDim, std::vector<unsigned int> xInd, std::vector<unsigned int> yInd, unsigned int rank);
 
       ///
       ///
