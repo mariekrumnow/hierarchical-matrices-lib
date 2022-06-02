@@ -23,7 +23,7 @@ public:
       /// \param originalBlock
       /// \param I
       /// \param J
-      OuterProductBlock(const datatype originalBlock[xDim][yDim], unsigned int I, unsigned int J);
+      OuterProductBlock(const datatype (&originalBlock)[xDim][yDim], unsigned int I, unsigned int J, unsigned int rank);
 
       ///
       ///

@@ -12,7 +12,8 @@ template <class datatype, unsigned int dim>
 class HierarchicalMatrix: public Block<datatype, dim, dim> {
 
 protected:
-      Block<datatype, dim, dim>* matrix[2][2]; ///< Hierarchical matrix, recursively divided into quadrants, [0][0] = top left, [0][1] = bottom left, [1][0] = top right, [1][1] = bottom right
+      // matrix[y][x] --> [0][0] = top left, [0][1] = top right / [1][0] = bottom left, [1][1] = bottom right
+      Block<datatype, dim, dim>* matrix[2][2]; ///< Hierarchical matrix, recursively divided into quadrants
 
 public:
       /// Transforms an entrywise matrix into a hierarchical matrix
