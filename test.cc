@@ -4,9 +4,6 @@
 #include "OuterProductBlock.hpp"
 #include "HierarchicalMatrix.hpp"
 
-#include "EntrywiseBlock.cpp"
-#include "OuterProductBlock.cpp"
-
 #include "functions/addition.cpp"
 #include "functions/coarse.cpp"
 #include "functions/constructor.cpp"
@@ -18,7 +15,8 @@
 #include <iostream>
 
 int main(int argc, char** argv){
-      double daten1[2][2]= { {1.1, 2.2}, {3.3, 4.4} };
+      double daten1[2][2]= { {0.0, 0.1},
+                              {1.0, 1.1} };
       double ** daten = new double*[2];
       for(int i=0; i<2; i++){
             daten[i] = new double[2];
