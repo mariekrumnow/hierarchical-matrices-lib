@@ -8,6 +8,7 @@ class Block {
 protected:
       unsigned int xDim;
       unsigned int yDim;
+      // Liste mit abgedekten Indizes?
 
 public:
       /// Initialization of attributes from subclasses
@@ -15,6 +16,10 @@ public:
 
       /// Abstract function for coarsening
       virtual Block& coarse() =0;
+
+      // invalid abstract return type Block
+      // virtual Block operator+(const Block& addedBlock) =0;
+      // virtual Block operator*(const Block& multBlock) =0;
 };
 
 #endif // HIERARCHICAL_MATRICES_BLOCK_H

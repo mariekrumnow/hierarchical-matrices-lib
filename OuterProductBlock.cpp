@@ -3,21 +3,19 @@
 #include <iostream>
 
 template <class datatype>
-OuterProductBlock<datatype>::OuterProductBlock(const datatype (&originalBlock)[xDim][yDim], unsigned int rank)
-      :Block<datatype>::Block(), k(rank)
+OuterProductBlock<datatype>::OuterProductBlock(const datatype ** originalBlock, unsigned int xDim, unsigned int yDim /*, List-container*/, unsigned int rank)
+      :Block<datatype>::Block(xDim, yDim), k(rank)
 {
-      // Zeilen bzw Spalten rausfinden, die linear unabhängig sind
-      // --> Zeilen aus Algorithmus für k rausfindbar?
-      // Zeilen/Spalten so zerlegen (dividieren?), dass aus Mult wieder Matrix entsteht
+      // Block raussuchen und als Matrix abspeichern?
+      // SVD mit Block aufrufen
+      // Zurückgegebene Matrizen in die Attribute setzen
 
-      for(unsigned int i=0; i< xDim; i++){
-            u[i] = new datatype[k];
-            // u[i][0] = originalBlock[i][0];
-      }
-
+      // for(unsigned int i=0; i< xDim; i++){
+      //       u[i] = new datatype[k];
+      // }
+      //
       for(unsigned int i=0; i< yDim; i++){
             v[i] = new datatype[k];
-            // v[i][1] = originalBlock[0][i];
       }
 
       // k = Rang der Matrix? Weil Rang = Maximale Anzahl linear unabhängiger Zeilen/Spalten = k (S.10)
@@ -79,33 +77,33 @@ Block<datatype>& OuterProductBlock<datatype>::coarse(){
 //---------------------------------------------------------------------------------------
 
 template <class datatype>
-OuterProductBlock<datatype>& OuterProductBlock<datatype>::operator+( const OuterProductBlock<datatype>& addedBlock ){
+Block<datatype> OuterProductBlock<datatype>::operator+( const OuterProductBlock<datatype>& addedBlock ){
 
 }
 
 template <class datatype>
-OuterProductBlock<datatype>& OuterProductBlock<datatype>::operator+( const EntrywiseBlock<datatype>& addedBlock ){
+Block<datatype> OuterProductBlock<datatype>::operator+( const EntrywiseBlock<datatype>& addedBlock ){
 
 }
 
 template <class datatype>
-OuterProductBlock<datatype>& OuterProductBlock<datatype>::operator+( const HierarchicalMatrix<datatype>& addedBlock ){
+Block<datatype> OuterProductBlock<datatype>::operator+( const HierarchicalMatrix<datatype>& addedBlock ){
 
 }
 
 //---------------------------------------------------------------------------------------
 
 template <class datatype>
-OuterProductBlock<datatype>& OuterProductBlock<datatype>::operator*( const OuterProductBlock<datatype>& multBlock ){
+Block<datatype> OuterProductBlock<datatype>::operator*( const OuterProductBlock<datatype>& multBlock ){
 
 }
 
 template <class datatype>
-OuterProductBlock<datatype>& OuterProductBlock<datatype>::operator*( const EntrywiseBlock<datatype>& multBlock ){
+Block<datatype> OuterProductBlock<datatype>::operator*( const EntrywiseBlock<datatype>& multBlock ){
 
 }
 
 template <class datatype>
-OuterProductBlock<datatype>& OuterProductBlock<datatype>::operator*( const HierarchicalMatrix<datatype>& multBlock ){
+Block<datatype> OuterProductBlock<datatype>::operator*( const HierarchicalMatrix<datatype>& multBlock ){
 
 }

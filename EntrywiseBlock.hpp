@@ -13,7 +13,7 @@ template <class datatype>
 class EntrywiseBlock: public Block<datatype>{
 
 protected:
-      datatype (&block)[xDim][yDim]; ///< Exact part of the original matrix
+      datatype ** block; ///< xDim * yDim array / Exact part of the original matrix
 
 public:
       /// Copies a matrix to be stored in a block
@@ -21,7 +21,7 @@ public:
       /// \param originalBlock
       /// \param I
       /// \param J
-      EntrywiseBlock(datatype ( &originalBlock)[xDim][yDim]);
+      EntrywiseBlock(datatype ** originalBlock, unsigned int yDim, unsigned int xDim /*, List-container*/);
 
       ///
       ///
@@ -30,13 +30,13 @@ public:
 
       //---------------------------------------------------------------------------------------
 
-      EntrywiseBlock& operator+( const EntrywiseBlock& addedBlock );
-      EntrywiseBlock& operator+( const OuterProductBlock<datatype>& addedBlock );
-      EntrywiseBlock& operator+( const HierarchicalMatrix<datatype>& addedBlock );
+      Block<datatype> operator+( const EntrywiseBlock& addedBlock );
+      Block<datatype> operator+( const OuterProductBlock<datatype>& addedBlock );
+      Block<datatype> operator+( const HierarchicalMatrix<datatype>& addedBlock );
 
-      EntrywiseBlock& operator*( const EntrywiseBlock& multBlock );
-      EntrywiseBlock& operator*( const OuterProductBlock<datatype>& multBlock );
-      EntrywiseBlock& operator*( const HierarchicalMatrix<datatype>& multBlock );
+      Block<datatype> operator*( const EntrywiseBlock& multBlock );
+      Block<datatype> operator*( const OuterProductBlock<datatype>& multBlock );
+      Block<datatype> operator*( const HierarchicalMatrix<datatype>& multBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_ENTRYWISEBLOCK_H

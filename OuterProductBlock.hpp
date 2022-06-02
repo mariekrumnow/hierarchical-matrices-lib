@@ -13,9 +13,10 @@ template <class datatype>
 class OuterProductBlock: public Block<datatype> {
 
 protected:
-      unsigned int k; ///<
-      datatype * u[xDim]; ///< Erste Dimension muss k groß sein!
-      datatype * v[yDim]; ///< Erste Dimension muss k groß sein!
+      unsigned int k; ///< rank of resulting matrix
+      datatype * u[Block<datatype>::xDim]; ///< k * yDim array
+      datatype ** x; ///< k * k array
+      datatype * v[Block<datatype>::yDim]; ///< k * xDim array
 
 public:
       /// Transforms an entrywise matrix into it's outer product form
@@ -23,7 +24,7 @@ public:
       /// \param originalBlock
       /// \param I
       /// \param J
-      OuterProductBlock(const datatype (&originalBlock)[xDim][yDim], unsigned int rank);
+      OuterProductBlock(const datatype ** originalBlock, unsigned int xDim, unsigned int yDim /*, List-container*/, unsigned int rank);
 
       ///
       ///
@@ -32,13 +33,13 @@ public:
 
       //---------------------------------------------------------------------------------------
 
-      OuterProductBlock& operator+( const OuterProductBlock& addedBlock );
-      OuterProductBlock& operator+( const EntrywiseBlock<datatype>& addedBlock );
-      OuterProductBlock& operator+( const HierarchicalMatrix<datatype>& addedBlock );
+      Block<datatype> operator+( const OuterProductBlock& addedBlock );
+      Block<datatype> operator+( const EntrywiseBlock<datatype>& addedBlock );
+      Block<datatype> operator+( const HierarchicalMatrix<datatype>& addedBlock );
 
-      OuterProductBlock& operator*( const OuterProductBlock& multBlock );
-      OuterProductBlock& operator*( const EntrywiseBlock<datatype>& multBlock );
-      OuterProductBlock& operator*( const HierarchicalMatrix<datatype>& multBlock );
+      Block<datatype> operator*( const OuterProductBlock& multBlock );
+      Block<datatype> operator*( const EntrywiseBlock<datatype>& multBlock );
+      Block<datatype> operator*( const HierarchicalMatrix<datatype>& multBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_OUTERPRODUCTBLOCK_H

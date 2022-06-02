@@ -19,7 +19,7 @@ public:
       /// Transforms an entrywise matrix into a hierarchical matrix
       ///
       /// \param originalMatrix The entrywise matrix to be transformed and calculated with
-      HierarchicalMatrix(datatype (&originalMatrix)[dim][dim]);
+      HierarchicalMatrix(datatype ** originalMatrix, unsigned int yDim, unsigned int xDim /*, List-container*/);
 
       ///
       ///
@@ -30,22 +30,22 @@ public:
       ///
       /// \param addedMatrix Second matrix to be added
       /// \return Sum of the two matrices
-      HierarchicalMatrix& operator+( const HierarchicalMatrix& addedMatrix );
-      HierarchicalMatrix& operator+=( const HierarchicalMatrix& addedMatrix );
+      Block<datatype> operator+( const HierarchicalMatrix& addedMatrix );
+      Block<datatype> operator+=( const HierarchicalMatrix& addedMatrix );
 
       /// Matrix-vector multiplication
       ///
       /// \param vector
       /// \return
-      std::array<datatype> operator*( const datatype vector[dim] );
-      std::array<datatype> operator*=( const datatype vector[dim] );
+      std::array<datatype, Block<datatype>::xDim> operator*( const datatype vector[Block<datatype>::xDim] );
+      std::array<datatype, Block<datatype>::xDim> operator*=( const datatype vector[Block<datatype>::xDim] );
 
       /// Matrix-matrix multiplication
       ///
       /// \param multMatrix
       /// \return
-      HierarchicalMatrix& operator*( const HierarchicalMatrix& multMatrix );
-      HierarchicalMatrix& operator*=( const HierarchicalMatrix& multMatrix );
+      Block<datatype> operator*( const HierarchicalMatrix& multMatrix );
+      Block<datatype> operator*=( const HierarchicalMatrix& multMatrix );
 
       /// Inversion
       ///
@@ -59,11 +59,11 @@ public:
 
       //---------------------------------------------------------------------------------------
 
-      HierarchicalMatrix& operator+( const EntrywiseBlock<datatype>& addedBlock );
-      HierarchicalMatrix& operator+( const OuterProductBlock<datatype>& addedBlock );
+      Block<datatype> operator+( const EntrywiseBlock<datatype>& addedBlock );
+      Block<datatype> operator+( const OuterProductBlock<datatype>& addedBlock );
 
-      HierarchicalMatrix& operator*( const EntrywiseBlock<datatype>& multBlock );
-      HierarchicalMatrix& operator*( const OuterProductBlock<datatype>& multBlock );
+      Block<datatype> operator*( const EntrywiseBlock<datatype>& multBlock );
+      Block<datatype> operator*( const OuterProductBlock<datatype>& multBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_HIERARCHICALMATRIX_H
