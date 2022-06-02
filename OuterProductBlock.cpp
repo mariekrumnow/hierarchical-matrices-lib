@@ -77,33 +77,13 @@ Block<datatype>& OuterProductBlock<datatype>::coarse(){
 //---------------------------------------------------------------------------------------
 
 template <class datatype>
-Block<datatype> OuterProductBlock<datatype>::operator+( const OuterProductBlock<datatype>& addedBlock ){
-
-}
-
-template <class datatype>
-Block<datatype> OuterProductBlock<datatype>::operator+( const EntrywiseBlock<datatype>& addedBlock ){
-
-}
-
-template <class datatype>
-Block<datatype> OuterProductBlock<datatype>::operator+( const HierarchicalMatrix<datatype>& addedBlock ){
+Block<datatype>& OuterProductBlock<datatype>::operator+( const Block<datatype>& addedBlock ){
 
 }
 
 //---------------------------------------------------------------------------------------
 
 template <class datatype>
-Block<datatype> OuterProductBlock<datatype>::operator*( const OuterProductBlock<datatype>& multBlock ){
-
-}
-
-template <class datatype>
-Block<datatype> OuterProductBlock<datatype>::operator*( const EntrywiseBlock<datatype>& multBlock ){
-
-}
-
-template <class datatype>
-Block<datatype> OuterProductBlock<datatype>::operator*( const HierarchicalMatrix<datatype>& multBlock ){
+Block<datatype>& OuterProductBlock<datatype>::operator*( const Block<datatype>& multBlock ){
 
 }

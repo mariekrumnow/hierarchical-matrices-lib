@@ -30,22 +30,22 @@ public:
       ///
       /// \param addedMatrix Second matrix to be added
       /// \return Sum of the two matrices
-      Block<datatype> operator+( const HierarchicalMatrix& addedMatrix );
-      Block<datatype> operator+=( const HierarchicalMatrix& addedMatrix );
+      Block<datatype>& operator+( const Block<datatype>& addedMatrix );
+      Block<datatype>& operator+=( const HierarchicalMatrix& addedMatrix );
 
       /// Matrix-vector multiplication
       ///
       /// \param vector
       /// \return
-      std::array<datatype, Block<datatype>::xDim> operator*( const datatype vector[Block<datatype>::xDim] );
-      std::array<datatype, Block<datatype>::xDim> operator*=( const datatype vector[Block<datatype>::xDim] );
+      datatype* operator*( const datatype vector[Block<datatype>::xDim] );
+      datatype* operator*=( const datatype vector[Block<datatype>::xDim] );
 
       /// Matrix-matrix multiplication
       ///
       /// \param multMatrix
       /// \return
-      Block<datatype> operator*( const HierarchicalMatrix& multMatrix );
-      Block<datatype> operator*=( const HierarchicalMatrix& multMatrix );
+      Block<datatype>& operator*( const Block<datatype>& multMatrix );
+      Block<datatype>& operator*=( const HierarchicalMatrix& multMatrix );
 
       /// Inversion
       ///
@@ -59,11 +59,11 @@ public:
 
       //---------------------------------------------------------------------------------------
 
-      Block<datatype> operator+( const EntrywiseBlock<datatype>& addedBlock );
-      Block<datatype> operator+( const OuterProductBlock<datatype>& addedBlock );
-
-      Block<datatype> operator*( const EntrywiseBlock<datatype>& multBlock );
-      Block<datatype> operator*( const OuterProductBlock<datatype>& multBlock );
+      // Block<datatype>& operator+( const EntrywiseBlock<datatype>& addedBlock );
+      // Block<datatype>& operator+( const OuterProductBlock<datatype>& addedBlock );
+      //
+      // Block<datatype>& operator*( const EntrywiseBlock<datatype>& multBlock );
+      // Block<datatype>& operator*( const OuterProductBlock<datatype>& multBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_HIERARCHICALMATRIX_H

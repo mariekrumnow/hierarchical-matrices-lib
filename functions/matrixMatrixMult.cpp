@@ -1,12 +1,12 @@
 #include "../HierarchicalMatrix.hpp"
 
 template <class datatype>
-Block<datatype> HierarchicalMatrix<datatype>::operator*( const HierarchicalMatrix<datatype>& multMatrix ){
+Block<datatype>& HierarchicalMatrix<datatype>::operator*( const Block<datatype>& multMatrix ){
 
 }
 
 template <class datatype>
-Block<datatype> HierarchicalMatrix<datatype>::operator*=( const HierarchicalMatrix<datatype>& multMatrix ){
+Block<datatype>& HierarchicalMatrix<datatype>::operator*=( const HierarchicalMatrix<datatype>& multMatrix ){
 
 }
 

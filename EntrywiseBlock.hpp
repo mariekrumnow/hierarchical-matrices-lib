@@ -30,13 +30,8 @@ public:
 
       //---------------------------------------------------------------------------------------
 
-      Block<datatype> operator+( const EntrywiseBlock& addedBlock );
-      Block<datatype> operator+( const OuterProductBlock<datatype>& addedBlock );
-      Block<datatype> operator+( const HierarchicalMatrix<datatype>& addedBlock );
-
-      Block<datatype> operator*( const EntrywiseBlock& multBlock );
-      Block<datatype> operator*( const OuterProductBlock<datatype>& multBlock );
-      Block<datatype> operator*( const HierarchicalMatrix<datatype>& multBlock );
+      Block<datatype>& operator+( const Block<datatype>& addedBlock );
+      Block<datatype>& operator*( const Block<datatype>& multBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_ENTRYWISEBLOCK_H

@@ -14,12 +14,11 @@ public:
       /// Initialization of attributes from subclasses
       Block(unsigned int x, unsigned int y): xDim(x), yDim(y) {}
 
-      /// Abstract function for coarsening
+      /// Abstract functions
       virtual Block& coarse() =0;
-
-      // invalid abstract return type Block
-      // virtual Block operator+(const Block& addedBlock) =0;
-      // virtual Block operator*(const Block& multBlock) =0;
+      
+      virtual Block& operator+(const Block& addedBlock) =0;
+      virtual Block& operator*(const Block& multBlock) =0;
 };
 
 #endif // HIERARCHICAL_MATRICES_BLOCK_H

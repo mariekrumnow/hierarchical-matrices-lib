@@ -1,7 +1,7 @@
 # Eingerückter Befehl wird ausgeführt, wenn Datei vor dem Doppelpunkt nicht existent
 # ODER sie älter als die genannten Dateien ist
 
-test.exe: test.cc Exceptions.hpp\
+test.exe: test.cc Exceptions.hpp Block.hpp\
 	EntrywiseBlock.hpp OuterProductBlock.hpp HierarchicalMatrix.hpp\
 	EntrywiseBlock.cpp OuterProductBlock.cpp\
 	functions/addition.cpp functions/coarse.cpp functions/constructor.cpp functions/inversion.cpp functions/luDecomposition.cpp functions/matrixMatrixMult.cpp functions/matrixVectorMult.cpp
