@@ -4,13 +4,13 @@
 #include "Block.hpp"
 
 
-template <class datatype, unsigned int dim> class HierarchicalMatrix;
-template <class datatype, unsigned int xDim, unsigned int yDim> class EntrywiseBlock;
+template <class datatype> class HierarchicalMatrix;
+template <class datatype> class EntrywiseBlock;
 
 
 /// Depicts an admissible part
-template <class datatype, unsigned int xDim, unsigned int yDim>
-class OuterProductBlock: public Block<datatype, xDim, yDim> {
+template <class datatype>
+class OuterProductBlock: public Block<datatype> {
 
 protected:
       unsigned int k; ///<
@@ -23,22 +23,22 @@ public:
       /// \param originalBlock
       /// \param I
       /// \param J
-      OuterProductBlock(const datatype (&originalBlock)[xDim][yDim], unsigned int I, unsigned int J, unsigned int rank);
+      OuterProductBlock(const datatype (&originalBlock)[xDim][yDim], unsigned int rank);
 
       ///
       ///
       /// \return
-      Block<datatype, xDim, yDim>& coarse() final;
+      Block<datatype>& coarse() final;
 
       //---------------------------------------------------------------------------------------
 
       OuterProductBlock& operator+( const OuterProductBlock& addedBlock );
-      OuterProductBlock& operator+( const EntrywiseBlock<datatype, xDim, yDim>& addedBlock );
-      OuterProductBlock& operator+( const HierarchicalMatrix<datatype, xDim>& addedBlock );
+      OuterProductBlock& operator+( const EntrywiseBlock<datatype>& addedBlock );
+      OuterProductBlock& operator+( const HierarchicalMatrix<datatype>& addedBlock );
 
       OuterProductBlock& operator*( const OuterProductBlock& multBlock );
-      OuterProductBlock& operator*( const EntrywiseBlock<datatype, xDim, yDim>& multBlock );
-      OuterProductBlock& operator*( const HierarchicalMatrix<datatype, xDim>& multBlock );
+      OuterProductBlock& operator*( const EntrywiseBlock<datatype>& multBlock );
+      OuterProductBlock& operator*( const HierarchicalMatrix<datatype>& multBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_OUTERPRODUCTBLOCK_H

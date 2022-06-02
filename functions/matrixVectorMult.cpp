@@ -1,11 +1,11 @@
 #include "../HierarchicalMatrix.hpp"
 
-template <class datatype, unsigned int dim>
-std::array<datatype, dim> HierarchicalMatrix<datatype,dim>::operator*( const datatype vector[dim] ){
+template <class datatype>
+std::array<datatype> HierarchicalMatrix<datatype>::operator*( const datatype vector[dim] ){
 
 }
 
-template <class datatype, unsigned int dim>
-std::array<datatype, dim> HierarchicalMatrix<datatype,dim>::operator*=( const datatype vector[dim] ){
+template <class datatype>
+std::array<datatype> HierarchicalMatrix<datatype>::operator*=( const datatype vector[dim] ){
 
 }

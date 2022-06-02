@@ -1,11 +1,11 @@
 #include "../HierarchicalMatrix.hpp"
 
-template <class datatype, unsigned int dim>
-HierarchicalMatrix<datatype,dim>& HierarchicalMatrix<datatype,dim>::operator+( const HierarchicalMatrix<datatype,dim>& addedMatrix ){
+template <class datatype>
+HierarchicalMatrix<datatype>& HierarchicalMatrix<datatype>::operator+( const HierarchicalMatrix<datatype>& addedMatrix ){
 
 }
 
-template <class datatype, unsigned int dim>
-HierarchicalMatrix<datatype,dim>& HierarchicalMatrix<datatype,dim>::operator+=( const HierarchicalMatrix<datatype,dim>& addedMatrix ){
+template <class datatype>
+HierarchicalMatrix<datatype>& HierarchicalMatrix<datatype>::operator+=( const HierarchicalMatrix<datatype>& addedMatrix ){
 
 }

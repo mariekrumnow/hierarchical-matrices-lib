@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-template <class datatype, unsigned int xDim, unsigned int yDim>
-OuterProductBlock<datatype, xDim, yDim>::OuterProductBlock(const datatype (&originalBlock)[xDim][yDim], unsigned int I, unsigned int J, unsigned int rank)
-      :Block<datatype, xDim, yDim>::Block(I, J), k(rank)
+template <class datatype>
+OuterProductBlock<datatype>::OuterProductBlock(const datatype (&originalBlock)[xDim][yDim], unsigned int rank)
+      :Block<datatype>::Block(), k(rank)
 {
       // Zeilen bzw Spalten rausfinden, die linear unabhängig sind
       // --> Zeilen aus Algorithmus für k rausfindbar?
@@ -71,41 +71,41 @@ OuterProductBlock<datatype, xDim, yDim>::OuterProductBlock(const datatype (&orig
       } // Rang k FERTIG
 }
 
-template <class datatype, unsigned int xDim, unsigned int yDim>
-Block<datatype, xDim, yDim>& OuterProductBlock<datatype, xDim, yDim>::coarse(){
+template <class datatype>
+Block<datatype>& OuterProductBlock<datatype>::coarse(){
 
 }
 
 //---------------------------------------------------------------------------------------
 
-template <class datatype, unsigned int xDim, unsigned int yDim>
-OuterProductBlock<datatype, xDim, yDim>& OuterProductBlock<datatype, xDim, yDim>::operator+( const OuterProductBlock<datatype, xDim, yDim>& addedBlock ){
+template <class datatype>
+OuterProductBlock<datatype>& OuterProductBlock<datatype>::operator+( const OuterProductBlock<datatype>& addedBlock ){
 
 }
 
-template <class datatype, unsigned int xDim, unsigned int yDim>
-OuterProductBlock<datatype, xDim, yDim>& OuterProductBlock<datatype, xDim, yDim>::operator+( const EntrywiseBlock<datatype, xDim, yDim>& addedBlock ){
+template <class datatype>
+OuterProductBlock<datatype>& OuterProductBlock<datatype>::operator+( const EntrywiseBlock<datatype>& addedBlock ){
 
 }
 
-template <class datatype, unsigned int xDim, unsigned int yDim>
-OuterProductBlock<datatype, xDim, yDim>& OuterProductBlock<datatype, xDim, yDim>::operator+( const HierarchicalMatrix<datatype, xDim>& addedBlock ){
+template <class datatype>
+OuterProductBlock<datatype>& OuterProductBlock<datatype>::operator+( const HierarchicalMatrix<datatype>& addedBlock ){
 
 }
 
 //---------------------------------------------------------------------------------------
 
-template <class datatype, unsigned int xDim, unsigned int yDim>
-OuterProductBlock<datatype, xDim, yDim>& OuterProductBlock<datatype, xDim, yDim>::operator*( const OuterProductBlock<datatype, xDim, yDim>& multBlock ){
+template <class datatype>
+OuterProductBlock<datatype>& OuterProductBlock<datatype>::operator*( const OuterProductBlock<datatype>& multBlock ){
 
 }
 
-template <class datatype, unsigned int xDim, unsigned int yDim>
-OuterProductBlock<datatype, xDim, yDim>& OuterProductBlock<datatype, xDim, yDim>::operator*( const EntrywiseBlock<datatype, xDim, yDim>& multBlock ){
+template <class datatype>
+OuterProductBlock<datatype>& OuterProductBlock<datatype>::operator*( const EntrywiseBlock<datatype>& multBlock ){
 
 }
 
-template <class datatype, unsigned int xDim, unsigned int yDim>
-OuterProductBlock<datatype, xDim, yDim>& OuterProductBlock<datatype, xDim, yDim>::operator*( const HierarchicalMatrix<datatype, xDim>& multBlock ){
+template <class datatype>
+OuterProductBlock<datatype>& OuterProductBlock<datatype>::operator*( const HierarchicalMatrix<datatype>& multBlock ){
 
 }
