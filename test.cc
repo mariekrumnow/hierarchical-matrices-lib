@@ -18,14 +18,10 @@
 #include <iostream>
 
 int main(int argc, char** argv){
-      // double daten[2][2] = { {1.1, 2.2}, {3.3, 4.4} };
-      // HierarchicalMatrix<double, 2> * exampleBlock = new HierarchicalMatrix<double, 2>(daten);
-      //
-      // std::cout << "Warnungsvermeider: " << sizeof(exampleBlock); // Vermeidet Warning, dass exampleBlock unbenutzt ist
+      double daten[2][2] = { {1.1, 2.2}, {3.3, 4.4} };
+      HierarchicalMatrix<double, 2> * exampleBlock = new HierarchicalMatrix<double, 2>(daten);
 
-      unsigned int newIndices[2][2][2] = { { {000, 001}, {010, 011} },
-                                        { {100, 101}, {110, 111} } };
-    std::cout << newIndices[1][0][0];
+      std::cout << "Warnungsvermeider: " << sizeof(exampleBlock); // Vermeidet Warning, dass exampleBlock unbenutzt ist
 
       return 0;
 }
