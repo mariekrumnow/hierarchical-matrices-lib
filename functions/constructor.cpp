@@ -7,9 +7,13 @@
 
 // HierarchicalMatrix
 template <class datatype>
-HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, unsigned int yDim, unsigned int xDim, std::list<std::vector<unsigned int>> indices)
-      :Block<datatype>::Block(xDim, yDim)
+HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, unsigned int mDim, unsigned int nDim, std::list<std::vector<unsigned int>> indices)
+      :Block<datatype>::Block(mDim, nDim)
 {
+    std::vector<unsigned int> indice1 (0,0);
+    matrix[0][0] = new OuterProductBlock<datatype>(originalMatrix, mDim, nDim, indice1, indice1, 2);
+    matrix[0][1] = new EntrywiseBlock<datatype>(originalMatrix, mDim, nDim, indice1, indice1);
+
       // Wenn Liste nur einen Vektor enthält:
             // Fehler
       // Sonst:
@@ -46,29 +50,29 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, uns
 
 // OuterProductBlock
 template <class datatype>
-OuterProductBlock<datatype>::OuterProductBlock(const datatype ** originalBlock, unsigned int xDim, unsigned int yDim, std::vector<unsigned int> xInd, std::vector<unsigned int> yInd, unsigned int rank)
-      :Block<datatype>::Block(xDim, yDim), xIndices(xInd), yIndices(yInd), k(rank)
+OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank)
+      :Block<datatype>::Block(mDim, nDim), iIndices(iInd), jIndices(jInd), k(rank)
 {
       // Block raussuchen und als Matrix abspeichern?
       // SVD mit Block aufrufen
       // Zurückgegebene Matrizen in die Attribute setzen
 
-      // for(unsigned int i=0; i< xDim; i++){
+      // for(unsigned int i=0; i< mDim; i++){
       //       u[i] = new datatype[k];
       // }
       //
-      for(unsigned int i=0; i< yDim; i++){
+      for(unsigned int i=0; i< nDim; i++){
             v[i] = new datatype[k];
       }
 
       // k = Rang der Matrix? Weil Rang = Maximale Anzahl linear unabhängiger Zeilen/Spalten = k (S.10)
       // Berechnung des Rangs (k) des Blocks via
       // https://www.geeksforgeeks.org/program-for-rank-of-matrix/
-      k = yDim;
+      k = nDim;
 
-      datatype copy[xDim][yDim]; // Kopie wird verändert!
-      for(unsigned int i=0; i< xDim; i++){
-            for(unsigned int j=0; j < yDim; j++){
+      datatype copy[mDim][nDim]; // Kopie wird verändert!
+      for(unsigned int i=0; i< mDim; i++){
+            for(unsigned int j=0; j < nDim; j++){
                   copy[i][j] = originalBlock[i][j];
             }
       }
@@ -76,7 +80,7 @@ OuterProductBlock<datatype>::OuterProductBlock(const datatype ** originalBlock, 
 
       for (unsigned int row = 0; row < k; row++){
             if (copy[row][row]){
-                  for (unsigned int col = 0; col < xDim; col++){
+                  for (unsigned int col = 0; col < mDim; col++){
                         if (col != row){
                               datatype mult = copy[col][row] / copy[row][row]; // Kann failen wenn int erlaubt
                               for (unsigned int i = 0; i < k; i++){
@@ -88,7 +92,7 @@ OuterProductBlock<datatype>::OuterProductBlock(const datatype ** originalBlock, 
             else {
                   bool reduce = true;
 
-                  for (unsigned int i = row + 1; i < xDim; i++) {
+                  for (unsigned int i = row + 1; i < mDim; i++) {
                         if (copy[i][row]) {
                               for (unsigned int j=0; j < k; j++) {
                                     datatype temp = copy[row][j];
@@ -102,7 +106,7 @@ OuterProductBlock<datatype>::OuterProductBlock(const datatype ** originalBlock, 
 
                   if (reduce) {
                         k--;
-                        for (unsigned int i=0; i < xDim; i++){
+                        for (unsigned int i=0; i < mDim; i++){
                               copy[i][row] = copy[i][k];
                         }
                   }
@@ -115,8 +119,8 @@ OuterProductBlock<datatype>::OuterProductBlock(const datatype ** originalBlock, 
 
 // EntrywiseBlock
 template <class datatype>
-EntrywiseBlock<datatype>::EntrywiseBlock(datatype ** originalBlock, unsigned int yDim, unsigned int xDim, std::vector<unsigned int> xInd, std::vector<unsigned int> yInd)
-      :Block<datatype>::Block(xDim, yDim), xIndices(xInd), yIndices(yInd), block(originalBlock)
+EntrywiseBlock<datatype>::EntrywiseBlock(datatype ** originalBlock, unsigned int nDim, unsigned int mDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd)
+      :Block<datatype>::Block(mDim, nDim), iIndices(iInd), jIndices(jInd), block(originalBlock)
 {
       // Sonst nix mehr nötig zu machen, muss ja nur 1:1 eingespeichert werden
 }
