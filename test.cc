@@ -25,13 +25,11 @@ int main(int argc, char** argv){
 
             for(int j=0; j<2; j++){
                   daten[i][j] = daten1[i][j];
-                  std::cout << daten[i][j] << " ";
             }
       }
-      std::vector<unsigned int> indice1 (0,0);
-      std::vector<unsigned int> indice2 (1,1);
-      // Mag er net
-      // std::list<std::vector<unsigned int>> indices (indice1);
+      //std::vector<unsigned int> indice1 (0,0);
+      //std::vector<unsigned int> indice2 (1,1);
+      std::list<std::vector<unsigned int>> indices;
 
       HierarchicalMatrix<double> * exampleBlock = new HierarchicalMatrix<double>(daten, 2, 2, indices);
 

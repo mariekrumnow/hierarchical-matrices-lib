@@ -15,10 +15,10 @@ template <class datatype>
 class EntrywiseBlock: public Block<datatype>{
 
 protected:
-      datatype ** block; ///< xDim * yDim array / Exact part of the original matrix
+      std::vector<unsigned int> iIndices; //< Menge der Zeilen-Indizes, die in dem Block enthalten sind
+      std::vector<unsigned int> jIndices; //< Menge der Spalten-Indizes, die in dem Block enthalten sind
 
-      std::vector<unsigned int> xIndices;
-      std::vector<unsigned int> yIndices;
+      datatype ** block; ///< mDim * nDim array / Exact part of the original matrix
 
 public:
       /// Copies a matrix to be stored in a block
@@ -26,7 +26,7 @@ public:
       /// \param originalBlock
       /// \param I
       /// \param J
-      EntrywiseBlock(datatype ** originalBlock, unsigned int yDim, unsigned int xDim, std::vector<unsigned int> xInd, std::vector<unsigned int> yInd);
+      EntrywiseBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd);
 
       ///
       ///

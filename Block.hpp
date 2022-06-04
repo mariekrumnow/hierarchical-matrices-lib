@@ -6,12 +6,12 @@ template <class datatype>
 class Block {
 
 protected:
-      unsigned int xDim;
-      unsigned int yDim;
+      unsigned int mDim; //< Zeilen der ursprünglichen Matrix / Rows
+      unsigned int nDim; //< Spalten der ursprünglichen Matrix / Columns
 
 public:
       /// Initialization of attributes from subclasses
-      Block(unsigned int x, unsigned int y): xDim(x), yDim(y) {}
+      Block(unsigned int m, unsigned int n): mDim(m), nDim(n) {}
 
       /// Abstract functions
       virtual Block& coarse() =0;
