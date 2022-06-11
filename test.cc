@@ -27,11 +27,13 @@ int main(int argc, char** argv){
                   daten[i][j] = daten1[i][j];
             }
       }
-      //std::vector<unsigned int> indice1 (0,0);
-      //std::vector<unsigned int> indice2 (1,1);
+      std::vector<unsigned int> indice1 (0,0);
+      std::vector<unsigned int> indice2 (1,1);
       std::list<std::vector<unsigned int>> indices;
+      indices.push_back(indice1);
+      indices.push_back(indice2);
 
-      HierarchicalMatrix<double> * exampleBlock = new HierarchicalMatrix<double>(daten, 2, 2, indices);
+      HierarchicalMatrix<double> * exampleBlock = new HierarchicalMatrix<double>(daten, &indices, 2, 2);
 
       std::cout << "Warnungsvermeider: " << sizeof(exampleBlock); // Vermeidet Warning, dass exampleBlock unbenutzt ist
 
