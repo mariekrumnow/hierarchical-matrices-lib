@@ -3,11 +3,11 @@
 #include "../EntrywiseBlock.hpp"
 
 #include <cmath>
+#include <lapacke.h>
 
-// TODO: Szenarios mit <4 Aufteilungen durchdenken
+// TODO: Szenarios mit <4 Aufteilungen durchdenken --> if um alles in nested for-loop mit Prüfung, ob Indizes < bzw > falls das reicht?
 // TODO: Um Dim bei Hierarchischer Matrix kümmern
-// TODO: Entscheidung ob EW/OP nach low-rank bzw admissibility
-// TODO: Um Rang bei Übergabe an OP kümmern --> Low-rank Matrix
+// TODO: Entscheidung ob EW/OP nach admissibility
 // TODO: SVD mit LaPack machen
 
 // HierarchicalMatrix
@@ -80,23 +80,73 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                               jVectorNum--;
                         }
 
-                        // Indizes entsprechend der Vektoren in die gekappte Matrix kopieren
-                        datatype ** cutMatrix = new datatype*[iVector->size()];
-                        for(unsigned int a=0; a < iVector->size(); a++){
-                              cutMatrix[a] = new datatype[jVector->size()];
+                        unsigned int newMdim = iVector->size();
+                        unsigned int newNdim = jVector->size();
 
-                              for(unsigned int b=0; b < jVector->size(); b++){
+                        // Indizes entsprechend der Vektoren in die gekappte Matrix kopieren
+                        datatype ** cutMatrix = new datatype*[newMdim];
+                        for(unsigned int a=0; a < newMdim; a++){
+                              cutMatrix[a] = new datatype[newNdim];
+
+                              for(unsigned int b=0; b < newNdim; b++){
                                     cutMatrix[a][b] = originalMatrix[ (*iVector)[a] ][ (*iVector)[b] ];
                               }
                         }
 
-                        // OP(ad) oder EW-Konstruktor(non) je nach Admissibilty + low-rank
+                        // Berechnung des Rangs (k) des Blocks via
+                        // https://www.geeksforgeeks.org/program-for-rank-of-matrix/
+                        unsigned int k = newNdim;
 
-                        if ( 1/* k*(dim + dim) < dim*dim */ ) { // == Low-rank matrix
-                              matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix, iVector->size(), jVector->size(), *iVector, *jVector, 2); // Rang!!
+                        datatype copy[newMdim][newNdim]; // Kopie wird verändert!
+                        for(unsigned int i=0; i< newMdim; i++){
+                              for(unsigned int j=0; j < newNdim; j++){
+                                    copy[i][j] = cutMatrix[i][j];
+                              }
+                        }
+
+
+                        for (unsigned int row = 0; row < k; row++){
+                              if (copy[row][row]){
+                                    for (unsigned int col = 0; col < newMdim; col++){
+                                          if (col != row){
+                                                datatype mult = copy[col][row] / copy[row][row]; // Kann failen wenn int erlaubt
+                                                for (unsigned int i = 0; i < k; i++){
+                                                      copy[col][i] -= mult * copy[row][i];
+                                                }
+                                          }
+                                    }
+                              }
+                              else {
+                                    bool reduce = true;
+
+                                    for (unsigned int i = row + 1; i < newMdim; i++) {
+                                          if (copy[i][row]) {
+                                                for (unsigned int j=0; j < k; j++) {
+                                                      datatype temp = copy[row][j];
+                                                      copy[row][j] = copy[i][j];
+                                                      copy[i][j] = temp;
+                                                }
+                                                reduce = false;
+                                                break;
+                                          }
+                                    }
+
+                                    if (reduce) {
+                                          k--;
+                                          for (unsigned int i=0; i < newMdim; i++){
+                                                copy[i][row] = copy[i][k];
+                                          }
+                                    }
+
+                                    row--;
+                              }
+                        } // Rang k FERTIG
+
+                        if ( k*(newMdim + newNdim) < newMdim*newNdim ) { // == Low-rank matrix
+                              matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector, k);
                         }
                         else {
-                              matrix[a][b] = new EntrywiseBlock<datatype>(cutMatrix, iVector->size(), jVector->size(), *iVector, *jVector);
+                              matrix[a][b] = new EntrywiseBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector);
                         }
                   }
             }
@@ -110,66 +160,34 @@ template <class datatype>
 OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank)
       :Block<datatype>::Block(mDim, nDim), iIndices(iInd), jIndices(jInd), k(rank)
 {
+      // Übergabe- & Rückgabeparam. vorbereiten
+      // datatype ** u; ///< mDim * k array
+      // datatype ** x; ///< k * k array
+      // datatype ** v; ///< nDim * k array
+      // Wie mit anderen Datentypen umgehen? Kann abhängig davon die Funktion aufgerufen werden?
+
+      u = new datatype*[mDim];
+      for(unsigned int a=0; a < mDim; a++){
+            u[a] = new datatype[k];
+      }
+
+      x = new datatype*[k];
+      for(unsigned int a=0; a < k; a++){
+            x[a] = new datatype[k];
+      }
+
+      v = new datatype*[nDim];
+      for(unsigned int a=0; a < nDim; a++){
+            v[a] = new datatype[k];
+      }
+
       // SVD mit Block aufrufen
-      // Zurückgegebene Matrizen in die Attribute setzen
-
-      // for(unsigned int i=0; i< mDim; i++){
-      //       u[i] = new datatype[k];
+      // LAPACK_COL_MAJOR als erstes Arg?, originalBlock zu double Array?
+      // http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing_ga84fdf22a62b12ff364621e4713ce02f2.html#ga84fdf22a62b12ff364621e4713ce02f2
+      // int info = LAPACKE_dgesvd('A', 'A', mDim, nDim, originalBlock, mDim, s, u, ldu, vt, ldvt);+
+      // if (info !=0){
+      //       // std::cerr<<"Lapack error occured in dgesdd. error code :"<<info<<std::endl;
       // }
-      //
-      for(unsigned int i=0; i< nDim; i++){
-            v[i] = new datatype[k];
-      }
-
-      // k = Rang der Matrix? Weil Rang = Maximale Anzahl linear unabhängiger Zeilen/Spalten = k (S.10)
-      // Berechnung des Rangs (k) des Blocks via
-      // https://www.geeksforgeeks.org/program-for-rank-of-matrix/
-      k = nDim;
-
-      datatype copy[mDim][nDim]; // Kopie wird verändert!
-      for(unsigned int i=0; i< mDim; i++){
-            for(unsigned int j=0; j < nDim; j++){
-                  copy[i][j] = originalBlock[i][j];
-            }
-      }
-
-
-      for (unsigned int row = 0; row < k; row++){
-            if (copy[row][row]){
-                  for (unsigned int col = 0; col < mDim; col++){
-                        if (col != row){
-                              datatype mult = copy[col][row] / copy[row][row]; // Kann failen wenn int erlaubt
-                              for (unsigned int i = 0; i < k; i++){
-                                    copy[col][i] -= mult * copy[row][i];
-                              }
-                        }
-                  }
-            }
-            else {
-                  bool reduce = true;
-
-                  for (unsigned int i = row + 1; i < mDim; i++) {
-                        if (copy[i][row]) {
-                              for (unsigned int j=0; j < k; j++) {
-                                    datatype temp = copy[row][j];
-                                    copy[row][j] = copy[i][j];
-                                    copy[i][j] = temp;
-                              }
-                              reduce = false;
-                              break;
-                        }
-                  }
-
-                  if (reduce) {
-                        k--;
-                        for (unsigned int i=0; i < mDim; i++){
-                              copy[i][row] = copy[i][k];
-                        }
-                  }
-
-                  row--;
-            }
-      } // Rang k FERTIG
 }
 
 
