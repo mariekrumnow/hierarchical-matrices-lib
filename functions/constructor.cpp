@@ -3,12 +3,16 @@
 #include "../EntrywiseBlock.hpp"
 
 #include <cmath>
+#include <algorithm>
 #include <lapacke.h>
 
-// TODO: Szenarios mit <4 Aufteilungen durchdenken --> if um alles in nested for-loop mit Prüfung, ob Indizes < bzw > falls das reicht?
-// TODO: Um Dim bei Hierarchischer Matrix kümmern
-// TODO: Entscheidung ob EW/OP nach admissibility
-// TODO: SVD mit LaPack machen
+// TODO: SVD-Aufruf korrekt hinbekommen + X berechnen? + in Attr speichern
+// TODO: Wie clusterParamEta rausfinden? Immer 1? Variabel?
+// TODO: Was sind Distanz & Durchmesser? Wie berechnen?
+
+// Helper function for HierarchicalMatrix, defined at bottom
+template <class datatype> unsigned int diameter(std::vector<unsigned int> cluster, datatype ** originalMatrix);
+
 
 // HierarchicalMatrix
 template <class datatype>
@@ -17,13 +21,28 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
 {
       enum IndiceOrientation {kRangeI=0, kRangeJ=1, kBottom=0, kTop=1};
 
-      // Beim initialen Aufruf die Anzahl der Vektoren == Blöcke speichern
       if (indices == nullptr) {
+            // Beim initialen Aufruf die Anzahl der Vektoren == Blöcke speichern
             indices[kRangeI][kBottom] = 1;
             indices[kRangeI][kTop] = originalIndices->size();
 
             indices[kRangeJ][kBottom] = 1;
             indices[kRangeJ][kTop] = originalIndices->size();
+      }
+      else {
+            // Dimension der enthaltenen Blöcke berechnen
+            unsigned int vectorIndice = 1;
+            auto currentVector = originalIndices->begin();
+            while( currentVector != originalIndices->end() ) {
+                  if( indices[kRangeI][kBottom] <= vectorIndice || vectorIndice <= indices[kRangeI][kTop] ) {
+                        mDim += currentVector->size();
+                  }
+                  else if( indices[kRangeJ][kBottom] <= vectorIndice || vectorIndice <= indices[kRangeJ][kTop] ) {
+                        nDim += currentVector->size();
+                  }
+                  currentVector++;
+                  vectorIndice++;
+            }
       }
 
       // Mitte der Indizes zum Aufteilen in Quadranten berechnen
@@ -32,17 +51,32 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
 
       // Prüfen, ob nur noch je 1 Indize vorhanden ist --> Blatt erreicht
       bool aufteilbar[2][2] = {
-            {indices[kRangeI][kBottom] == iMiddle && indices[kRangeJ][kBottom] == jMiddle,
-                  indices[kRangeI][kBottom] == iMiddle && jMiddle+1 == indices[kRangeJ][kTop]},
-            {iMiddle+1 == indices[kRangeI][kTop] && indices[kRangeJ][kBottom] == jMiddle,
-                  iMiddle+1 == indices[kRangeI][kTop] && jMiddle+1 == indices[kRangeJ][kTop]}   };
+            { !(indices[kRangeI][kBottom] == iMiddle && indices[kRangeJ][kBottom] == jMiddle),
+                  !(indices[kRangeI][kBottom] == iMiddle && jMiddle+1 == indices[kRangeJ][kTop]) },
+            { !(iMiddle+1 == indices[kRangeI][kTop] && indices[kRangeJ][kBottom] == jMiddle),
+                  !(iMiddle+1 == indices[kRangeI][kTop] && jMiddle+1 == indices[kRangeJ][kTop]) }   };
 
-      for (int a=0; a<2; a++) {
-            for (int b=0; b<2; b++) {
+      // Check if not all 4 Blocks can be built and thus invalid ones need to be skipped in for-loop
+      unsigned int maxBlockI = 2;
+      unsigned int maxBlockJ = 2;
+      if( iMiddle+1 > indices[kRangeI][kTop] ) {
+            if( jMiddle+1 > indices[kRangeJ][kTop] ) { // Just 1 indice for i and j each --> only 1 Block can be built
+                  maxBlockI = 1;
+                  maxBlockJ = 1;
+            }
+            else{ // Just 1 indice for i --> only 1x2 Blocks can be built
+                  maxBlockI = 1;
+            }
+      }
+      else if( jMiddle+1 > indices[kRangeJ][kTop] ) { // Just 1 indice for j --> only 2x1 Blocks can be built
+            maxBlockJ = 1;
+      }
+      // Side note: A 1x3 block or similar can't appear since we aren't dividing blocks bigger than 2x2!
+
+      for (unsigned int a=0; a< maxBlockI; a++) {
+            for (unsigned int b=0; b< maxBlockJ; b++) {
                   if (aufteilbar[a][b]) {
-                        // Neue Dim berechnen? (Brauch man die für die Hierarchischen?)
-                        // (for each vector in list, get size, sum size)
-
+                        // Indizes aufteilen
                         unsigned int newInd[2][2];
                         if(a < 2) {
                               newInd[kRangeI][kBottom] = indices[kRangeI][kBottom];
@@ -62,7 +96,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                               newInd[kRangeJ][kTop] = indices[kRangeJ][kTop];
                         }
 
-                        matrix[a][b] = new HierarchicalMatrix<datatype>(originalMatrix, originalIndices, mDim, nDim, newInd); //DIM NOCH NET RICHTIG
+                        matrix[a][b] = new HierarchicalMatrix<datatype>(originalMatrix, originalIndices, 0, 0, newInd); // Dim wird sowieso überschrieben
                   }
                   else {
                         // Vektoren anhand der Indize raussuchen
@@ -146,7 +180,26 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                               matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector, k);
                         }
                         else {
-                              matrix[a][b] = new EntrywiseBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector);
+                              unsigned int minDistance = std::max(iVector->size(), jVector->size()); // Oder lieber ersten Wert nehmen?
+                              std::for_each(iVector->cbegin(), iVector->cend(), [&minDistance, jVector, originalMatrix] (const unsigned int ind1) {
+                                    std::for_each(jVector->cbegin(), jVector->cend(), [ind1, &minDistance, originalMatrix] (const unsigned int ind2) {
+                                          if(originalMatrix[ind1][ind2] < minDistance) {
+                                                minDistance = originalMatrix[ind1][ind2];
+                                          }
+                                    });
+                              });
+
+                              // Between 0 and 1? >0? Depends on Cluster somehow
+                              unsigned int clusterParamEta = 1;
+
+                              if( std::min(diameter(*iVector, originalMatrix), diameter(*jVector, originalMatrix)) <= clusterParamEta * minDistance ) {
+                                    // Matrix can be approximated by low-rank one --> coarse (admissible)
+                                    matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix/*.coarse()*/, newMdim, newNdim, *iVector, *jVector, k);
+                              }
+                              else{
+                                    // Important info will be lost by approximation, has to be saved with more effort (non-admissible)
+                                    matrix[a][b] = new EntrywiseBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector);
+                              }
                         }
                   }
             }
@@ -161,11 +214,6 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
       :Block<datatype>::Block(mDim, nDim), iIndices(iInd), jIndices(jInd), k(rank)
 {
       // Übergabe- & Rückgabeparam. vorbereiten
-      // datatype ** u; ///< mDim * k array
-      // datatype ** x; ///< k * k array
-      // datatype ** v; ///< nDim * k array
-      // Wie mit anderen Datentypen umgehen? Kann abhängig davon die Funktion aufgerufen werden?
-
       u = new datatype*[mDim];
       for(unsigned int a=0; a < mDim; a++){
             u[a] = new datatype[k];
@@ -181,12 +229,30 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
             v[a] = new datatype[k];
       }
 
+      double* convertedBlock = new double[nDim*mDim];
+      double* convertedU = new double[mDim*mDim];
+      double* convertedV  = new double[nDim*nDim];
+
+      double* pos = convertedBlock;
+      for (unsigned int i=0; i< nDim; i++) {
+            for (unsigned int j=0; j< mDim; j++) {
+                  *pos++ = originalBlock[j][i];
+            }
+      }
+
+      int workArrSize = 5*std::max(mDim, nDim);
+      double s[std::min(mDim, nDim)], workArr[workArrSize];
+
       // SVD mit Block aufrufen
-      // LAPACK_COL_MAJOR als erstes Arg?, originalBlock zu double Array?
-      // http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing_ga84fdf22a62b12ff364621e4713ce02f2.html#ga84fdf22a62b12ff364621e4713ce02f2
-      // int info = LAPACKE_dgesvd('A', 'A', mDim, nDim, originalBlock, mDim, s, u, ldu, vt, ldvt);+
+      // https://cpp.hotexamples.com/de/examples/-/-/dgesvd_/cpp-dgesvd_-function-examples.html#0xf71dbdc59dc1ab38f7a86d6f008277708cc941285db6708f1275a020eacb3fe9-177,,209,
+      // char, char, int, int, double[lda][*], int, double[*], double[ldu][*], int, double[ldvt][*], int, double[*], int, int
+      // char, char, int, int, double*,         int, double*, double*,        int, double*,           int, double*
+      // Option 'S' für geringere Dim von U/VT?
+      // int info = dgesvd_('A', 'A', mDim, nDim, convertedBlock, mDim, s, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
+      // http://www.netlib.org/lapack/double/
+      // http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing.html
       // if (info !=0){
-      //       // std::cerr<<"Lapack error occured in dgesdd. error code :"<<info<<std::endl;
+             // std::cerr<<"Lapack error occured in dgesdd. error code :"<<info<<std::endl;
       // }
 }
 
@@ -197,4 +263,18 @@ EntrywiseBlock<datatype>::EntrywiseBlock(datatype ** originalBlock, unsigned int
       :Block<datatype>::Block(mDim, nDim), iIndices(iInd), jIndices(jInd), block(originalBlock)
 {
       // Sonst nix mehr nötig zu machen, muss ja nur 1:1 eingespeichert werden
+}
+
+
+// Helper function for HierarchicalMatrix
+template <class datatype>
+unsigned int diameter(std::vector<unsigned int> cluster, datatype ** originalMatrix){
+      unsigned int maxDistance = cluster.size(); // Oder lieber ersten Wert nehmen?
+
+      std::for_each(cluster.cbegin(), cluster.cend(), [&maxDistance, originalMatrix] (const unsigned int ind) {
+            if(originalMatrix[ind][ind] < maxDistance) {
+                  maxDistance = originalMatrix[ind][ind];
+            }
+      });
+      return maxDistance;
 }
