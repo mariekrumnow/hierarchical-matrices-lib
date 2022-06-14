@@ -6,8 +6,8 @@
 #include <algorithm>
 #include <lapacke.h>
 
-// TODO: SVD-Aufruf korrekt hinbekommen + X berechnen? + in Attr speichern
-// TODO: Wie clusterParamEta rausfinden? Immer 1? Variabel?
+// TODO: Lapack-Dateien finden + X berechnen? + in Attr speichern
+// TODO: Wie clusterParamEta rausfinden? Immer 1? Variabel? S.22/23
 // TODO: Was sind Distanz & Durchmesser? Wie berechnen?
 
 // Helper function for HierarchicalMatrix, defined at bottom
@@ -180,7 +180,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                               matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector, k);
                         }
                         else {
-                              unsigned int minDistance = std::max(iVector->size(), jVector->size()); // Oder lieber ersten Wert nehmen?
+                              unsigned int minDistance = 100 /*Erster Wert*/; //!!Ggf datatype wenn Wert aus Matrix
                               std::for_each(iVector->cbegin(), iVector->cend(), [&minDistance, jVector, originalMatrix] (const unsigned int ind1) {
                                     std::for_each(jVector->cbegin(), jVector->cend(), [ind1, &minDistance, originalMatrix] (const unsigned int ind2) {
                                           if(originalMatrix[ind1][ind2] < minDistance) {
@@ -245,10 +245,9 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
 
       // SVD mit Block aufrufen
       // https://cpp.hotexamples.com/de/examples/-/-/dgesvd_/cpp-dgesvd_-function-examples.html#0xf71dbdc59dc1ab38f7a86d6f008277708cc941285db6708f1275a020eacb3fe9-177,,209,
-      // char, char, int, int, double[lda][*], int, double[*], double[ldu][*], int, double[ldvt][*], int, double[*], int, int
-      // char, char, int, int, double*,         int, double*, double*,        int, double*,           int, double*
+      // (int), char, char, int, int, double[lda][*], int, double[*], double[ldu][*], int, double[ldvt][*], int, double[*], int
       // Option 'S' für geringere Dim von U/VT?
-      // int info = dgesvd_('A', 'A', mDim, nDim, convertedBlock, mDim, s, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
+      // int info = LAPACKE_dgesvd_work(LAPACK_COL_MAJOR, 'A', 'A', mDim, nDim, convertedBlock, mDim, s, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
       // http://www.netlib.org/lapack/double/
       // http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing.html
       // if (info !=0){
@@ -269,12 +268,14 @@ EntrywiseBlock<datatype>::EntrywiseBlock(datatype ** originalBlock, unsigned int
 // Helper function for HierarchicalMatrix
 template <class datatype>
 unsigned int diameter(std::vector<unsigned int> cluster, datatype ** originalMatrix){
-      unsigned int maxDistance = cluster.size(); // Oder lieber ersten Wert nehmen?
+      unsigned int maxDistance = 0 /*Erster Wert*/;
 
-      std::for_each(cluster.cbegin(), cluster.cend(), [&maxDistance, originalMatrix] (const unsigned int ind) {
-            if(originalMatrix[ind][ind] < maxDistance) {
-                  maxDistance = originalMatrix[ind][ind];
-            }
+      std::for_each(cluster.cbegin(), cluster.cend(), [&maxDistance, cluster, originalMatrix] (const unsigned int ind1) {
+            std::for_each(cluster.cbegin(), cluster.cend(), [ind1, &maxDistance, originalMatrix] (const unsigned int ind2) {
+                  if(originalMatrix[ind1][ind2] > maxDistance) {
+                        maxDistance = originalMatrix[ind1][ind2];
+                  }
+            });
       });
       return maxDistance;
 }
