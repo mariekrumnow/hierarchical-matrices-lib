@@ -7,7 +7,7 @@ test.exe: test.cc Exceptions.hpp Block.hpp\
 # -I = Pfad zu den h-(bzw include-)Dateien von LaPack
 # -L = Pfad zu \lib-Ordner von MinGW
 # Ansonsten ist der Kompilier-Befehl bei allen Developern gleich!
-	g++ -Wall -Wno-return-type -std=c++17 -IC:\MinGW\include\lapack-cmake-build -LC:\MinGW\lib -llapacke -llapack -lblas -lgfortran test.cc  -o test.exe
+	g++ -Wall -Wno-return-type -std=c++17 -IC:\MinGW\include\lapack-cmake-build -LC:\MinGW\lib -llapacke -llapack -lblas test.cc  -o test.exe
 
 clean:
 	del test.exe *.o

@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <lapacke.h>
 
+#include <iostream>
+
 // TODO: Lapack-Dateien finden + X berechnen? + in Attr speichern
 // TODO: Wie clusterParamEta rausfinden? Immer 1? Variabel? S.22/23
 // TODO: Was sind Distanz & Durchmesser? Wie berechnen?
@@ -23,6 +25,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
 
       if (indices == nullptr) {
             // Beim initialen Aufruf die Anzahl der Vektoren == Blöcke speichern
+            indices = new unsigned int[2][2];
             indices[kRangeI][kBottom] = 1;
             indices[kRangeI][kTop] = originalIndices->size();
 
@@ -46,8 +49,8 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
       }
 
       // Mitte der Indizes zum Aufteilen in Quadranten berechnen
-      unsigned int iMiddle = indices[kRangeI][kBottom] + floor(indices[kRangeI][kTop]-indices[kRangeI][kBottom] /2);
-      unsigned int jMiddle = indices[kRangeJ][kBottom] + floor(indices[kRangeJ][kTop]-indices[kRangeJ][kBottom] /2);
+      unsigned int iMiddle = indices[kRangeI][kBottom] + floor((indices[kRangeI][kTop]-indices[kRangeI][kBottom]) /2);
+      unsigned int jMiddle = indices[kRangeJ][kBottom] + floor((indices[kRangeJ][kTop]-indices[kRangeJ][kBottom]) /2);
 
       // Prüfen, ob nur noch je 1 Indize vorhanden ist --> Blatt erreicht
       bool aufteilbar[2][2] = {
@@ -73,9 +76,12 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
       }
       // Side note: A 1x3 block or similar can't appear since we aren't dividing blocks bigger than 2x2!
 
+      std::cout << maxBlockI << " " << maxBlockJ << " ";
+
       for (unsigned int a=0; a< maxBlockI; a++) {
             for (unsigned int b=0; b< maxBlockJ; b++) {
                   if (aufteilbar[a][b]) {
+                      std::cout << "HM ";
                         // Indizes aufteilen
                         unsigned int newInd[2][2];
                         if(a < 2) {
@@ -177,6 +183,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                         } // Rang k FERTIG
 
                         if ( k*(newMdim + newNdim) < newMdim*newNdim ) { // == Low-rank matrix
+                             std::cout << "OP1 ";
                               matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector, k);
                         }
                         else {
@@ -194,10 +201,12 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
 
                               if( std::min(diameter(*iVector, originalMatrix), diameter(*jVector, originalMatrix)) <= clusterParamEta * minDistance ) {
                                     // Matrix can be approximated by low-rank one --> coarse (admissible)
+                                     std::cout << "OP2 ";
                                     matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix/*.coarse()*/, newMdim, newNdim, *iVector, *jVector, k);
                               }
                               else{
                                     // Important info will be lost by approximation, has to be saved with more effort (non-admissible)
+                                     std::cout << "EW ";
                                     matrix[a][b] = new EntrywiseBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector);
                               }
                         }
@@ -229,19 +238,19 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
             v[a] = new datatype[k];
       }
 
-      double* convertedBlock = new double[nDim*mDim];
-      double* convertedU = new double[mDim*mDim];
-      double* convertedV  = new double[nDim*nDim];
-
-      double* pos = convertedBlock;
-      for (unsigned int i=0; i< nDim; i++) {
-            for (unsigned int j=0; j< mDim; j++) {
-                  *pos++ = originalBlock[j][i];
-            }
-      }
-
-      int workArrSize = 5*std::max(mDim, nDim);
-      double s[std::min(mDim, nDim)], workArr[workArrSize];
+      // double* convertedBlock = new double[nDim*mDim];
+      // double* convertedU = new double[mDim*mDim];
+      // double* convertedV  = new double[nDim*nDim];
+      //
+      // double* pos = convertedBlock;
+      // for (unsigned int i=0; i< nDim; i++) {
+      //       for (unsigned int j=0; j< mDim; j++) {
+      //             *pos++ = originalBlock[j][i];
+      //       }
+      // }
+      //
+      // int workArrSize = 5*std::max(mDim, nDim);
+      // double s[std::min(mDim, nDim)], workArr[workArrSize];
 
       // SVD mit Block aufrufen
       // https://cpp.hotexamples.com/de/examples/-/-/dgesvd_/cpp-dgesvd_-function-examples.html#0xf71dbdc59dc1ab38f7a86d6f008277708cc941285db6708f1275a020eacb3fe9-177,,209,
