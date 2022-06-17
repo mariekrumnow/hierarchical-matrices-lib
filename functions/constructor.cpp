@@ -238,25 +238,25 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
             v[a] = new datatype[k];
       }
 
-      // double* convertedBlock = new double[nDim*mDim];
-      // double* convertedU = new double[mDim*mDim];
-      // double* convertedV  = new double[nDim*nDim];
-      //
-      // double* pos = convertedBlock;
-      // for (unsigned int i=0; i< nDim; i++) {
-      //       for (unsigned int j=0; j< mDim; j++) {
-      //             *pos++ = originalBlock[j][i];
-      //       }
-      // }
-      //
-      // int workArrSize = 5*std::max(mDim, nDim);
-      // double s[std::min(mDim, nDim)], workArr[workArrSize];
+      double* convertedBlock = new double[nDim*mDim];
+      double* convertedU = new double[mDim*mDim];
+      double* convertedV  = new double[nDim*nDim];
+
+      double* pos = convertedBlock;
+      for (unsigned int i=0; i< nDim; i++) {
+            for (unsigned int j=0; j< mDim; j++) {
+                  *pos++ = originalBlock[j][i];
+            }
+      }
+
+      int workArrSize = 5*std::max(mDim, nDim);
+      double s[std::min(mDim, nDim)], workArr[workArrSize];
 
       // SVD mit Block aufrufen
       // https://cpp.hotexamples.com/de/examples/-/-/dgesvd_/cpp-dgesvd_-function-examples.html#0xf71dbdc59dc1ab38f7a86d6f008277708cc941285db6708f1275a020eacb3fe9-177,,209,
       // (int), char, char, int, int, double[lda][*], int, double[*], double[ldu][*], int, double[ldvt][*], int, double[*], int
       // Option 'S' für geringere Dim von U/VT?
-      // int info = LAPACKE_dgesvd_work(LAPACK_COL_MAJOR, 'A', 'A', mDim, nDim, convertedBlock, mDim, s, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
+      int info = LAPACKE_dgesvd_work(LAPACK_COL_MAJOR, 'A', 'A', mDim, nDim, convertedBlock, mDim, s, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
       // http://www.netlib.org/lapack/double/
       // http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing.html
       // if (info !=0){
