@@ -21,7 +21,7 @@ public:
       /// Transforms an entrywise matrix into a hierarchical matrix
       ///
       /// \param originalMatrix The entrywise matrix to be transformed and calculated with
-      HierarchicalMatrix(datatype ** originalMatrix, unsigned int mDim, unsigned int nDim, std::list<std::vector<unsigned int>> indices);
+      HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int mDim, unsigned int nDim, unsigned int indices[2][2] = {});
 
       ///
       ///
