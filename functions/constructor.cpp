@@ -8,9 +8,9 @@
 
 #include <iostream>
 
-// TODO: Lapack-Dateien finden + X berechnen? + in Attr speichern
-// TODO: Wie clusterParamEta rausfinden? Immer 1? Variabel? S.22/23
-// TODO: Was sind Distanz & Durchmesser? Wie berechnen?
+// TODO: Distanz & Durchmesser mit Dijkstra
+// TODO: OP fertig machen (Sigma s = X + in Attr speichern)
+// TODO: (Testen von Konstruktor)
 
 // Helper function for HierarchicalMatrix, defined at bottom
 template <class datatype> unsigned int diameter(std::vector<unsigned int> cluster, datatype ** originalMatrix);
@@ -18,7 +18,7 @@ template <class datatype> unsigned int diameter(std::vector<unsigned int> cluste
 
 // HierarchicalMatrix
 template <class datatype>
-HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int mDim, unsigned int nDim, unsigned int indices[2][2])
+HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int mDim, unsigned int nDim, double clusterParamEta, unsigned int indices[2][2])
       :Block<datatype>::Block(mDim, nDim)
 {
       enum IndiceOrientation {kRangeI=0, kRangeJ=1, kBottom=0, kTop=1};
@@ -102,7 +102,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                               newInd[kRangeJ][kTop] = indices[kRangeJ][kTop];
                         }
 
-                        matrix[a][b] = new HierarchicalMatrix<datatype>(originalMatrix, originalIndices, 0, 0, newInd); // Dim wird sowieso überschrieben
+                        matrix[a][b] = new HierarchicalMatrix<datatype>(originalMatrix, originalIndices, 0, 0, clusterParamEta, newInd); // Dim wird sowieso überschrieben
                   }
                   else {
                         // Vektoren anhand der Indize raussuchen
@@ -187,7 +187,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                               matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector, k);
                         }
                         else {
-                              unsigned int minDistance = 100 /*Erster Wert*/; //!!Ggf datatype wenn Wert aus Matrix
+                              unsigned int minDistance = mDim*nDim;
                               std::for_each(iVector->cbegin(), iVector->cend(), [&minDistance, jVector, originalMatrix] (const unsigned int ind1) {
                                     std::for_each(jVector->cbegin(), jVector->cend(), [ind1, &minDistance, originalMatrix] (const unsigned int ind2) {
                                           if(originalMatrix[ind1][ind2] < minDistance) {
@@ -195,9 +195,6 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                                           }
                                     });
                               });
-
-                              // Between 0 and 1? >0? Depends on Cluster somehow
-                              unsigned int clusterParamEta = 1;
 
                               if( std::min(diameter(*iVector, originalMatrix), diameter(*jVector, originalMatrix)) <= clusterParamEta * minDistance ) {
                                     // Matrix can be approximated by low-rank one --> coarse (admissible)
@@ -222,7 +219,33 @@ template <class datatype>
 OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank)
       :Block<datatype>::Block(mDim, nDim), iIndices(iInd), jIndices(jInd), k(rank)
 {
-      // Übergabe- & Rückgabeparam. vorbereiten
+      double* convertedBlock = new double[nDim*mDim];
+      double* convertedU = new double[mDim*mDim];
+      double* convertedV  = new double[nDim*nDim];
+
+      double convertedX[std::min(mDim, nDim)];
+
+      double* pos = convertedBlock;
+      for (unsigned int i=0; i< nDim; i++) {
+            for (unsigned int j=0; j< mDim; j++) {
+                  *pos++ = originalBlock[j][i];
+            }
+      }
+
+      int workArrSize = 5*std::max(mDim, nDim);
+      double workArr[workArrSize];
+
+      // SVD mit Block aufrufen
+      // https://cpp.hotexamples.com/de/examples/-/-/dgesvd_/cpp-dgesvd_-function-examples.html#0xf71dbdc59dc1ab38f7a86d6f008277708cc941285db6708f1275a020eacb3fe9-177,,209,
+      // Option 'S' für geringere Dim von U/VT?
+      int info = LAPACKE_dgesvd_work(LAPACK_COL_MAJOR, 'A', 'A', mDim, nDim, convertedBlock, mDim, convertedX, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
+      // http://www.netlib.org/lapack/double/
+      // http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing.html
+      // if (info !=0){
+             // std::cerr<<"Lapack error occured in dgesdd. error code :"<<info<<std::endl;
+      // }
+
+      // Attribute aus Format von Lapack rausholen
       u = new datatype*[mDim];
       for(unsigned int a=0; a < mDim; a++){
             u[a] = new datatype[k];
@@ -237,31 +260,6 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
       for(unsigned int a=0; a < nDim; a++){
             v[a] = new datatype[k];
       }
-
-      double* convertedBlock = new double[nDim*mDim];
-      double* convertedU = new double[mDim*mDim];
-      double* convertedV  = new double[nDim*nDim];
-
-      double* pos = convertedBlock;
-      for (unsigned int i=0; i< nDim; i++) {
-            for (unsigned int j=0; j< mDim; j++) {
-                  *pos++ = originalBlock[j][i];
-            }
-      }
-
-      int workArrSize = 5*std::max(mDim, nDim);
-      double s[std::min(mDim, nDim)], workArr[workArrSize];
-
-      // SVD mit Block aufrufen
-      // https://cpp.hotexamples.com/de/examples/-/-/dgesvd_/cpp-dgesvd_-function-examples.html#0xf71dbdc59dc1ab38f7a86d6f008277708cc941285db6708f1275a020eacb3fe9-177,,209,
-      // (int), char, char, int, int, double[lda][*], int, double[*], double[ldu][*], int, double[ldvt][*], int, double[*], int
-      // Option 'S' für geringere Dim von U/VT?
-      int info = LAPACKE_dgesvd_work(LAPACK_COL_MAJOR, 'A', 'A', mDim, nDim, convertedBlock, mDim, s, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
-      // http://www.netlib.org/lapack/double/
-      // http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing.html
-      // if (info !=0){
-             // std::cerr<<"Lapack error occured in dgesdd. error code :"<<info<<std::endl;
-      // }
 }
 
 
@@ -277,7 +275,7 @@ EntrywiseBlock<datatype>::EntrywiseBlock(datatype ** originalBlock, unsigned int
 // Helper function for HierarchicalMatrix
 template <class datatype>
 unsigned int diameter(std::vector<unsigned int> cluster, datatype ** originalMatrix){
-      unsigned int maxDistance = 0 /*Erster Wert*/;
+      unsigned int maxDistance = 0;
 
       std::for_each(cluster.cbegin(), cluster.cend(), [&maxDistance, cluster, originalMatrix] (const unsigned int ind1) {
             std::for_each(cluster.cbegin(), cluster.cend(), [ind1, &maxDistance, originalMatrix] (const unsigned int ind2) {
