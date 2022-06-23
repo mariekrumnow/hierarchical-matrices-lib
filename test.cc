@@ -36,7 +36,7 @@ int main(int argc, char** argv){
       indices.push_back(indice2);
       indices.push_back(indice3);
 
-      HierarchicalMatrix<double> * exampleBlock = new HierarchicalMatrix<double>(daten, &indices, 2, 2);
+      HierarchicalMatrix<double> * exampleBlock = new HierarchicalMatrix<double>(daten, &indices, 2);
 
       std::cout << "Warnungsvermeider: " << sizeof(exampleBlock); // Vermeidet Warning, dass exampleBlock unbenutzt ist
 

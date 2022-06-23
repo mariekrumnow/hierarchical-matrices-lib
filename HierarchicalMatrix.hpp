@@ -17,16 +17,17 @@ protected:
       // [0][0] = top left, [0][1] = top right / [1][0] = bottom left, [1][1] = bottom right
       Block<datatype>* matrix[2][2]; ///< Hierarchical matrix, recursively divided into quadrants
 
+private:
       enum IndiceOrientation {kRangeI=0, kRangeJ=1, kBottom=0, kTop=1};
+
+      HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta /*, graph?*/);
+      void constructHierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta /*, graph?*/);
 
 public:
       /// Transforms an entrywise matrix into a hierarchical matrix
       ///
       /// \param originalMatrix The entrywise matrix to be transformed and calculated with
-      // HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int dim, double clusterParamEta =0.5);
-      // HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int mDim, unsigned int nDim, unsigned int indices[2][2], /*graph, */ double clusterParamEta =0.5);
-
-      HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int mDim, unsigned int nDim, double clusterParamEta =0.5, unsigned int indices[2][2] = {});
+      HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int dim, double clusterParamEta =0.5);
 
       ///
       ///
@@ -44,8 +45,8 @@ public:
       ///
       /// \param vector
       /// \return
-      datatype* operator*( const datatype vector[Block<datatype>::xDim] );
-      datatype* operator*=( const datatype vector[Block<datatype>::xDim] );
+      datatype* operator*( const datatype vector[Block<datatype>::mDim] );
+      datatype* operator*=( const datatype vector[Block<datatype>::mDim] );
 
       /// Matrix-matrix multiplication
       ///

@@ -15,47 +15,58 @@
 // Helper function for HierarchicalMatrix, defined at bottom
 template <class datatype> unsigned int diameter(std::vector<unsigned int> cluster, datatype ** originalMatrix);
 
-
 // HierarchicalMatrix
 template <class datatype>
-HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int mDim, unsigned int nDim, double clusterParamEta, unsigned int indices[2][2])
-      :Block<datatype>::Block(mDim, nDim)
+HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int dim, double clusterParamEta)
+      :Block<datatype>::Block(dim, dim)
 {
-      if (indices == nullptr) {
-            // Beim initialen Aufruf die Anzahl der Vektoren (= Anz Blöcke) speichern
-            indices = new unsigned int[2][2];
-            indices[kRangeI][kBottom] = 1;
-            indices[kRangeI][kTop] = originalIndices->size();
+      // Anzahl der Vektoren (= Anz Blöcke) speichern
+      unsigned int indices[2][2];
+      indices[kRangeI][kBottom] = 1;
+      indices[kRangeI][kTop] = originalIndices->size();
 
-            indices[kRangeJ][kBottom] = 1;
-            indices[kRangeJ][kTop] = originalIndices->size();
+      indices[kRangeJ][kBottom] = 1;
+      indices[kRangeJ][kTop] = originalIndices->size();
 
-            // Matrix-Graph zur Weitergabe aufstellen
-            //Eingabe-Matrix ist quadratisch
-            for (unsigned int a =0; a < mDim; a++){
-                for (unsigned int b =a; b < nDim; b++){
-                    if( originalMatrix[a][b] || originalMatrix[b][a] ){
-                        //Trage Kante ein
-                    }
-                }
-            }
-      }
-      else {
-            // Dimension der enthaltenen Blöcke berechnen
-            unsigned int vectorIndice = 1;
-            auto currentVector = originalIndices->begin();
-            while( currentVector != originalIndices->end() ) {
-                  if( indices[kRangeI][kBottom] <= vectorIndice || vectorIndice <= indices[kRangeI][kTop] ) {
-                        mDim += currentVector->size();
-                  }
-                  else if( indices[kRangeJ][kBottom] <= vectorIndice || vectorIndice <= indices[kRangeJ][kTop] ) {
-                        nDim += currentVector->size();
-                  }
-                  currentVector++;
-                  vectorIndice++;
-            }
+      // Matrix-Graph zur Weitergabe aufstellen
+      for (unsigned int a =0; a < dim; a++){
+          for (unsigned int b =a; b < dim; b++){
+              if( originalMatrix[a][b] || originalMatrix[b][a] ){
+                  //Trage Kante ein
+              }
+          }
       }
 
+      constructHierarchicalMatrix(originalMatrix, originalIndices, indices, clusterParamEta /*, graph?*/);
+}
+
+
+template <class datatype>
+HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], /*graph, */ double clusterParamEta)
+// HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int mDim, unsigned int nDim, double clusterParamEta, unsigned int indices[2][2])
+      :Block<datatype>::Block(0, 0)
+{
+      // Dimension der enthaltenen Blöcke berechnen
+      unsigned int vectorIndice = 1;
+      auto currentVector = originalIndices->begin();
+      while( currentVector != originalIndices->end() ) {
+            if( indices[kRangeI][kBottom] <= vectorIndice || vectorIndice <= indices[kRangeI][kTop] ) {
+                  Block<datatype>::nDim += currentVector->size();
+            }
+            else if( indices[kRangeJ][kBottom] <= vectorIndice || vectorIndice <= indices[kRangeJ][kTop] ) {
+                  Block<datatype>::nDim += currentVector->size();
+            }
+            currentVector++;
+            vectorIndice++;
+      }
+
+      constructHierarchicalMatrix(originalMatrix, originalIndices, indices, /*graph, */ clusterParamEta);
+}
+
+
+template <class datatype>
+void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta /*, graph?*/)
+{
       // Mitte der Indizes zum Aufteilen in Quadranten berechnen
       unsigned int iMiddle = indices[kRangeI][kBottom] + floor((indices[kRangeI][kTop]-indices[kRangeI][kBottom]) /2);
       unsigned int jMiddle = indices[kRangeJ][kBottom] + floor((indices[kRangeJ][kTop]-indices[kRangeJ][kBottom]) /2);
@@ -110,7 +121,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                               newInd[kRangeJ][kTop] = indices[kRangeJ][kTop];
                         }
 
-                        matrix[a][b] = new HierarchicalMatrix<datatype>(originalMatrix, originalIndices, 0, 0, clusterParamEta, newInd); // Dim wird sowieso überschrieben
+                        matrix[a][b] = new HierarchicalMatrix<datatype>(originalMatrix, originalIndices, newInd, clusterParamEta /*, graph?*/);
                   }
                   else {
                         // Vektoren anhand der Indize raussuchen
@@ -195,7 +206,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                               matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector, k);
                         }
                         else {
-                              unsigned int minDistance = mDim*nDim;
+                              unsigned int minDistance = Block<datatype>::nDim * Block<datatype>::nDim;
                               std::for_each(iVector->cbegin(), iVector->cend(), [&minDistance, jVector, originalMatrix] (const unsigned int ind1) {
                                     std::for_each(jVector->cbegin(), jVector->cend(), [ind1, &minDistance, originalMatrix] (const unsigned int ind2) {
                                           if(originalMatrix[ind1][ind2] < minDistance) {
@@ -246,7 +257,7 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
       // SVD mit Block aufrufen
       // https://cpp.hotexamples.com/de/examples/-/-/dgesvd_/cpp-dgesvd_-function-examples.html#0xf71dbdc59dc1ab38f7a86d6f008277708cc941285db6708f1275a020eacb3fe9-177,,209,
       // Option 'S' für geringere Dim von U/VT?
-      int info = LAPACKE_dgesvd_work(LAPACK_COL_MAJOR, 'A', 'A', mDim, nDim, convertedBlock, mDim, convertedX, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
+      // int info = LAPACKE_dgesvd_work(LAPACK_COL_MAJOR, 'A', 'A', mDim, nDim, convertedBlock, mDim, convertedX, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
       // http://www.netlib.org/lapack/double/
       // http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing.html
       // if (info !=0){
