@@ -21,16 +21,24 @@ template <class datatype>
 HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int mDim, unsigned int nDim, double clusterParamEta, unsigned int indices[2][2])
       :Block<datatype>::Block(mDim, nDim)
 {
-      enum IndiceOrientation {kRangeI=0, kRangeJ=1, kBottom=0, kTop=1};
-
       if (indices == nullptr) {
-            // Beim initialen Aufruf die Anzahl der Vektoren == Blöcke speichern
+            // Beim initialen Aufruf die Anzahl der Vektoren (= Anz Blöcke) speichern
             indices = new unsigned int[2][2];
             indices[kRangeI][kBottom] = 1;
             indices[kRangeI][kTop] = originalIndices->size();
 
             indices[kRangeJ][kBottom] = 1;
             indices[kRangeJ][kTop] = originalIndices->size();
+
+            // Matrix-Graph zur Weitergabe aufstellen
+            //Eingabe-Matrix ist quadratisch
+            for (unsigned int a =0; a < mDim; a++){
+                for (unsigned int b =a; b < nDim; b++){
+                    if( originalMatrix[a][b] || originalMatrix[b][a] ){
+                        //Trage Kante ein
+                    }
+                }
+            }
       }
       else {
             // Dimension der enthaltenen Blöcke berechnen
