@@ -23,9 +23,7 @@ protected:
 public:
       /// Copies a matrix to be stored in a block
       ///
-      /// \param originalBlock
-      /// \param I
-      /// \param J
+      /// \param 
       EntrywiseBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd);
 
       ///
