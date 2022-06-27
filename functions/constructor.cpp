@@ -13,15 +13,17 @@
 
 // TODO: (Destruktor, in dem rekursiv die ganzen Attribute gelöscht werden?)
 
-// TODO: Garantie, dass Diagonalen belegt? (sonst selfconnected löschen)
+// TODO: Garantie, dass Diagonalen der Ges.matrix belegt? (sonst selfconnected löschen)
 // TODO: Graph auf Block oder Gesamtmatrix bezogen? Von Matrix A und IxI die Rede, hätte man auch b,t,s nehmen können --> Code verlegen/abändern
 // TODO: Wie das Problem mit Datentyp bei Rangberechnung lösen? ~Z.225
+
 // TODO: Wie soll das mit dim k bei SVD-Aufruf gehen?
+// TODO: x doch nicht immer Diagonalmatrix? sicher?
 
-// TODO: Makro für LA-Fkt mit richtigem Datentyp
-// TODO: Testen von Konstruktor [public Konstruktor geht]
-// --> 2x2, 4x4 richtig, bei 3x3 wir 2x2 Block statt 1x2 gebildet & es läuft ins nix
+// TODO: Makro für LA-Fkt-Namen mit richtigem Datentyp
+// TODO: Testen von Konstruktor [geht: public Konstruktor, private Konstruktor, Mitte berechnen, neue dim berechnen]
 
+// Verbesserung: Boolische Algebra + if-cases davor vereinen
 // Verbesserung: nullptr-Belegung von matrix mit anderem for-loop vereinen
 
 // Helper function for HierarchicalMatrix, defined at bottom
@@ -116,21 +118,24 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
       :Block<datatype>::Block(0, 0)
 {
       // Dimension der enthaltenen Blöcke berechnen
+
+      // std::cout << std::endl << indices[kRangeI][kBottom] << " < " << indices[kRangeI][kTop];
+      // std::cout << std::endl << indices[kRangeJ][kBottom] << " < " << indices[kRangeJ][kTop] << std::endl;
       unsigned int vectorIndice = 1;
-      auto currentVector = originalIndices->begin();
+      std::list<std::vector<unsigned int>>::iterator currentVector = originalIndices->begin();
       while( currentVector != originalIndices->end() ) {
             if( indices[kRangeI][kBottom] <= vectorIndice && vectorIndice <= indices[kRangeI][kTop] ) { // Wenn Indize des Vektors im Indize-Bereich liegt
                   Block<datatype>::mDim += currentVector->size();
-                  std::cout << currentVector->size() << std::endl;
+                  // std::cout << std::endl << currentVector->size();
             }
-            else if( indices[kRangeJ][kBottom] <= vectorIndice && vectorIndice <= indices[kRangeJ][kTop] ) {
+            if( indices[kRangeJ][kBottom] <= vectorIndice && vectorIndice <= indices[kRangeJ][kTop] ) {
                   Block<datatype>::nDim += currentVector->size();
-                  std::cout << currentVector->size() << std::endl;
+                  // std::cout << std::endl << currentVector->size();
             }
             currentVector++;
             vectorIndice++;
       }
-      std::cout << std::endl << "m: " << Block<datatype>::mDim << "  n: " << Block<datatype>::nDim << std::endl;
+      // std::cout << std::endl << "m: " << Block<datatype>::mDim << "  n: " << Block<datatype>::nDim << std::endl;
 
       constructHierarchicalMatrix(originalMatrix, originalIndices, indices, clusterParamEta, distances);
 }
@@ -145,31 +150,33 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
       // std::cout  << std::endl << "i: " << indices[kRangeI][kBottom] << " - " << indices[kRangeI][kTop] << " Mitte: " << iMiddle << std::endl;
       // std::cout << "j: " << indices[kRangeJ][kBottom] << " - " << indices[kRangeJ][kTop] << " Mitte: " << jMiddle << std::endl;
 
+      // Making sure a 3x2 block won't unnecessarily be split across the x2
+      if( indices[kRangeI][kBottom] == iMiddle && iMiddle+1 == indices[kRangeI][kTop]
+                  && indices[kRangeJ][kBottom]+1 == jMiddle && jMiddle+1 == indices[kRangeJ][kTop] ){
+            iMiddle = indices[kRangeI][kTop];
+      }
+      else if( indices[kRangeJ][kBottom] == jMiddle && jMiddle+1 == indices[kRangeJ][kTop]
+                  && indices[kRangeI][kBottom]+1 == iMiddle && iMiddle+1 == indices[kRangeI][kTop] ){
+            jMiddle = indices[kRangeJ][kTop];
+      }
+
       // Prüfen, ob nur noch je 1 Indize vorhanden ist --> Blatt erreicht
-      bool aufteilbar[2][2] = {
+      bool splittable[2][2] = {
             { !(indices[kRangeI][kBottom] == iMiddle && indices[kRangeJ][kBottom] == jMiddle),
                   !(indices[kRangeI][kBottom] == iMiddle && jMiddle+1 == indices[kRangeJ][kTop]) },
             { !(iMiddle+1 == indices[kRangeI][kTop] && indices[kRangeJ][kBottom] == jMiddle),
                   !(iMiddle+1 == indices[kRangeI][kTop] && jMiddle+1 == indices[kRangeJ][kTop]) }   };
 
-      // Check if not all 4 Blocks can be built and thus invalid ones need to be skipped in for-loop
+      // Check if not all 4 Blocks can be built and thus invalid ones need to be skipped in for-loop --> If 1x1 it wouldn't be split!
       unsigned int maxBlockI = 2;
       unsigned int maxBlockJ = 2;
       if( iMiddle+1 > indices[kRangeI][kTop] ) {
-            if( jMiddle+1 > indices[kRangeJ][kTop] ) { // Just 1 indice for i and j each --> only 1 Block can be built
-                  maxBlockI = 1;
-                  maxBlockJ = 1;
-            }
-            else{ // Just 1 indice for i --> only 1x2 Blocks can be built
-                  maxBlockI = 1;
-            }
+            maxBlockI = 1;
       }
       else if( jMiddle+1 > indices[kRangeJ][kTop] ) { // Just 1 indice for j --> only 2x1 Blocks can be built
             maxBlockJ = 1;
       }
-      // Side note: A 1x3 block or similar can't appear since we aren't dividing blocks bigger than 2x2!
-
-      // std::cout << maxBlockI << " " << maxBlockJ << " ";
+      std::cout << maxBlockI << " " << maxBlockJ << " ";
 
       unsigned int a, b;
       for (a=0; a<2; a++) {
@@ -180,11 +187,11 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
 
       for (a=0; a< maxBlockI; a++) {
             for (b=0; b< maxBlockJ; b++) {
-                  if (aufteilbar[a][b]) {
+                  if (splittable[a][b]) {
                       std::cout << "HM ";
                         // Indizes aufteilen
                         unsigned int newInd[2][2];
-                        if(a < 2) {
+                        if( a==0 ) {
                               newInd[kRangeI][kBottom] = indices[kRangeI][kBottom];
                               newInd[kRangeI][kTop] = iMiddle;
                         }
@@ -193,7 +200,7 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
                               newInd[kRangeI][kTop] = indices[kRangeI][kTop];
                         }
 
-                        if( !(b % 2) ) {
+                        if( b==0 ) {
                               newInd[kRangeJ][kBottom] = indices[kRangeJ][kBottom];
                               newInd[kRangeJ][kTop] = jMiddle;
                         }
@@ -206,15 +213,15 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
                   }
                   else {
                         // Vektoren anhand der Indize raussuchen
-                        unsigned int iVectorNum = a<2 ? iMiddle : iMiddle+1;
-                        auto iVector = originalIndices->begin();
+                        unsigned int iVectorNum = a==0 ? iMiddle : iMiddle+1;
+                        std::list<std::vector<unsigned int>>::iterator iVector = originalIndices->begin();
                         while( iVectorNum != 1 ) {
                               iVector++;
                               iVectorNum--;
                         }
 
-                        unsigned int jVectorNum = !(b % 2) ? jMiddle : jMiddle+1;
-                        auto jVector = originalIndices->begin();
+                        unsigned int jVectorNum = b==0 ? jMiddle : jMiddle+1;
+                        std::list<std::vector<unsigned int>>::iterator jVector = originalIndices->begin();
                         while( jVectorNum != 1 ) {
                               jVector++;
                               jVectorNum--;
@@ -222,6 +229,7 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
 
                         unsigned int newMdim = iVector->size();
                         unsigned int newNdim = jVector->size();
+                        // std::cout << " " << iVector->size() << " " << jVector->size() << " ";
 
                         // Indizes entsprechend der Vektoren in die gekappte Matrix kopieren
                         datatype ** cutMatrix = new datatype*[newMdim];
