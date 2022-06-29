@@ -11,20 +11,29 @@
 
 #include <iostream>
 
-// TODO: (Destruktor, in dem rekursiv die ganzen Attribute gelöscht werden?)
+// TODO: Destruktor, in dem rekursiv die ganzen Attribute gelöscht werden
+//  --> Wird bei delete der Destruktor der Klassen aufgerufen? Dann brauch man ja nur for(2x2) delete matrix2x2 jap
 
-// TODO: Garantie, dass Diagonalen der Ges.matrix belegt? (sonst selfconnected löschen)
-// TODO: Graph auf Block oder Gesamtmatrix bezogen? Von Matrix A und IxI die Rede, hätte man auch b,t,s nehmen können --> Code verlegen/abändern
-// TODO: Wie das Problem mit Datentyp bei Rangberechnung lösen? ~Z.225
+//Vektorn sind Blääter wie auf S.31 im Buch
 
-// TODO: Wie soll das mit dim k bei SVD-Aufruf gehen?
-// TODO: x doch nicht immer Diagonalmatrix? sicher?
+// TODO: Wie das Problem mit Datentyp bei Rangberechnung lösen? ~Z.225 ist okay
 
-// TODO: Makro für LA-Fkt-Namen mit richtigem Datentyp
+// TODO: Nach SVD-AUffruf Singulärwerte angucken & entspprechend Zeilen auf  k runterkürzen
+// In d gucken wir welche singulärwerte kleiner als threshhold, u und v auf spalten kürzen auf k,
+//s der größe nach sortiert, wo es kleiner wird wegschmeißen.In d gucken wir welche singulärwerte kleiner als threshhold,
+//u und v auf spalten kürzen auf k, s größe nach sortiert, wo es kleiner wird wegschmeißen.
+// TODO: x lieber wie vorher als k*k Matrix speichern für Sonderfälle
+
+// TODO: Makro für LA-Fkt-Namen mit richtigem Datentyp --> Textuelle Ersetzung reicht nicht, Makro mit Parametern,
+// Function like Macros
+// Funktionsnamen + Parameter mit ifdeftype = double
+
 // TODO: Testen von Konstruktor [geht: public Konstruktor, private Konstruktor, Mitte berechnen, neue dim berechnen]
 
-// Verbesserung: Boolische Algebra + if-cases davor vereinen
-// Verbesserung: nullptr-Belegung von matrix mit anderem for-loop vereinen
+// WÜrde es das vereinfachen, wenn man in Block die Indize-Rannge reinpackt (2x2 arr)? Müsste ja gehen wg konsekutivität ja
+
+//TODO: Nochmal schauen, ob die Indizes aucch in die passenden Quadranten gepackkt werden
+
 
 // Helper function for HierarchicalMatrix, defined at bottom
 unsigned int diameter(std::vector<unsigned int> cluster, unsigned int ** distances);
@@ -256,7 +265,7 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
                               if (copy[row][row]){
                                     for (unsigned int col = 0; col < newMdim; col++){
                                           if (col != row){
-                                                datatype mult = copy[col][row] / copy[row][row]; // Kann failen wenn int erlaubt
+                                                datatype mult = copy[col][row] / copy[row][row];
                                                 for (unsigned int i = 0; i < k; i++){
                                                       copy[col][i] -= mult * copy[row][i];
                                                 }
@@ -328,14 +337,17 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
 // OuterProductBlock
 template <class datatype>
 OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank)
-      :Block<datatype>::Block(mDim, nDim), iIndices(iInd), jIndices(jInd), k(rank)
+      :Block<datatype>::Block(mDim, nDim), k(rank)
 {
+    Block<datatype>::indiceRange[kRangeI][kBottom] = iInd.front();
+    Block<datatype>::indiceRange[kRangeI][kTop] = iInd.back();
+    Block<datatype>::indiceRange[kRangeJ][kBottom] = jInd.front();
+    Block<datatype>::indiceRange[kRangeJ][kTop] = jInd.back();
+
       datatype* convertedBlock = new datatype[nDim*mDim];
-      // Größen mit k?
       datatype* convertedU = new datatype[mDim*mDim];
       datatype* convertedV  = new datatype[nDim*nDim];
-      // std::min(mDim, nDim) statt k?
-      x = new datatype[k];
+      datatype* convertedX = new datatype[std::min(mDim, nDim)];
 
       datatype* pos = convertedBlock;
       unsigned int a, b;
@@ -358,21 +370,34 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
       //        std::cerr<<"Lapack error occured in dgesdd. error code :" << info << std::endl;
       // }
 
+      // Irrelevante Zeilen /vertauschen
+
+
       // Attribute aus Format von Lapack rausholen
       pos = convertedU;
       u = new datatype*[mDim];
       for(a=0; a < mDim; a++){
-            u[a] = new datatype[k]; // stattdessen mDim?
-            for (b=0; b < k; b++){ // stattdessen mDim?
+            u[a] = new datatype[k];
+            for (b=0; b < k; b++){
                   u[b][a] = *pos++;
             }
+      }
+
+      pos = convertedX;
+      x = new datatype*[k];
+      for(a=0; a < k; a++){
+            x[a] = new datatype[k];
+            for (b=0; b < k; b++){
+                  x[a][b] = 0;
+            }
+            x[a][a] = *pos++;
       }
 
       pos = convertedV;
       v = new datatype*[nDim];
       for(a=0; a < nDim; a++){
-            v[a] = new datatype[k]; // stattdessen nDim?
-            for (b=0; b < k; b++){ // stattdessen nDim?
+            v[a] = new datatype[k];
+            for (b=0; b < k; b++){
                   v[a][b] = *pos++;
             }
       }
@@ -387,9 +412,12 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
 // EntrywiseBlock
 template <class datatype>
 EntrywiseBlock<datatype>::EntrywiseBlock(datatype ** originalBlock, unsigned int nDim, unsigned int mDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd)
-      :Block<datatype>::Block(mDim, nDim), iIndices(iInd), jIndices(jInd), block(originalBlock)
+      :Block<datatype>::Block(mDim, nDim), block(originalBlock)
 {
-      // Sonst nix mehr nötig zu machen, muss ja nur 1:1 eingespeichert werden
+    Block<datatype>::indiceRange[kRangeI][kBottom] = iInd.front();
+    Block<datatype>::indiceRange[kRangeI][kTop] = iInd.back();
+    Block<datatype>::indiceRange[kRangeJ][kBottom] = jInd.front();
+    Block<datatype>::indiceRange[kRangeJ][kTop] = jInd.back();
 }
 
 

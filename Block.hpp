@@ -1,13 +1,17 @@
 #ifndef HIERARCHICAL_MATRICES_BLOCK_H
 #define HIERARCHICAL_MATRICES_BLOCK_H
 
+    enum IndiceOrientation {kRangeI=0, kRangeJ=1, kBottom=0, kTop=1};
+
 /// Abstract class to depict all parts of the matrix
 template <class datatype>
 class Block {
 
 protected:
+
       unsigned int mDim; //< Zeilen der ursprünglichen Matrix / Rows
       unsigned int nDim; //< Spalten der ursprünglichen Matrix / Columns
+      unsigned int indiceRange[2][2]; //<
 
 public:
       /// Initialization of attributes from subclasses

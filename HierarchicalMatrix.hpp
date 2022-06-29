@@ -18,10 +18,10 @@ protected:
       Block<datatype>* matrix[2][2]; ///< Hierarchical matrix, recursively divided into quadrants, can be partially nullptr!
 
 private:
-      enum IndiceOrientation {kRangeI=0, kRangeJ=1, kBottom=0, kTop=1};
-
       HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances);
       void constructHierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances);
+
+      ~HierarchicalMatrix();
 
 public:
       /// Transforms an entrywise matrix into a hierarchical matrix
