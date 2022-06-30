@@ -2,23 +2,20 @@
 #include "../OuterProductBlock.hpp"
 #include "../EntrywiseBlock.hpp"
 
-#include <cmath>
+#include "../user_settings.hpp"
+
 #include <algorithm>
+#include <cmath>
+#include <lapacke.h>
 #include <limits>
 #include <queue>
 
-#include <lapacke.h>
-
-#include <iostream>
+#include <iostream> // For testing
 
 // TODO: Nach SVD-AUffruf Singulärwerte angucken & entspprechend Zeilen auf  k runterkürzen
 // In d gucken wir welche singulärwerte kleiner als threshhold, u und v auf spalten kürzen auf k,
 //s der größe nach sortiert, wo es kleiner wird wegschmeißen.In d gucken wir welche singulärwerte kleiner als threshhold,
 //u und v auf spalten kürzen auf k, s größe nach sortiert, wo es kleiner wird wegschmeißen.
-
-// TODO: Makro für LA-Fkt-Namen mit richtigem Datentyp --> Textuelle Ersetzung reicht nicht, Makro mit Parametern,
-// Function like Macros
-// Funktionsnamen + Parameter mit ifdeftype = double
 
 // TODO: Testen von Konstruktor [geht: public Konstruktor, private Konstruktor, Mitte berechnen, neue dim berechnen]
 
@@ -370,7 +367,7 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
       // SVD mit Block aufrufen
       // https://cpp.hotexamples.com/de/examples/-/-/dgesvd_/cpp-dgesvd_-function-examples.html#0xf71dbdc59dc1ab38f7a86d6f008277708cc941285db6708f1275a020eacb3fe9-177,,209,
       // Option 'S' für geringere Dim von U/VT?
-      // int info = LAPACKE_dgesvd_work(LAPACK_COL_MAJOR, 'S', 'S', mDim, nDim, convertedBlock, mDim, x, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
+      int info = CALC_SVD(LAPACK_COL_MAJOR, 'S', 'S', mDim, nDim, convertedBlock, mDim, convertedX, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
       // http://www.netlib.org/lapack/double/
       // http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing.html
       // if (info){
