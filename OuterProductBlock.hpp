@@ -6,10 +6,6 @@
 #include <vector>
 
 
-template <class datatype> class HierarchicalMatrix;
-template <class datatype> class EntrywiseBlock;
-
-
 /// Depicts an admissible part
 template <class datatype>
 class OuterProductBlock: public Block<datatype> {
@@ -36,8 +32,12 @@ public:
 
       //---------------------------------------------------------------------------------------
 
-      Block<datatype>& operator+( const Block<datatype>& addedBlock );
-      Block<datatype>& operator*( const Block<datatype>& multBlock );
+      // Block<datatype>& operator*( const Block<datatype>& multBlock );
+
+      Block<datatype>* operator+( Block<datatype>* addedBlock );
+      Block<datatype>* operator+( const HierarchicalMatrix<datatype>* addedBlock );
+      Block<datatype>* operator+( const OuterProductBlock* addedBlock );
+      Block<datatype>* operator+( const EntrywiseBlock<datatype>* addedBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_OUTERPRODUCTBLOCK_H

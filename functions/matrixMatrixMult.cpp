@@ -2,30 +2,30 @@
 #include "../OuterProductBlock.hpp"
 #include "../EntrywiseBlock.hpp"
 
-// HierarchicalMatrix
-template <class datatype>
-Block<datatype>& HierarchicalMatrix<datatype>::operator*( const Block<datatype>& multMatrix ){
-
-}
-
-template <class datatype>
-Block<datatype>& HierarchicalMatrix<datatype>::operator*=( const HierarchicalMatrix<datatype>& multMatrix ){
-
-}
-
-
-// OuterProductBlock
-template <class datatype>
-Block<datatype>& OuterProductBlock<datatype>::operator*( const Block<datatype>& multBlock ){
-
-}
-
-
-// EntrywiseBlock
-template <class datatype>
-Block<datatype>& EntrywiseBlock<datatype>::operator*( const Block<datatype>& multBlock ){
-
-}
+// // HierarchicalMatrix
+// template <class datatype>
+// Block<datatype>& HierarchicalMatrix<datatype>::operator*( const Block<datatype>& multMatrix ){
+//
+// }
+//
+// template <class datatype>
+// Block<datatype>& HierarchicalMatrix<datatype>::operator*=( const HierarchicalMatrix<datatype>& multMatrix ){
+//
+// }
+//
+//
+// // OuterProductBlock
+// template <class datatype>
+// Block<datatype>& OuterProductBlock<datatype>::operator*( const Block<datatype>& multBlock ){
+//
+// }
+//
+//
+// // EntrywiseBlock
+// template <class datatype>
+// Block<datatype>& EntrywiseBlock<datatype>::operator*( const Block<datatype>& multBlock ){
+//
+// }
 
 
 // OuterProductBlock& opopmult(OuterProductBlock& A, OuterProductBlock& B){

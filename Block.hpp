@@ -1,6 +1,10 @@
 #ifndef HIERARCHICAL_MATRICES_BLOCK_H
 #define HIERARCHICAL_MATRICES_BLOCK_H
 
+template <class datatype> class HierarchicalMatrix;
+template <class datatype> class OuterProductBlock;
+template <class datatype> class EntrywiseBlock;
+
 
 enum IndiceOrientation {kRangeI=0, kRangeJ=1, kBottom=0, kTop=1};
 
@@ -13,7 +17,7 @@ protected:
 
       unsigned int mDim; //< Zeilen der ursprünglichen Matrix / Rows
       unsigned int nDim; //< Spalten der ursprünglichen Matrix / Columns
-      unsigned int indiceRange[2][2]; //<
+      unsigned int indiceRange[2][2]; //< Indices that can be found within the HM
 
 public:
       /// Initialization of attributes from subclasses
@@ -22,8 +26,12 @@ public:
       /// Abstract functions
       virtual Block& coarse() =0;
 
-      virtual Block& operator+(const Block& addedBlock) =0;
-      virtual Block& operator*(const Block& multBlock) =0;
+      // virtual Block& operator*(const Block& multBlock) =0;
+
+      virtual Block* operator+( Block* addedBlock ) =0;
+      virtual Block* operator+( const HierarchicalMatrix<datatype>* addedBlock ) =0;
+      virtual Block* operator+( const OuterProductBlock<datatype>* addedBlock ) =0;
+      virtual Block* operator+( const EntrywiseBlock<datatype>* addedBlock ) =0;
 
       virtual ~Block(){};
 };

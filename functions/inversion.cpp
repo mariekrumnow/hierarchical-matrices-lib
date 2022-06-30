@@ -2,8 +2,8 @@
 #include "../OuterProductBlock.hpp"
 #include "../EntrywiseBlock.hpp"
 
-template <class datatype>
-HierarchicalMatrix<datatype>& HierarchicalMatrix<datatype>::invert(){
+// template <class datatype>
+// HierarchicalMatrix<datatype>& HierarchicalMatrix<datatype>::invert(){
 
       // Nur in erstem Aufruf: Tiefe Kopie mit der selben Block-Struktur anlegen
       // --> Copy-Konstruktor + darin polymorpher clone-"Konstruktor"(Funktion), siehe https://stackoverflow.com/questions/4122789/copy-object-keep-polymorphism
@@ -55,4 +55,4 @@ HierarchicalMatrix<datatype>& HierarchicalMatrix<datatype>::invert(){
       // - Operator Addition + Operator Subtraktion
 
 
-}
+// }
