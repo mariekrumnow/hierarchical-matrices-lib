@@ -6,10 +6,6 @@
 #include <vector>
 
 
-template <class datatype> class HierarchicalMatrix;
-template <class datatype> class EntrywiseBlock;
-
-
 /// Depicts an admissible part
 template <class datatype>
 class OuterProductBlock: public Block<datatype> {
@@ -21,13 +17,13 @@ protected:
 
       unsigned int k; ///< rank of resulting matrix
 
-      ~OuterProductBlock();
-
 public:
       /// Transforms an entrywise matrix into it's outer product form
       ///
       /// \param
       OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank);
+
+      ~OuterProductBlock();
 
       ///
       ///
@@ -36,8 +32,12 @@ public:
 
       //---------------------------------------------------------------------------------------
 
-      Block<datatype>& operator+( const Block<datatype>& addedBlock );
-      Block<datatype>& operator*( const Block<datatype>& multBlock );
+      // Block<datatype>& operator*( const Block<datatype>& multBlock );
+
+      Block<datatype>* operator+( Block<datatype>* addedBlock );
+      Block<datatype>* operator+( HierarchicalMatrix<datatype>* addedBlock );
+      Block<datatype>* operator+( OuterProductBlock* addedBlock );
+      Block<datatype>* operator+( EntrywiseBlock<datatype>* addedBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_OUTERPRODUCTBLOCK_H
