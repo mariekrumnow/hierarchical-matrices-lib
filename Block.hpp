@@ -29,9 +29,9 @@ public:
       // virtual Block& operator*(const Block& multBlock) =0;
 
       virtual Block* operator+( Block* addedBlock ) =0;
-      virtual Block* operator+( const HierarchicalMatrix<datatype>* addedBlock ) =0;
-      virtual Block* operator+( const OuterProductBlock<datatype>* addedBlock ) =0;
-      virtual Block* operator+( const EntrywiseBlock<datatype>* addedBlock ) =0;
+      virtual Block* operator+( HierarchicalMatrix<datatype>* addedBlock ) =0;
+      virtual Block* operator+( OuterProductBlock<datatype>* addedBlock ) =0;
+      virtual Block* operator+( EntrywiseBlock<datatype>* addedBlock ) =0;
 
       virtual ~Block(){};
 };

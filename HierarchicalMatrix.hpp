@@ -71,9 +71,9 @@ public:
       //---------------------------------------------------------------------------------------
 
       Block<datatype>* operator+( Block<datatype>* addedBlock );
-      Block<datatype>* operator+( const HierarchicalMatrix* addedBlock );
-      Block<datatype>* operator+( const OuterProductBlock<datatype>* addedBlock );
-      Block<datatype>* operator+( const EntrywiseBlock<datatype>* addedBlock );
+      Block<datatype>* operator+( HierarchicalMatrix* addedBlock );
+      Block<datatype>* operator+( OuterProductBlock<datatype>* addedBlock );
+      Block<datatype>* operator+( EntrywiseBlock<datatype>* addedBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_HIERARCHICALMATRIX_H

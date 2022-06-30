@@ -38,17 +38,17 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( Block<datatype>* added
 }
 
 template <class datatype>
-Block<datatype>* HierarchicalMatrix<datatype>::operator+( const HierarchicalMatrix<datatype>* addedBlock ){
+Block<datatype>* HierarchicalMatrix<datatype>::operator+( HierarchicalMatrix<datatype>* addedBlock ){
       // HM + HM | Hier vllt auch nur wieder die public Funktion aufrufen?
 }
 
 template <class datatype>
-Block<datatype>* HierarchicalMatrix<datatype>::operator+( const OuterProductBlock<datatype>* addedBlock ){
+Block<datatype>* HierarchicalMatrix<datatype>::operator+( OuterProductBlock<datatype>* addedBlock ){
       // HM + OP
 }
 
 template <class datatype>
-Block<datatype>* HierarchicalMatrix<datatype>::operator+( const EntrywiseBlock<datatype>* addedBlock ){
+Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){
       // HM + EW
 }
 
@@ -62,20 +62,20 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( Block<datatype>* addedB
 }
 
 template <class datatype>
-Block<datatype>* OuterProductBlock<datatype>::operator+( const HierarchicalMatrix<datatype>* addedBlock ){ // FERTIG
+Block<datatype>* OuterProductBlock<datatype>::operator+( HierarchicalMatrix<datatype>* addedBlock ){ // FERTIG
       // OP + HM == HM + OP | call function with swapped parameters
       return *addedBlock + this;
 }
 
 template <class datatype>
-Block<datatype>* OuterProductBlock<datatype>::operator+( const OuterProductBlock<datatype>* addedBlock ){
+Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datatype>* addedBlock ){
       std::cout << " OP+OP ";
 
       // OP + OP
 }
 
 template <class datatype>
-Block<datatype>* OuterProductBlock<datatype>::operator+( const EntrywiseBlock<datatype>* addedBlock ){
+Block<datatype>* OuterProductBlock<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){
       // OP + EW
 }
 
@@ -87,18 +87,18 @@ Block<datatype>* EntrywiseBlock<datatype>::operator+( Block<datatype>* addedBloc
 }
 
 template <class datatype>
-Block<datatype>* EntrywiseBlock<datatype>::operator+( const HierarchicalMatrix<datatype>* addedBlock ){ // FERTIG
+Block<datatype>* EntrywiseBlock<datatype>::operator+( HierarchicalMatrix<datatype>* addedBlock ){ // FERTIG
       // EW + HM == HM + EW | call function with swapped parameters
       return *addedBlock + this;
 }
 
 template <class datatype>
-Block<datatype>* EntrywiseBlock<datatype>::operator+( const OuterProductBlock<datatype>* addedBlock ){ // FERTIG
+Block<datatype>* EntrywiseBlock<datatype>::operator+( OuterProductBlock<datatype>* addedBlock ){ // FERTIG
       // EW + OP == OP + EW | call function with swapped parameters
       return *addedBlock + this;
 }
 
 template <class datatype>
-Block<datatype>* EntrywiseBlock<datatype>::operator+( const EntrywiseBlock<datatype>* addedBlock ){
+Block<datatype>* EntrywiseBlock<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){
       // EW + EW
 }
