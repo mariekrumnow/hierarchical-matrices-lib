@@ -15,21 +15,18 @@ template <class datatype>
 class OuterProductBlock: public Block<datatype> {
 
 protected:
-      std::vector<unsigned int> iIndices; //< Menge der Zeilen-Indizes, die in dem Block enthalten sind
-      std::vector<unsigned int> jIndices; //< Menge der Spalten-Indizes, die in dem Block enthalten sind
-
       datatype ** u; ///< mDim * k array
       datatype ** x; ///< k * k array
       datatype ** v; ///< nDim * k array
 
       unsigned int k; ///< rank of resulting matrix
 
+      ~OuterProductBlock();
+
 public:
       /// Transforms an entrywise matrix into it's outer product form
       ///
-      /// \param originalBlock
-      /// \param I
-      /// \param J
+      /// \param
       OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank);
 
       ///

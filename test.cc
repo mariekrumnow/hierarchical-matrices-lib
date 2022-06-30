@@ -16,29 +16,45 @@
 #include <list>
 #include <vector>
 
-int main(int argc, char** argv){
-      double daten1[3][3]= { {1.0, 2.0, 3.0},
-                              {2.0, 4.0, 6.0},
-                            {3.0, 8.0, 9.0}};
-      double ** daten = new double*[3];
-      for(int i=0; i<3; i++){
-            daten[i] = new double[3];
+#define SIZE 3
 
-            for(int j=0; j<3; j++){
+int main(int argc, char** argv){
+      double daten1[SIZE][SIZE]=
+                              // { {1.0, 2.0},
+                              // {2.0, 4.0}};
+                              { {1.0, 2.0, 3.0},
+                              {2.0, 4.0, 6.0},
+                              {3.0, 8.0, 9.0}};
+                            // { {1.0, 2.0, 0.0, 0.0},
+                            //   {2.0, 4.0, 6.0, 0.0},
+                            //   {0.0, 8.0, 9.0, 12.0},
+                            //   {0.0, 0.0, 12.0, 16.0}};
+                              // { {1.0, 2.0, 0.0, 0.0, 0.0},
+                              //  {2.0, 4.0, 6.0, 0.0, 0.0},
+                              //  {0.0, 8.0, 9.0, 12.0, 0.0},
+                              //  {0.0, 0.0, 12.0, 16.0, 20.0},
+                              //  {0.0, 0.0, 0.0, 20.0, 25.0}};
+      double ** daten = new double*[SIZE];
+      for(int i=0; i<SIZE; i++){
+            daten[i] = new double[SIZE];
+
+            for(int j=0; j<SIZE; j++){
                   daten[i][j] = daten1[i][j];
             }
       }
-      std::vector<unsigned int> indice1 (0);
-      std::vector<unsigned int> indice2 (1);
-      std::vector<unsigned int> indice3 (2);
+
       std::list<std::vector<unsigned int>> indices;
-      indices.push_back(indice1);
-      indices.push_back(indice2);
-      indices.push_back(indice3);
 
-      HierarchicalMatrix<double> * exampleBlock = new HierarchicalMatrix<double>(daten, &indices, 2, 2);
+      // Puts 1 indice in each vector
+      std::vector<unsigned int> indice[SIZE];
+      for(int i=0; i<SIZE; i++){
+            indice[i].push_back(i);
+            indices.push_back(indice[i]);
+      }
 
-      std::cout << "Warnungsvermeider: " << sizeof(exampleBlock); // Vermeidet Warning, dass exampleBlock unbenutzt ist
+      HierarchicalMatrix<double> * exampleBlock = new HierarchicalMatrix<double>(daten, &indices, SIZE);
+
+      std::cout << std::endl << "Success!";
 
       return 0;
 }

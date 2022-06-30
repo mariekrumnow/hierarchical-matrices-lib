@@ -1,4 +1,6 @@
 # Own
+Doxyfile
+latex/*
 
 # Prerequisites
 *.d
