@@ -11,18 +11,10 @@
 
 #include <iostream>
 
-// TODO: Destruktor, in dem rekursiv die ganzen Attribute gelöscht werden
-//  --> Wird bei delete der Destruktor der Klassen aufgerufen? Dann brauch man ja nur for(2x2) delete matrix2x2 jap
-
-//Vektorn sind Blääter wie auf S.31 im Buch
-
-// TODO: Wie das Problem mit Datentyp bei Rangberechnung lösen? ~Z.225 ist okay
-
 // TODO: Nach SVD-AUffruf Singulärwerte angucken & entspprechend Zeilen auf  k runterkürzen
 // In d gucken wir welche singulärwerte kleiner als threshhold, u und v auf spalten kürzen auf k,
 //s der größe nach sortiert, wo es kleiner wird wegschmeißen.In d gucken wir welche singulärwerte kleiner als threshhold,
 //u und v auf spalten kürzen auf k, s größe nach sortiert, wo es kleiner wird wegschmeißen.
-// TODO: x lieber wie vorher als k*k Matrix speichern für Sonderfälle
 
 // TODO: Makro für LA-Fkt-Namen mit richtigem Datentyp --> Textuelle Ersetzung reicht nicht, Makro mit Parametern,
 // Function like Macros
@@ -30,9 +22,7 @@
 
 // TODO: Testen von Konstruktor [geht: public Konstruktor, private Konstruktor, Mitte berechnen, neue dim berechnen]
 
-// WÜrde es das vereinfachen, wenn man in Block die Indize-Rannge reinpackt (2x2 arr)? Müsste ja gehen wg konsekutivität ja
-
-//TODO: Nochmal schauen, ob die Indizes aucch in die passenden Quadranten gepackkt werden
+// TODO: Nochmal schauen, ob die Indizes auch in die passenden Quadranten gepackt werden
 
 
 // Helper function for HierarchicalMatrix, defined at bottom
@@ -46,6 +36,11 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
       // Anzahl der Vektoren (= Anz Blöcke) speichern
       unsigned int indices[2][2] = { {1, originalIndices->size()},
                                     {1, originalIndices->size()} };
+
+      Block<datatype>::indiceRange[kRangeI][kBottom] = 0;
+      Block<datatype>::indiceRange[kRangeI][kTop] = dim-1;
+      Block<datatype>::indiceRange[kRangeJ][kBottom] = 0;
+      Block<datatype>::indiceRange[kRangeJ][kTop] = dim-1;
 
       // Matrix-Graph durch existierende Kanten aufstellen
       std::vector< std::vector<unsigned int> > vertices; // [0] begin & [1] end node for each vertice
@@ -140,6 +135,18 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
             if( indices[kRangeJ][kBottom] <= vectorIndice && vectorIndice <= indices[kRangeJ][kTop] ) {
                   Block<datatype>::nDim += currentVector->size();
                   // std::cout << std::endl << currentVector->size();
+            }
+            if( vectorIndice == indices[kRangeI][kBottom] ){
+                  Block<datatype>::indiceRange[kRangeI][kBottom] = currentVector->front();
+            }
+            if( vectorIndice == indices[kRangeI][kTop] ){
+                  Block<datatype>::indiceRange[kRangeI][kTop] = currentVector->back();
+            }
+            if( vectorIndice == indices[kRangeJ][kBottom] ){
+                  Block<datatype>::indiceRange[kRangeJ][kBottom] = currentVector->front();
+            }
+            if( vectorIndice == indices[kRangeJ][kTop] ){
+                  Block<datatype>::indiceRange[kRangeJ][kTop] = currentVector->back();
             }
             currentVector++;
             vectorIndice++;
