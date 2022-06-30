@@ -17,13 +17,13 @@ class EntrywiseBlock: public Block<datatype>{
 protected:
       datatype ** block; ///< mDim * nDim array / Exact part of the original matrix
 
-      ~EntrywiseBlock();
-
 public:
       /// Copies a matrix to be stored in a block
       ///
       /// \param
       EntrywiseBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd);
+
+      ~EntrywiseBlock();
 
       ///
       ///

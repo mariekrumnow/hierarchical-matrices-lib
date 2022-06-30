@@ -7,6 +7,7 @@
 #include "functions/addition.cpp"
 #include "functions/coarse.cpp"
 #include "functions/constructor.cpp"
+#include "functions/destructor.cpp"
 #include "functions/inversion.cpp"
 #include "functions/luDecomposition.cpp"
 #include "functions/matrixMatrixMult.cpp"
@@ -16,15 +17,15 @@
 #include <list>
 #include <vector>
 
-#define SIZE 3
+#define SIZE 2
 
 int main(int argc, char** argv){
       double daten1[SIZE][SIZE]=
-                              // { {1.0, 2.0},
-                              // {2.0, 4.0}};
-                              { {1.0, 2.0, 3.0},
-                              {2.0, 4.0, 6.0},
-                              {3.0, 8.0, 9.0}};
+                              { {1.0, 2.0},
+                              {2.0, 4.0}};
+                              // { {1.0, 2.0, 3.0},
+                              // {2.0, 4.0, 6.0},
+                              // {3.0, 8.0, 9.0}};
                             // { {1.0, 2.0, 0.0, 0.0},
                             //   {2.0, 4.0, 6.0, 0.0},
                             //   {0.0, 8.0, 9.0, 12.0},
@@ -52,7 +53,9 @@ int main(int argc, char** argv){
             indices.push_back(indice[i]);
       }
 
-      HierarchicalMatrix<double> * exampleBlock = new HierarchicalMatrix<double>(daten, &indices, SIZE);
+      HierarchicalMatrix<double> exampleBlock(daten, &indices, SIZE);
+
+      // exampleBlock+exampleBlock;
 
       std::cout << std::endl << "Success!";
 

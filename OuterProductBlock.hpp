@@ -21,13 +21,13 @@ protected:
 
       unsigned int k; ///< rank of resulting matrix
 
-      ~OuterProductBlock();
-
 public:
       /// Transforms an entrywise matrix into it's outer product form
       ///
       /// \param
       OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank);
+
+      ~OuterProductBlock();
 
       ///
       ///

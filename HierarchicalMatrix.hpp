@@ -21,13 +21,13 @@ private:
       HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances);
       void constructHierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances);
 
-      ~HierarchicalMatrix();
-
 public:
       /// Transforms an entrywise matrix into a hierarchical matrix
       ///
       /// \param originalMatrix The entrywise matrix to be transformed and calculated with
       HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int dim, double clusterParamEta =0.5);
+
+      ~HierarchicalMatrix();
 
       ///
       ///

@@ -1,7 +1,9 @@
 #ifndef HIERARCHICAL_MATRICES_BLOCK_H
 #define HIERARCHICAL_MATRICES_BLOCK_H
 
-    enum IndiceOrientation {kRangeI=0, kRangeJ=1, kBottom=0, kTop=1};
+
+enum IndiceOrientation {kRangeI=0, kRangeJ=1, kBottom=0, kTop=1};
+
 
 /// Abstract class to depict all parts of the matrix
 template <class datatype>
@@ -22,6 +24,8 @@ public:
 
       virtual Block& operator+(const Block& addedBlock) =0;
       virtual Block& operator*(const Block& multBlock) =0;
+
+      virtual ~Block(){};
 };
 
 #endif // HIERARCHICAL_MATRICES_BLOCK_H
