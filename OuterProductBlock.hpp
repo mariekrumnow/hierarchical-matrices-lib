@@ -23,14 +23,12 @@ public:
       /// \param
       OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank);
 
-      ~OuterProductBlock();
-
       ///
       ///
       /// \return
       Block<datatype>& coarse() final;
 
-      //---------------------------------------------------------------------------------------
+      datatype* operator*( const datatype vector[] );
 
       // Block<datatype>& operator*( const Block<datatype>& multBlock );
 
@@ -38,6 +36,8 @@ public:
       Block<datatype>* operator+( HierarchicalMatrix<datatype>* addedBlock );
       Block<datatype>* operator+( OuterProductBlock* addedBlock );
       Block<datatype>* operator+( EntrywiseBlock<datatype>* addedBlock );
+
+      ~OuterProductBlock();
 };
 
 #endif // HIERARCHICAL_MATRICES_OUTERPRODUCTBLOCK_H

@@ -12,10 +12,16 @@
 
 #include <iostream> // For testing
 
-// TODO: Nach SVD-AUffruf Singulärwerte angucken & entspprechend Zeilen auf  k runterkürzen
-// In d gucken wir welche singulärwerte kleiner als threshhold, u und v auf spalten kürzen auf k,
-//s der größe nach sortiert, wo es kleiner wird wegschmeißen.In d gucken wir welche singulärwerte kleiner als threshhold,
-//u und v auf spalten kürzen auf k, s größe nach sortiert, wo es kleiner wird wegschmeißen.
+// TODO: coarse-Funktion machen
+// TODO: Fertige Funktionen+Attr dokumentieren (Anwender-Zeug genau, Rest grob)
+
+// TODO: Funktionsköpfe für mvm
+// TODO: Funktionen aus public raus, ggf friend-class machen um in protected?
+
+// FRAGE: Nach SVD-Aufruf Singulärwerte in s (convertedX) angucken & entsprechend Zeilen auf k runterkürzen
+// In d gucken wir welche singulärwerte kleiner als threshhold, u und v auf k spalten kürzen,
+// s der größe nach sortiert, wo es kleiner wird wegschmeißen.
+// --> alles über Rang k hinaus weggeschmissen?
 
 // TODO: Testen von Konstruktor [geht: public Konstruktor, private Konstruktor, Mitte berechnen, neue dim berechnen]
 
@@ -189,7 +195,7 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
       else if( jMiddle+1 > indices[kRangeJ][kTop] ) { // Just 1 indice for j --> only 2x1 Blocks can be built
             maxBlockJ = 1;
       }
-      std::cout << maxBlockI << " " << maxBlockJ << " ";
+      // std::cout << maxBlockI << " " << maxBlockJ << " ";
 
       unsigned int a, b;
       for (a=0; a<2; a++) {
@@ -201,7 +207,7 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
       for (a=0; a< maxBlockI; a++) {
             for (b=0; b< maxBlockJ; b++) {
                   if (splittable[a][b]) {
-                      std::cout << "HM ";
+                      // std::cout << "HM ";
                         // Indizes aufteilen
                         unsigned int newInd[2][2];
                         if( a==0 ) {
@@ -303,7 +309,7 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
                         } // Rang k FERTIG
 
                         if ( k*(newMdim + newNdim) < newMdim*newNdim ) { // == Low-rank matrix
-                             std::cout << "OP1 ";
+                             // std::cout << "OP1 ";
                               matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector, k);
                         }
                         else {
@@ -318,12 +324,12 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
 
                               if( std::min(diameter(*iVector, distances), diameter(*jVector, distances)) <= clusterParamEta * minDistance ) {
                                     // Matrix can be approximated by low-rank one --> coarse (admissible)
-                                     std::cout << "OP2 ";
+                                     // std::cout << "OP2 ";
                                     matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix/*.coarse()*/, newMdim, newNdim, *iVector, *jVector, k);
                               }
                               else{
                                     // Important info will be lost by approximation, has to be saved with more effort (non-admissible)
-                                     std::cout << "EW ";
+                                     // std::cout << "EW ";
                                     matrix[a][b] = new EntrywiseBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector);
                               }
                         }
@@ -365,19 +371,17 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
       datatype* workArr = new datatype[workArrSize];
 
       // SVD mit Block aufrufen
-      // https://cpp.hotexamples.com/de/examples/-/-/dgesvd_/cpp-dgesvd_-function-examples.html#0xf71dbdc59dc1ab38f7a86d6f008277708cc941285db6708f1275a020eacb3fe9-177,,209,
-      // Option 'S' für geringere Dim von U/VT?
-      int info = CALC_SVD(LAPACK_COL_MAJOR, 'S', 'S', mDim, nDim, convertedBlock, mDim, convertedX, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
+      // example: https://cpp.hotexamples.com/de/examples/-/-/dgesvd_/cpp-dgesvd_-function-examples.html#0xf71dbdc59dc1ab38f7a86d6f008277708cc941285db6708f1275a020eacb3fe9-177,,209,
       // http://www.netlib.org/lapack/double/
       // http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing.html
+      // Option 'S' für geringere Dim von U/VT?
+      // int info = CALC_SVD(LAPACK_COL_MAJOR, 'A', 'A', mDim, nDim, convertedBlock, mDim, convertedX, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
       // if (info){
       //        std::cerr<<"Lapack error occured in dgesdd. error code :" << info << std::endl;
       // }
 
-      // Irrelevante Zeilen /vertauschen
-
-
       // Attribute aus Format von Lapack rausholen
+      // --> Zeilen über Rang k hinaus einfach weggeschmissen
       pos = convertedU;
       u = new datatype*[mDim];
       for(a=0; a < mDim; a++){

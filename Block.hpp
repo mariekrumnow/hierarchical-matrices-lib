@@ -26,6 +26,8 @@ public:
       /// Abstract functions
       virtual Block& coarse() =0;
 
+      virtual datatype* operator*( const datatype vector[] ) =0;
+
       // virtual Block& operator*(const Block& multBlock) =0;
 
       virtual Block* operator+( Block* addedBlock ) =0;
