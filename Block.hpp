@@ -23,8 +23,8 @@ public:
       /// Initialization of attributes from subclasses
       Block(unsigned int m, unsigned int n): mDim(m), nDim(n) {}
 
-      /// Abstract functions
-      virtual Block& coarse() =0;
+      // Abstract functions
+      virtual Block& coarse( double accuracy ) =0;
 
       virtual datatype* operator*( const datatype vector[] ) =0;
 

@@ -6,20 +6,20 @@
 
 // HierarchicalMatrix
 template <class datatype>
-Block<datatype>& HierarchicalMatrix<datatype>::coarse(){
+Block<datatype>& HierarchicalMatrix<datatype>::coarse( double accuracy ){
 
 }
 
 
 // OuterProductBlock
 template <class datatype>
-Block<datatype>& OuterProductBlock<datatype>::coarse(){
+Block<datatype>& OuterProductBlock<datatype>::coarse( double accuracy ){
 
 }
 
 
 // EntrywiseBlock
 template <class datatype>
-Block<datatype>& EntrywiseBlock<datatype>::coarse(){
+Block<datatype>& EntrywiseBlock<datatype>::coarse( double accuracy ){
 
 }

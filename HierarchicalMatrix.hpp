@@ -22,17 +22,23 @@ protected:
       Block<datatype>* matrix[2][2]; ///< Hierarchical matrix, recursively divided into quadrants, can be partially nullptr!
 
 public:
-      /// Transforms an entrywise matrix into a hierarchical matrix
+      /// Transforms an entrywise matrix with float, double or complex float entries into a hierarchical matrix
+      /// Example: HierarchicalMatrix<double> exampleMatrix(data, &indices, 100)
+      /// with data =  and indices = std::vector<unsigned int> indice[100]
       ///
       /// \param originalMatrix The entrywise matrix to be transformed and calculated with
       /// \param originalIndices Vektoren sind Blätter wie auf S.31 im Buch
+      /// \param dim
+      /// \param clusterParamEta
       HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int dim, double clusterParamEta =0.5);
 
 
+      /// Coarsens the given hierarchical matrix until the given accuracy can no longer be held,
+      /// usually keeping the same storage size while reducing the number of branches/blocks
       ///
-      ///
-      /// \return
-      Block<datatype>& coarse() final;
+      /// \param accuracy
+      /// \return The coarsened hierarchical matrix
+      Block<datatype>& coarse( double accuracy ) final;
 
       /// Rounded addition of two Hierarchical Matrices
       ///

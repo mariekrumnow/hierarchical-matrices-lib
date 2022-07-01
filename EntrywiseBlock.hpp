@@ -23,7 +23,7 @@ public:
       ///
       ///
       /// \return
-      Block<datatype>& coarse() final;
+      Block<datatype>& coarse( double accuracy ) final;
 
       datatype* operator*( const datatype vector[] );
 
