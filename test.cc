@@ -53,9 +53,18 @@ int main(int argc, char** argv){
             indices.push_back(indice[i]);
       }
 
+      // Testing constructor
       HierarchicalMatrix<double> exampleBlock(daten, &indices, SIZE);
 
-      // exampleBlock+exampleBlock;
+      // Testing addition
+      // exampleBlock + exampleBlock;
+
+      // Testing matrix-vector-multiplication
+      // double xVector[SIZE];
+      // for(int i=0; i<SIZE; i++){
+      //       xVector[i] = i;
+      // }
+      // double* result = exampleBlock * xVector;
 
       std::cout << std::endl << "Success!";
 

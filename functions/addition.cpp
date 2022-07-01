@@ -15,7 +15,7 @@
 // HierarchicalMatrix: public functions --> Noch alle (2) Funktionen offen
 template <class datatype>
 HierarchicalMatrix<datatype>* HierarchicalMatrix<datatype>::operator+( const HierarchicalMatrix<datatype>& addedMatrix ){
-      std::cout << " HM+HM ";
+      // std::cout << " HM+HM ";
 
       for(int a=0; a<2; a++){
             for(int b=0; b<2; b++){
@@ -56,7 +56,7 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatyp
 // OuterProductBlock --> Noch 2 Funktionen offen
 template <class datatype>
 Block<datatype>* OuterProductBlock<datatype>::operator+( Block<datatype>* addedBlock ){ // FERTIG
-      std::cout << " OP+?? ";
+      // std::cout << " OP+?? ";
 
       return *addedBlock + this;
 }
@@ -69,7 +69,7 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( HierarchicalMatrix<data
 
 template <class datatype>
 Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datatype>* addedBlock ){
-      std::cout << " OP+OP ";
+      // std::cout << " OP+OP ";
 
       // OP + OP
 }

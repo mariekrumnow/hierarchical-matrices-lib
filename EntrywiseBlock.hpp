@@ -20,14 +20,12 @@ public:
       /// \param
       EntrywiseBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd);
 
-      ~EntrywiseBlock();
-
       ///
       ///
       /// \return
       Block<datatype>& coarse() final;
 
-      //---------------------------------------------------------------------------------------
+      datatype* operator*( const datatype vector[] );
 
       // Block<datatype>& operator*( const Block<datatype>& multBlock );
 
@@ -35,6 +33,8 @@ public:
       Block<datatype>* operator+( HierarchicalMatrix<datatype>* addedBlock );
       Block<datatype>* operator+( OuterProductBlock<datatype>* addedBlock );
       Block<datatype>* operator+( EntrywiseBlock* addedBlock );
+
+      ~EntrywiseBlock();
 };
 
 #endif // HIERARCHICAL_MATRICES_ENTRYWISEBLOCK_H
