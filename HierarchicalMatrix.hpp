@@ -10,7 +10,7 @@
 #include <vector>
 
 
-/// Transforms an entrywise matrix into a hierarchical matrix to be calculated with
+/// Transforms a square entrywise matrix into a hierarchical matrix to be calculated with
 template <class datatype>
 class HierarchicalMatrix: public Block<datatype> {
 
@@ -19,40 +19,44 @@ class HierarchicalMatrix: public Block<datatype> {
 
 protected:
       // [0][0] = top left, [0][1] = top right / [1][0] = bottom left, [1][1] = bottom right
-      Block<datatype>* matrix[2][2]; ///< Hierarchical matrix, recursively divided into quadrants, can be partially nullptr!
+      Block<datatype>* matrix[2][2]; ///< Hierarchical matrix, recursively divided into quadrants until one of the other Block types is reached, can also hold nullptr if a 2x1 or 1x2 division is reached
 
 public:
       /// Transforms an entrywise matrix with float, double or complex float entries into a hierarchical matrix
       /// Example: HierarchicalMatrix<double> exampleMatrix(data, &indices, 100)
-      /// with data =  and indices = std::vector<unsigned int> indice[100]
       ///
-      /// \param originalMatrix The entrywise matrix to be transformed and calculated with
-      /// \param originalIndices Vektoren sind Blätter wie auf S.31 im Buch
-      /// \param dim
-      /// \param clusterParamEta
+      /// \param originalMatrix A two-dimensional array containing the square entrywise matrix to be transformed and calculated with
+      /// \param originalIndices List containing the admissible partition into blocks for column and row indices of the matrix,
+      ///  each vector contains all the indices in ascending order, vectors are listed in ascending order
+      ///  so the first vector always s withh 0 and the last ends with dim-1, see page 31: Fig 1.5
+      /// \param dim Number of columns/rows of the input matrix
+      /// \param clusterParamEta Optional cluster parameter between 0 and 1, will be defaulted to 0.5 if no value is given, see page 24: (1.13)
       HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int dim, double clusterParamEta =0.5);
 
 
       /// Coarsens the given hierarchical matrix until the given accuracy can no longer be held,
       /// usually keeping the same storage size while reducing the number of branches/blocks
       ///
-      /// \param accuracy
-      /// \return The coarsened hierarchical matrix
-      Block<datatype>& coarse( double accuracy ) final;
+      /// \param accuracy Accuracy > 0 to be satisfied in each coarsening step, see  page 72: (2.13)
+      /// \return The coarsened hierarchical matrix, nullptr if matrix couldn't be coarrsened
+      Block<datatype>* coarse( double accuracy ) final;
 
-      /// Rounded addition of two Hierarchical Matrices
+      /// Rounded addition of two Hierarchical Matrices of the same size
       ///
-      /// \param addedMatrix Second matrix to be added
-      /// \return Sum of the two matrices
+      /// \param addedMatrix Second matrix to be added with the same number of rows and columns as the first matrix
+      /// \return Sum of the two matrices with the same number of rows and columns as the input matrices, nullptr if matrices couldn't be added
       HierarchicalMatrix* operator+( const HierarchicalMatrix& addedMatrix );
+      /// Rounded addition of two Hierarchical Matrices of the same size
+      ///
+      /// \param addedMatrix Second matrix to be added with the same number of rows and columns as the first matrix
+      /// \return Sum of the two matrices with the same number of rows and columns as the input matrices, nullptr if matrices couldn't be added
       HierarchicalMatrix* operator+=( const HierarchicalMatrix& addedMatrix );
 
 
       /// Matrix-vector multiplication
-      /// Since mDim == nDim for both the input and output vector are of the same size
       ///
-      /// \param vector Vector of size nDim == mDim
-      /// \return New result vector of size mDim == nDim
+      /// \param vector One-dimensional array with size equaling the number of columns(=rows) of the input matrix
+      /// \return Resulting vector with size equaling the number of rows(=columns) of the input matrix, nullptr if vector couldn't be calculated
       datatype* operator*( const datatype vector[] );
 
       // Matrix-matrix multiplication
@@ -65,10 +69,13 @@ public:
       // LU-decomposition
       // std::array<HierarchicalMatrix*,2> luDecomposition();
 
+      /// Recursively frees all Blocks saved in the matrix-attribute
       ~HierarchicalMatrix();
 
 private:
+    /// Internal connstructor for all other layers except the outside constructor call
       HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances);
+      /// Outsourced part of the constructor that holds code to be executed in both the public and private one
       void constructHierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances);
 
       Block<datatype>* operator+( Block<datatype>* addedBlock );

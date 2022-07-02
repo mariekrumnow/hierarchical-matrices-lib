@@ -6,28 +6,25 @@
 #include <vector>
 
 
-/// Depicts an admissible part
+/// Depicts an admissible or low-rank part of the original matrix
 template <class datatype>
 class OuterProductBlock: public Block<datatype> {
 
 protected:
-      datatype ** u; ///< mDim * k array
-      datatype ** x; ///< k * k array
-      datatype ** v; ///< nDim * k array
+      datatype ** u; ///< mDim * k array / U
+      datatype ** x; ///< k * k array / X, similar to S
+      datatype ** v; ///< nDim * k array / V^H with complex entries, V^T with real entries
 
-      unsigned int k; ///< rank of resulting matrix
+      unsigned int k; ///< Rank of original matrix part
 
 public:
-      /// Transforms an entrywise matrix into it's outer product form
-      ///
-      /// \param
+      /// Transforms an entrywise part of the matrix into its outer product form
       OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank);
 
       ///
-      ///
-      /// \return
-      Block<datatype>& coarse( double accuracy ) final;
+      Block<datatype>* coarse( double accuracy ) final;
 
+      ///
       datatype* operator*( const datatype vector[] );
 
       // Block<datatype>& operator*( const Block<datatype>& multBlock );
@@ -37,6 +34,7 @@ public:
       Block<datatype>* operator+( OuterProductBlock* addedBlock );
       Block<datatype>* operator+( EntrywiseBlock<datatype>* addedBlock );
 
+      /// Frees all memory allocated for the u, x and v arrays
       ~OuterProductBlock();
 };
 

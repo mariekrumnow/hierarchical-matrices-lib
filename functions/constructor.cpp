@@ -13,10 +13,12 @@
 #include <iostream> // For testing
 
 // TODO: coarse-Funktion machen
-// TODO: Fertige Funktionen+Attr dokumentieren (Anwender-Zeug genau, Rest grob)
+// TODO: 2x OP, 2xEW noch  dokumentieren / ist enum da? / tauchen undokumentierte nicht auf? Sollen dann z.B. auch abstrakte FUnktionen mit 0 Inhhalt ganz knapp dokumeniert werden?
+// TODO: Rausfinden wie das in ne Library gepackt werden kann
+// TODO: Beispiel-Datei, damit man die Funktionsaufrufe sieht?
 
-// TODO: Funktionsköpfe für mvm
-// TODO: Funktionen aus public raus, ggf friend-class machen um in protected?
+// FRAGE: clusterrparam auch >1 erlaubt?
+// FRAGE: float complex oder double complex?
 
 // FRAGE: Nach SVD-Aufruf Singulärwerte in s (convertedX) angucken & entsprechend Zeilen auf k runterkürzen
 // In d gucken wir welche singulärwerte kleiner als threshhold, u und v auf k spalten kürzen,

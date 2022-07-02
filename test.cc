@@ -20,7 +20,7 @@
 #define SIZE 2
 
 int main(int argc, char** argv){
-      double daten1[SIZE][SIZE]=
+      double dataArr[SIZE][SIZE]=
                               { {1.0, 2.0},
                               {2.0, 4.0}};
                               // { {1.0, 2.0, 3.0},
@@ -35,26 +35,26 @@ int main(int argc, char** argv){
                               //  {0.0, 8.0, 9.0, 12.0, 0.0},
                               //  {0.0, 0.0, 12.0, 16.0, 20.0},
                               //  {0.0, 0.0, 0.0, 20.0, 25.0}};
-      double ** daten = new double*[SIZE];
+      double ** data = new double*[SIZE];
       for(int i=0; i<SIZE; i++){
-            daten[i] = new double[SIZE];
+            data[i] = new double[SIZE];
 
             for(int j=0; j<SIZE; j++){
-                  daten[i][j] = daten1[i][j];
+                  data[i][j] = dataArr[i][j];
             }
       }
 
       std::list<std::vector<unsigned int>> indices;
 
       // Puts 1 indice in each vector
-      std::vector<unsigned int> indice[SIZE];
+      std::vector<unsigned int> indice[1];
       for(int i=0; i<SIZE; i++){
             indice[i].push_back(i);
             indices.push_back(indice[i]);
       }
 
       // Testing constructor
-      HierarchicalMatrix<double> exampleBlock(daten, &indices, SIZE);
+      HierarchicalMatrix<double> exampleBlock(data, &indices, SIZE);
 
       // Testing addition
       // exampleBlock + exampleBlock;
