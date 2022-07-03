@@ -15,11 +15,14 @@ class Block {
 
 protected:
 
-      unsigned int mDim; //< Zeilen der ursprünglichen Matrix / Rows
-      unsigned int nDim; //< Spalten der ursprünglichen Matrix / Columns
+      
       unsigned int indiceRange[2][2]; //< Indices that can be found within the HM
 
 public:
+
+      unsigned int mDim; //< Zeilen der ursprünglichen Matrix / Rows
+      unsigned int nDim; //< Spalten der ursprünglichen Matrix / Columns
+
       /// Initialization of attributes from subclasses
       Block(unsigned int m, unsigned int n): mDim(m), nDim(n) {}
 

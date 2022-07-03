@@ -17,9 +17,9 @@ template <class datatype>
 HierarchicalMatrix<datatype>* HierarchicalMatrix<datatype>::operator+( const HierarchicalMatrix<datatype>& addedMatrix ){
       // std::cout << " HM+HM ";
 
-      for(int a=0; a<2; a++){
-            for(int b=0; b<2; b++){
-                  *matrix[a][b] + addedMatrix.matrix[a][b];
+      for(unsigned int a=0; a<2; a++){
+            for(unsigned int b=0; b<2; b++){
+                  matrix[a][b] = matrix[a][b] + addedMatrix->matrix[a][b];
             }
       }
       return this; // Ist noch falsch
@@ -41,10 +41,10 @@ template <class datatype>
 Block<datatype>* HierarchicalMatrix<datatype>::operator+( HierarchicalMatrix<datatype>* addedBlock ){ // FERTIG
       // HM + HM | Hier vllt auch nur wieder die public Funktion aufrufen?
 
-      matrix[0][0] = martix[0][0] + addedBlock.martix[0][0];
-      matrix[0][1] = martix[0][1] + addedBlock.martix[0][1];
-      matrix[1][0] = martix[1][0] + addedBlock.martix[1][0];
-      matrix[1][1] = martix[1][1] + addedBlock.martix[1][1];
+      *matrix[0][0] = *matrix[0][0] + addedBlock->matrix[0][0];
+      *matrix[0][1] = *matrix[0][1] + addedBlock->matrix[0][1];
+      *matrix[1][0] = *matrix[1][0] + addedBlock->matrix[1][0];
+      *matrix[1][1] = *matrix[1][1] + addedBlock->matrix[1][1];
 
       return this;
 }
@@ -53,10 +53,10 @@ template <class datatype>
 Block<datatype>* HierarchicalMatrix<datatype>::operator+( OuterProductBlock<datatype>* addedBlock ){
       // HM + OP
 
-      matrix[0][0] = martix[0][0] + newA;
-      matrix[0][1] = martix[0][1] + newB;
-      matrix[1][0] = martix[1][0] + newC;
-      matrix[1][1] = martix[1][1] + newD;
+      matrix[0][0] = matrix[0][0] + newA;
+      matrix[0][1] = matrix[0][1] + newB;
+      matrix[1][0] = matrix[1][0] + newC;
+      matrix[1][1] = matrix[1][1] + newD;
 
       return this;
 }
@@ -64,64 +64,64 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( OuterProductBlock<data
 template <class datatype>
 Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){ // FERTIG? Ind Vectoren für Add und Mult nicht benötigt -> problem wenn wegfallen?
       // HM + EW
-      datatype* BlockA = new datatype[addedBlock.nDim/2 * addedBlock.mDim/2];
-      datatype* BlockB = new datatype[addedBlock.nDim/2 * addedBlock.mDim/2];
-      datatype* BlockC = new datatype[addedBlock.nDim/2 * addedBlock.mDim/2];
-      datatype* BlockD = new datatype[addedBlock.nDim/2 * addedBlock.mDim/2];
+      datatype* BlockA = new datatype[addedBlock->nDim/2 * addedBlock->mDim/2];
+      datatype* BlockB = new datatype[addedBlock->nDim/2 * addedBlock->mDim/2];
+      datatype* BlockC = new datatype[addedBlock->nDim/2 * addedBlock->mDim/2];
+      datatype* BlockD = new datatype[addedBlock->nDim/2 * addedBlock->mDim/2];
 
-      int a, b;
+      unsigned int a, b;
 
-      for(a = 0; a < addedBlock.nDim/2; a++)
+      for(a = 0; a < addedBlock->nDim/2; a++)
       {
-            for(b = 0; b < addedBlock.nDim/2; b++)
+            for(b = 0; b < addedBlock->nDim/2; b++)
             {
-                  BlockA[a][b] = addedBlock.block[a][b];
+                  BlockA[a][b] = addedBlock->block[a][b];
             }
       }
 
-      for(a = 0; a < addedBlock.nDim/2; a++)
+      for(a = 0; a < addedBlock->nDim/2; a++)
       {
-            for(b = 0; b < addedBlock.nDim/2; b++)
+            for(b = 0; b < addedBlock->nDim/2; b++)
             {
-                  BlockB[a][b] = addedBlock.block[a][b + addedBlock.nDim/2];
+                  BlockB[a][b] = addedBlock->block[a][b + addedBlock->nDim/2];
             }
       }
 
-      for(a = 0; a < addedBlock.nDim/2; a++)
+      for(a = 0; a < addedBlock->nDim/2; a++)
       {
-            for(b = 0; b < addedBlock.nDim/2; b++)
+            for(b = 0; b < addedBlock->nDim/2; b++)
             {
-                  BlockC[a][b] = addedBlock.block[a + addedBlock.nDim/2][b];
+                  BlockC[a][b] = addedBlock->block[a + addedBlock->nDim/2][b];
             }
       }
 
-      for(a = 0; a < addedBlock.nDim/2; a++)
+      for(a = 0; a < addedBlock->nDim/2; a++)
       {
-            for(b = 0; b < addedBlock.nDim/2; b++)
+            for(b = 0; b < addedBlock->nDim/2; b++)
             {
-                  BlockD[a][b] = addedBlock.block[a + addedBlock.nDim/2][b + addedBlock.nDim/2];
+                  BlockD[a][b] = addedBlock->block[a + addedBlock->nDim/2][b + addedBlock->nDim/2];
             }
       }
 
-      newA = new EntrywiseBlock<datatype>(BlockA, addedBlock.mDim/2, addedBlock.nDim/2, NULL, NULL);
-      newB = new EntrywiseBlock<datatype>(BlockB, addedBlock.mDim/2, addedBlock.nDim/2, NULL, NULL);
-      newC = new EntrywiseBlock<datatype>(BlockC, addedBlock.mDim/2, addedBlock.nDim/2, NULL, NULL);
-      newD = new EntrywiseBlock<datatype>(BlockD, addedBlock.mDim/2, addedBlock.nDim/2, NULL, NULL);
+      EntrywiseBlock<datatype> newA = new EntrywiseBlock<datatype>(BlockA, addedBlock->mDim/2, addedBlock->nDim/2, NULL, NULL);
+      EntrywiseBlock<datatype> newB = new EntrywiseBlock<datatype>(BlockB, addedBlock->mDim/2, addedBlock->nDim/2, NULL, NULL);
+      EntrywiseBlock<datatype> newC = new EntrywiseBlock<datatype>(BlockC, addedBlock->mDim/2, addedBlock->nDim/2, NULL, NULL);
+      EntrywiseBlock<datatype> newD = new EntrywiseBlock<datatype>(BlockD, addedBlock->mDim/2, addedBlock->nDim/2, NULL, NULL);
 
 
-      matrix[0][0] = martix[0][0] + newA;
-      matrix[0][1] = martix[0][1] + newB;
-      matrix[1][0] = martix[1][0] + newC;
-      matrix[1][1] = martix[1][1] + newD;
+      matrix[0][0] = matrix[0][0] + newA;
+      matrix[0][1] = matrix[0][1] + newB;
+      matrix[1][0] = matrix[1][0] + newC;
+      matrix[1][1] = matrix[1][1] + newD;
 
       delete BlockA;
-      delete newA;
+      delete &newA;
       delete BlockB;
-      delete newB;
+      delete &newB;
       delete BlockC;
-      delete newC;
+      delete &newC;
       delete BlockD;
-      delete newD;
+      delete &newD;
 
       return this;
 }
@@ -146,41 +146,41 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
       // std::cout << " OP+OP ";
 
       // OP + OP
-      int a = 0;
-      int b = 0;
-      datatype* newu = new datatype[mDim * (k + addedBlock.k)];
-      datatype* newx = new datatype[(k + addedBlock.k) * (k + addedBlock.k)];
-      datatype* newv = new datatype[(k + addedBlock.k) * nDim];
+      unsigned int a = 0;
+      unsigned int b = 0;
+      datatype** newu = new datatype[addedBlock->mDim * (k + addedBlock->k)];
+      datatype** newx = new datatype[(k + addedBlock->k) * (k + addedBlock->k)];
+      datatype** newv = new datatype[(k + addedBlock->k) * addedBlock->nDim];
 
       // u befüllen
       for(a = 0; a < k; a++)
       {
-            for(b = 0; b < mDim; b++)
+            for(b = 0; b < addedBlock->mDim; b++)
             {
                   newu[a][b] = u[a][b];
             }
       }
-      for(a = 0; a < addedBlock.k; a++)
+      for(a = 0; a < addedBlock->k; a++)
       {
-            for(b = 0; b < mDim; b++)
+            for(b = 0; b < addedBlock->mDim; b++)
             {
-                  newu[a + k][b] = addedBlock.u[a][b];
+                  newu[a + k][b] = addedBlock->u[a][b];
             }
       }
 
       // v befüllen
-      for(a = 0; a < nDim; a++)
+      for(a = 0; a < addedBlock->nDim; a++)
       {
             for(b = 0; b < k; b++)
             {
                   newv[a][b] = v[a][b];
             }
       }
-      for(a = 0; a < nDim; a++)
+      for(a = 0; a < addedBlock->nDim; a++)
       {
-            for(b = 0; b < addedBlock.k; b++)
+            for(b = 0; b < addedBlock->k; b++)
             {
-                  newu[a][b + k] = addedBlock.u[a][b];
+                  newu[a][b + k] = addedBlock->u[a][b];
             }
       }
 
@@ -192,18 +192,18 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
                   newx[a][b] = x[a][b];
             }
       }
-      for(a = 0; a < addedBlock.k; a++)
+      for(a = 0; a < addedBlock->k; a++)
       {
-            for(b = 0; b < addedBlock.k; b++)
+            for(b = 0; b < addedBlock->k; b++)
             {
-                  newu[a + k][b + k] = addedBlock.u[a][b];
+                  newu[a + k][b + k] = addedBlock->u[a][b];
             }
       }
 
-      &u = &newu;
-      &v = &newv;
-      &x = &newx;
-      k = k + addedBlock.k;
+      u = newu;
+      v = newv;
+      x = newx;
+      k = k + addedBlock->k;
 
       return this;
 }
@@ -214,7 +214,7 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( EntrywiseBlock<datatype
 
       unsigned int newk;  // Berechnung von Construkter klauen? Marie?
 
-      temp = new OuterProductBlock<datatype>(addedBlock.block, addedBlock.mDim, addedBlock.nDim, *addedBlock.iInd, *addedBlock.jInd, newk);
+      datatype* temp = new OuterProductBlock<datatype>(addedBlock->block, addedBlock->mDim, addedBlock->nDim, *addedBlock->iInd, *addedBlock->jInd, newk);
 
       return this + temp;
 }
@@ -242,11 +242,11 @@ template <class datatype>
 Block<datatype>* EntrywiseBlock<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){ //FERTIG
       // EW + EW
 
-      for(int a = 0; a < mDim; a++)
+      for(unsigned int a = 0; a < addedBlock->mDim; a++)
       {
-            for(int b = 0; b < nDim; b++)
+            for(unsigned int b = 0; b < addedBlock->nDim; b++)
             {
-                  block[a][b] = block[a][b] + addedBlock.block[a][b];
+                  block[a][b] = block[a][b] + addedBlock->block[a][b];
             }
       }
 
