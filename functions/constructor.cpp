@@ -12,10 +12,10 @@
 
 #include <iostream> // For testing
 
-// TODO: coarse-Funktion machen
-// TODO: Nur noch Zeug dokumentieren, der neu aus anderen Branches kommt
-// TODO: Rausfinden wie das in ne Library gepackt werden kann
-// TODO: Beispiel-Datei, damit man die Funktionsaufrufe sieht?
+// Nur noch Zeug dokumentieren, das neu aus anderen Branches kommt
+
+// TODO: coarse-Funktion
+// TODO: How to library?
 
 // FRAGE: clusterrparam auch >1 erlaubt?
 // FRAGE: float complex oder double complex?

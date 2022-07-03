@@ -1,17 +1,8 @@
-#include "Exceptions.hpp"
 
-#include "EntrywiseBlock.hpp"
-#include "OuterProductBlock.hpp"
-#include "HierarchicalMatrix.hpp"
+// This file serves as an example of what can currently be done with the library
+// and how to use the different functions
 
-#include "functions/addition.cpp"
-#include "functions/coarse.cpp"
-#include "functions/constructor.cpp"
-#include "functions/destructor.cpp"
-#include "functions/inversion.cpp"
-#include "functions/luDecomposition.cpp"
-#include "functions/matrixMatrixMult.cpp"
-#include "functions/matrixVectorMult.cpp"
+#include "hierarchical_matrices_lib.cpp"
 
 #include <iostream>
 #include <list>
@@ -20,6 +11,7 @@
 #define SIZE 2
 
 int main(int argc, char** argv){
+      // Example matrices
       double dataArr[SIZE][SIZE]=
                               { {1.0, 2.0},
                               {2.0, 4.0}};
@@ -45,7 +37,6 @@ int main(int argc, char** argv){
       }
 
       std::list<std::vector<unsigned int>> indices;
-
       // Puts 1 indice in each vector
       std::vector<unsigned int> indice[SIZE];
       for(int i=0; i<SIZE; i++){
@@ -53,13 +44,13 @@ int main(int argc, char** argv){
             indices.push_back(indice[i]);
       }
 
-      // Testing constructor
+      // Initialization
       HierarchicalMatrix<double> exampleBlock(data, &indices, SIZE);
 
-      // Testing addition
+      // Addition
       // exampleBlock + exampleBlock;
 
-      // Testing matrix-vector-multiplication
+      // Matrix-vector-multiplication
       // double xVector[SIZE];
       // for(int i=0; i<SIZE; i++){
       //       xVector[i] = i;

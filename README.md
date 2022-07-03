@@ -24,6 +24,6 @@ Any mentionings of pages refer to the book "Hierarchical Matrices", see below.
 Specifically the first two chapters about "Low-Rank Matrices and Matrix Partitioning" and "Hierarchical Matrices"
 * OS: Windows
 * Compiler: MinGW 32
-* Libraries: LAPACKE 3.10 (Instructions: https://icl.utk.edu/lapack-for-windows/lapack/#lapacke),
+* Libraries: LAPACKE 3.10 (Instructions: https://icl.utk.edu/lapack-for-windows/lapack/#lapacke)  
 --> Needs C, C++ and Fortran compiler (e.g. gcc, g++ and gfortran included in MinGW)
 * Documentation: Doxygen
