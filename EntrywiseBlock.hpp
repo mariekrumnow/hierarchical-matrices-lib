@@ -11,8 +11,13 @@
 template <class datatype>
 class EntrywiseBlock: public Block<datatype>{
 
+friend class OuterProductBlock<datatype>;
+friend class HierarchicalMatrix<datatype>;
+
 protected:
       datatype ** block; ///< mDim * nDim array / Exact part of the original matrix
+
+      EntrywiseBlock(){}
 
 public:
       /// Copies a matrix to be stored in a block
