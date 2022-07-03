@@ -17,12 +17,35 @@ template <class datatype>
 HierarchicalMatrix<datatype>* HierarchicalMatrix<datatype>::operator+( const HierarchicalMatrix<datatype>& addedMatrix ){
       // std::cout << " HM+HM ";
 
+      HierarchicalMatrix<datatype>* temp = new HierarchicalMatrix<datatype>();
+
+      temp->nDim = this->nDim;
+      temp->mDim = this->mDim;
+
       for(unsigned int a=0; a<2; a++){
             for(unsigned int b=0; b<2; b++){
-                  matrix[a][b] = matrix[a][b] + addedMatrix->matrix[a][b];
+
+                  if(matrix[a][b] != nullptr && addedMatrix->matrix[a][b] != nullptr)
+                  {
+                  temp->matrix[a][b] = *matrix[a][b] + addedMatrix->matrix[a][b];
+                  }
+                  else if(matrix[a][b] != nullptr && addedMatrix->matrix[a][b] == nullptr)
+                  {
+                  temp->matrix[a][b] = matrix[a][b];
+                  }
+                  else if(matrix[a][b] == nullptr && addedMatrix->matrix[a][b] != nullptr)
+                  {
+                  temp->matrix[a][b] = addedMatrix->matrix[a][b];
+                  }
             }
       }
-      return this; // Ist noch falsch
+
+      for(unsigned int a = 0; a < 2; a++){
+            for(unsigned int b = 0; b < 2; b++){
+                  temp->indiceRange[a][b] = this->indiceRange[a][b];
+            }
+      }
+      return temp; 
 }
 
 template <class datatype>
@@ -38,82 +61,92 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( Block<datatype>* added
 }
 
 template <class datatype>
-Block<datatype>* HierarchicalMatrix<datatype>::operator+( HierarchicalMatrix<datatype>* addedBlock ){ // FERTIG
+Block<datatype>* HierarchicalMatrix<datatype>::operator+( HierarchicalMatrix<datatype>* addedMatrix ){ // FERTIG
       // HM + HM | Hier vllt auch nur wieder die public Funktion aufrufen?
 
-      matrix[0][0] = *matrix[0][0] + addedBlock->matrix[0][0];
-      matrix[0][1] = *matrix[0][1] + addedBlock->matrix[0][1];
-      matrix[1][0] = *matrix[1][0] + addedBlock->matrix[1][0];
-      matrix[1][1] = *matrix[1][1] + addedBlock->matrix[1][1];
+      HierarchicalMatrix<datatype>* temp = new HierarchicalMatrix<datatype>();
 
-      return this;
+      temp->nDim = this->nDim;
+      temp->mDim = this->mDim;
+
+      for(unsigned int a=0; a<2; a++){
+            for(unsigned int b=0; b<2; b++){
+
+                  if(matrix[a][b] != nullptr && addedMatrix->matrix[a][b] != nullptr)
+                  {
+                  temp->matrix[a][b] = *matrix[a][b] + addedMatrix->matrix[a][b];
+                  }
+                  else if(matrix[a][b] != nullptr && addedMatrix->matrix[a][b] == nullptr)
+                  {
+                  temp->matrix[a][b] = matrix[a][b];
+                  }
+                  else if(matrix[a][b] == nullptr && addedMatrix->matrix[a][b] != nullptr)
+                  {
+                  temp->matrix[a][b] = addedMatrix->matrix[a][b];
+                  }
+            }
+      }
+
+      for(unsigned int a = 0; a < 2; a++){
+            for(unsigned int b = 0; b < 2; b++){
+                  temp->indiceRange[a][b] = this->indiceRange[a][b];
+            }
+      }
+      return temp; 
 }
 
 template <class datatype>
 Block<datatype>* HierarchicalMatrix<datatype>::operator+( OuterProductBlock<datatype>* addedBlock ){
       // HM + OP
-
-      // matrix[0][0] = matrix[0][0] + newA;
-      // matrix[0][1] = matrix[0][1] + newB;
-      // matrix[1][0] = matrix[1][0] + newC;
-      // matrix[1][1] = matrix[1][1] + newD;
-
-      return this;
-}
-
-template <class datatype>
-Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){ // FERTIG? Ind Vectoren für Add und Mult nicht benötigt -> problem wenn wegfallen?
-      // HM + EW
-
       unsigned int a, b;
 
 
-      datatype** BlockA = new datatype*[addedBlock->nDim/2];
-      for(a=0; a < addedBlock->nDim/2; a++){
-            BlockA[a] = new datatype[addedBlock->mDim/2];
+      datatype** Uoben = new datatype*[addedBlock->k];
+      for(a=0; a < addedBlock->k; a++){
+            Uoben[a] = new datatype[addedBlock->mDim/2];
       }
-      datatype** BlockB = new datatype*[addedBlock->nDim/2];
-      for(a=0; a < addedBlock->nDim/2; a++){
-            BlockB[a] = new datatype[addedBlock->mDim/2];
+      datatype** Uunten = new datatype*[addedBlock->k];
+      for(a=0; a < addedBlock->k; a++){
+            Uunten[a] = new datatype[addedBlock->mDim/2];
       }
-      datatype** BlockC = new datatype*[addedBlock->nDim/2];
+      datatype** Vlinks = new datatype*[addedBlock->nDim/2];
       for(a=0; a < addedBlock->nDim/2; a++){
-            BlockA[a] = new datatype[addedBlock->mDim/2];
+            Vlinks[a] = new datatype[addedBlock->k];
       }
-      datatype** BlockD = new datatype*[addedBlock->nDim/2];
+      datatype** Vrechts = new datatype*[addedBlock->nDim/2];
       for(a=0; a < addedBlock->nDim/2; a++){
-            BlockA[a] = new datatype[addedBlock->mDim/2];
+            Vrechts[a] = new datatype[addedBlock->k];
       }
 
-      for(a = 0; a < addedBlock->nDim/2; a++)
+      for(a = 0; a < addedBlock->k; a++)
       {
-            for(b = 0; b < addedBlock->nDim/2; b++)
+            for(b = 0; b < addedBlock->mDim/2; b++)
             {
-                  BlockA[a][b] = addedBlock->block[a][b];
+                  Uoben[a][b] = addedBlock->u[a][b];
+            }
+      }
+
+      for(a = 0; a < addedBlock->k; a++)
+      {
+            for(b = 0; b < addedBlock->mDim/2; b++)
+            {
+                  Uunten[a][b] = addedBlock->block[a][b + addedBlock->mDim/2];
             }
       }
 
       for(a = 0; a < addedBlock->nDim/2; a++)
       {
-            for(b = 0; b < addedBlock->nDim/2; b++)
+            for(b = 0; b < addedBlock->k; b++)
             {
-                  BlockB[a][b] = addedBlock->block[a][b + addedBlock->nDim/2];
+                  Vlinks[a][b] = addedBlock->block[a][b];
             }
       }
 
       for(a = 0; a < addedBlock->nDim/2; a++)
       {
-            for(b = 0; b < addedBlock->nDim/2; b++)
+            for(b = 0; b < addedBlock->k; b++)
             {
-                  BlockC[a][b] = addedBlock->block[a + addedBlock->nDim/2][b];
-            }
-      }
-
-      for(a = 0; a < addedBlock->nDim/2; a++)
-      {
-            for(b = 0; b < addedBlock->nDim/2; b++)
-            {
-                  BlockD[a][b] = addedBlock->block[a + addedBlock->nDim/2][b + addedBlock->nDim/2];
+                  Vrechts[a][b] = addedBlock->block[a + addedBlock->nDim/2][b];
             }
       }
 
@@ -122,22 +155,204 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatyp
       EntrywiseBlock<datatype>* newC = new EntrywiseBlock<datatype>();
       EntrywiseBlock<datatype>* newD = new EntrywiseBlock<datatype>();
 
+      HierarchicalMatrix<datatype>* temp = new HierarchicalMatrix<datatype>();
 
-      matrix[0][0] = *matrix[0][0] + newA;
-      matrix[0][1] = *matrix[0][1] + newB;
-      matrix[1][0] = *matrix[1][0] + newC;
-      matrix[1][1] = *matrix[1][1] + newD;
+      temp->nDim = this->nDim;
+      temp->mDim = this->mDim;
 
-      delete BlockA;
-      delete &newA;
-      delete BlockB;
-      delete &newB;
-      delete BlockC;
-      delete &newC;
-      delete BlockD;
-      delete &newD;
+      for(a = 0; a < 2; a++){
+            for(b = 0; b < 2; b++){
+                  temp->indiceRange[a][b] = this->indiceRange[a][b];
+            }
+      }
+      return temp; 
 
-      return this;
+      if(matrix[0][0] != nullptr)
+      {
+            temp->matrix[0][0] = *matrix[0][0] + newA;
+      }
+      else
+      {
+            temp->matrix[0][0] = newA;
+      }
+
+      if(matrix[0][1] != nullptr)
+      {
+            temp->matrix[0][1] = *matrix[0][1] + newB;
+      }
+      else
+      {
+            temp->matrix[0][1] = newB;
+      }
+
+      if(matrix[1][0] != nullptr)
+      {
+            temp->matrix[1][0] = *matrix[1][0] + newC;
+      }
+      else
+      {
+            temp->matrix[1][0] = newC;
+      }
+
+      if(matrix[1][1] != nullptr)
+      {
+            temp->matrix[1][1] = *matrix[1][1] + newD;
+      }
+      else
+      {
+            temp->matrix[1][1] = newD;
+      }
+
+      for(a=0; a < addedBlock->nDim/2; a++){
+            delete[] BlockA[a];
+      }
+      delete[] BlockA;
+      delete newA;
+
+      for(a=0; a < addedBlock->nDim/2; a++){
+            delete[] BlockB[a];
+      }
+      delete[] BlockB;
+      delete newB;
+
+      for(a=0; a < addedBlock->nDim/2; a++){
+            delete[] BlockC[a];
+      }
+      delete[] BlockC;
+      delete newC;
+
+      for(a=0; a < addedBlock->nDim/2; a++){
+            delete[] BlockD[a];
+      }
+      delete[] BlockD;
+      delete newD;
+
+      return temp;
+}
+
+template <class datatype>
+Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){ // FERTIG? Ind Vectoren für Add und Mult nicht benötigt -> problem wenn wegfallen?
+      // HM + EW
+
+      unsigned int a, b;
+
+      EntrywiseBlock<datatype>* newA = new EntrywiseBlock<datatype>();
+      newA->nDim = this->nDim/2;
+      newA->mDim = this->mDim/2;
+      EntrywiseBlock<datatype>* newB = new EntrywiseBlock<datatype>();
+      newA->nDim = this->nDim/2;
+      newA->mDim = this->mDim/2;
+      EntrywiseBlock<datatype>* newC = new EntrywiseBlock<datatype>();
+      newA->nDim = this->nDim/2;
+      newA->mDim = this->mDim/2;
+      EntrywiseBlock<datatype>* newD = new EntrywiseBlock<datatype>();
+      newA->nDim = this->nDim/2;
+      newA->mDim = this->mDim/2;
+
+
+      datatype** newA->block = new datatype*[addedBlock->nDim/2];
+      for(a=0; a < addedBlock->nDim/2; a++){
+            newA->block[a] = new datatype[addedBlock->mDim/2];
+      }
+      datatype** newB->block = new datatype*[addedBlock->nDim/2];
+      for(a=0; a < addedBlock->nDim/2; a++){
+            newB->block[a] = new datatype[addedBlock->mDim/2];
+      }
+      datatype** newC->block = new datatype*[addedBlock->nDim/2];
+      for(a=0; a < addedBlock->nDim/2; a++){
+            newC->block[a] = new datatype[addedBlock->mDim/2];
+      }
+      datatype** newD->block = new datatype*[addedBlock->nDim/2];
+      for(a=0; a < addedBlock->nDim/2; a++){
+            newD->block[a] = new datatype[addedBlock->mDim/2];
+      }
+
+      for(a = 0; a < addedBlock->nDim/2; a++)
+      {
+            for(b = 0; b < addedBlock->nDim/2; b++)
+            {
+                  newA->block[a][b] = addedBlock->block[a][b];
+            }
+      }
+
+      for(a = 0; a < addedBlock->nDim/2; a++)
+      {
+            for(b = 0; b < addedBlock->nDim/2; b++)
+            {
+                  newB->block[a][b] = addedBlock->block[a][b + addedBlock->nDim/2];
+            }
+      }
+
+      for(a = 0; a < addedBlock->nDim/2; a++)
+      {
+            for(b = 0; b < addedBlock->nDim/2; b++)
+            {
+                  newC->block[a][b] = addedBlock->block[a + addedBlock->nDim/2][b];
+            }
+      }
+
+      for(a = 0; a < addedBlock->nDim/2; a++)
+      {
+            for(b = 0; b < addedBlock->nDim/2; b++)
+            {
+                  newD->block[a][b] = addedBlock->block[a + addedBlock->nDim/2][b + addedBlock->nDim/2];
+            }
+      }
+
+      HierarchicalMatrix<datatype>* temp = new HierarchicalMatrix<datatype>();
+
+      temp->nDim = this->nDim;
+      temp->mDim = this->mDim;
+
+      for(a = 0; a < 2; a++){
+            for(b = 0; b < 2; b++){
+                  temp->indiceRange[a][b] = this->indiceRange[a][b];
+            }
+      }
+      return temp; 
+
+      if(matrix[0][0] != nullptr)
+      {
+            temp->matrix[0][0] = *matrix[0][0] + newA;
+      }
+      else
+      {
+            temp->matrix[0][0] = newA;
+      }
+
+      if(matrix[0][1] != nullptr)
+      {
+            temp->matrix[0][1] = *matrix[0][1] + newB;
+      }
+      else
+      {
+            temp->matrix[0][1] = newB;
+      }
+
+      if(matrix[1][0] != nullptr)
+      {
+            temp->matrix[1][0] = *matrix[1][0] + newC;
+      }
+      else
+      {
+            temp->matrix[1][0] = newC;
+      }
+
+      if(matrix[1][1] != nullptr)
+      {
+            temp->matrix[1][1] = *matrix[1][1] + newD;
+      }
+      else
+      {
+            temp->matrix[1][1] = newD;
+      }
+
+      delete newA;
+      delete newB;
+      delete newC;
+      delete newD;
+
+      return temp;
 }
 
 
@@ -162,17 +377,20 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
       // OP + OP
       unsigned int a = 0;
       unsigned int b = 0;
-      datatype** newU = new datatype*[addedBlock->mDim];
+
+      OuterProductBlock<datatype>* temp = new OuterProductBlock<datatype>();
+
+      datatype** temp->u = new datatype*[addedBlock->mDim];
       for(a=0; a < addedBlock->mDim; a++){
-            newU[a] = new datatype[k + addedBlock->k];
+            temp->u[a] = new datatype[k + addedBlock->k];
       }
-      datatype** newX = new datatype*[k + addedBlock->k];
+      datatype** temp->x = new datatype*[k + addedBlock->k];
       for(a=0; a < (k + addedBlock->k); a++){
-            newX[a] = new datatype[k + addedBlock->k];
+            temp->x[a] = new datatype[k + addedBlock->k];
       }
-      datatype** newV = new datatype*[(k + addedBlock->k)];
+      datatype** temp->v = new datatype*[(k + addedBlock->k)];
       for(a=0; a < (k + addedBlock->k); a++){
-            newV[a] = new datatype[addedBlock->nDim];
+            temp->v[a] = new datatype[addedBlock->nDim];
       }
 
       // u befüllen
@@ -180,14 +398,14 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
       {
             for(b = 0; b < addedBlock->mDim; b++)
             {
-                  newU[a][b] = u[a][b];
+                  temp->u[a][b] = u[a][b];
             }
       }
       for(a = 0; a < addedBlock->k; a++)
       {
             for(b = 0; b < addedBlock->mDim; b++)
             {
-                  newU[a + k][b] = addedBlock->u[a][b];
+                  temp->u[a + k][b] = addedBlock->u[a][b];
             }
       }
 
@@ -196,14 +414,14 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
       {
             for(b = 0; b < k; b++)
             {
-                  newV[a][b] = v[a][b];
+                  temp->v[a][b] = v[a][b];
             }
       }
       for(a = 0; a < addedBlock->nDim; a++)
       {
             for(b = 0; b < addedBlock->k; b++)
             {
-                  newU[a][b + k] = addedBlock->u[a][b];
+                  temp->v[a][b + k] = addedBlock->u[a][b];
             }
       }
 
@@ -212,23 +430,29 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
       {
             for(b = 0; b < k; b++)
             {
-                  newX[a][b] = x[a][b];
+                  temp->x[a][b] = x[a][b];
             }
       }
       for(a = 0; a < addedBlock->k; a++)
       {
             for(b = 0; b < addedBlock->k; b++)
             {
-                  newU[a + k][b + k] = addedBlock->u[a][b];
+                  temp->x[a + k][b + k] = addedBlock->u[a][b];
             }
       }
 
-      u = newU;
-      v = newV;
-      x = newX;
-      k = k + addedBlock->k;
+      temp->nDim = this->nDim;
+      temp->mDim = this->mDim;
 
-      return this;
+      for(a = 0; a < 2; a++){
+            for(b = 0; b < 2; b++){
+                  temp->indiceRange[a][b] = this->indiceRange[a][b];
+            }
+      }
+
+      temp->k = k + addedBlock->k;
+
+      return temp;
 }
 
 template <class datatype>
@@ -273,13 +497,23 @@ template <class datatype>
 Block<datatype>* EntrywiseBlock<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){ //FERTIG
       // EW + EW
 
+      EntrywiseBlock<datatype>* temp = new EntrywiseBlock<datatype>();
+
+      temp->nDim = this->nDim;
+      temp->mDim = this->mDim;
+
       for(unsigned int a = 0; a < addedBlock->mDim; a++)
       {
             for(unsigned int b = 0; b < addedBlock->nDim; b++)
             {
-                  block[a][b] = block[a][b] + addedBlock->block[a][b];
+                  temp->block[a][b] = block[a][b] + addedBlock->block[a][b];
             }
       }
 
-      return this;
+      for(unsigned int a = 0; a < 2; a++){
+            for(unsigned int b = 0; b < 2; b++){
+                  temp->indiceRange[a][b] = this->indiceRange[a][b];
+            }
+      }
+      return temp; 
 }
