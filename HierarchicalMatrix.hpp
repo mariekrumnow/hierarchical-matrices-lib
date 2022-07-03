@@ -14,8 +14,8 @@
 template <class datatype>
 class HierarchicalMatrix: public Block<datatype> {
 
-      friend class OuterProductBlock<datatype>;
-      friend class EntrywiseBlock<datatype>;
+friend class OuterProductBlock<datatype>;
+friend class EntrywiseBlock<datatype>;
 
 protected:
       // [0][0] = top left, [0][1] = top right / [1][0] = bottom left, [1][1] = bottom right
@@ -73,7 +73,7 @@ public:
       ~HierarchicalMatrix();
 
 private:
-    /// Internal connstructor for all other layers except the outside constructor call
+      /// Internal connstructor for all other layers except the outside constructor call
       HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances);
       /// Outsourced part of the constructor that holds code to be executed in both the public and private one
       void constructHierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances);

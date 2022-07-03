@@ -19,10 +19,11 @@ Any mentionings of pages refer to the book "Hierarchical Matrices", see below.
 
 ## Used sources/tools for development:
 
-* "Hierarchical Matrices" by Mario Bebendorf from 2008 (see https://link.springer.com/book/10.1007/978-3-540-77147-0),  
-specifically the first two chapters about "Low-Rank Matrices and Matrix Partitioning" and "Hierarchical Matrices"
+* "Hierarchical Matrices" by Mario Bebendorf from 2008  
+(see https://link.springer.com/book/10.1007/978-3-540-77147-0)  
+Specifically the first two chapters about "Low-Rank Matrices and Matrix Partitioning" and "Hierarchical Matrices"
 * OS: Windows
 * Compiler: MinGW 32
-* Libraries: LAPACKE 3.10 (Instructions: https://icl.utk.edu/lapack-for-windows/lapack/#lapacke),  
+* Libraries: LAPACKE 3.10 (Instructions: https://icl.utk.edu/lapack-for-windows/lapack/#lapacke),
 --> Needs C, C++ and Fortran compiler (e.g. gcc, g++ and gfortran included in MinGW)
 * Documentation: Doxygen

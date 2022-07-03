@@ -47,7 +47,7 @@ int main(int argc, char** argv){
       std::list<std::vector<unsigned int>> indices;
 
       // Puts 1 indice in each vector
-      std::vector<unsigned int> indice[1];
+      std::vector<unsigned int> indice[SIZE];
       for(int i=0; i<SIZE; i++){
             indice[i].push_back(i);
             indices.push_back(indice[i]);

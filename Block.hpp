@@ -15,9 +15,9 @@ class Block {
 
 protected:
 
-      unsigned int mDim; //< Number of rows from the original matrix depicted within this block
-      unsigned int nDim; //< Number of columns from the original matrix depicted within this block
-      unsigned int indiceRange[2][2]; //< Lower and upper bound of row and column indices from the original matrix depicted within this block, see enum InndiceOrientation
+      unsigned int mDim; ///< Number of rows from the original matrix depicted within this block
+      unsigned int nDim; ///< Number of columns from the original matrix depicted within this block
+      unsigned int indiceRange[2][2]; ///< Lower and upper bound of row and column indices from the original matrix depicted within this block, see enum InndiceOrientation
 
 public:
       /// Automatic initialization of attributes from subclasses
@@ -29,8 +29,9 @@ public:
 
       // virtual Block& operator*(const Block& multBlock) =0;
 
-      /// First layer of poolymorphic addition, detects the first operand and calls swapped addition to detect the second operand throough the second layer
+      /// First layer of polymorphic addition, detects the first operand and calls swapped addition to detect the second operand through the second layer
       virtual Block* operator+( Block* addedBlock ) =0;
+
       /// Second layer of polymorphic addition, detects the second operand and actually calculates the correxponding sum
       virtual Block* operator+( HierarchicalMatrix<datatype>* addedBlock ) =0;
       /// Second layer of polymorphic addition, detects the second operand and actually calculates the correxponding sum

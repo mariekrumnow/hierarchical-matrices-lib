@@ -13,7 +13,7 @@
 #include <iostream> // For testing
 
 // TODO: coarse-Funktion machen
-// TODO: 2x OP, 2xEW noch  dokumentieren / ist enum da? / tauchen undokumentierte nicht auf? Sollen dann z.B. auch abstrakte FUnktionen mit 0 Inhhalt ganz knapp dokumeniert werden?
+// TODO: Nur noch Zeug dokumentieren, der neu aus anderen Branches kommt
 // TODO: Rausfinden wie das in ne Library gepackt werden kann
 // TODO: Beispiel-Datei, damit man die Funktionsaufrufe sieht?
 
@@ -26,8 +26,7 @@
 // --> alles über Rang k hinaus weggeschmissen?
 
 // TODO: Testen von Konstruktor [geht: public Konstruktor, private Konstruktor, Mitte berechnen, neue dim berechnen]
-
-// TODO: Nochmal schauen, ob die Indizes auch in die passenden Quadranten gepackt werden
+// --> Nochmal schauen, ob die Indizes auch in die passenden Quadranten gepackt werden
 
 
 // Helper function for HierarchicalMatrix, defined at bottom
@@ -119,6 +118,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
       for(a=0; a < dim; a++){
             delete[] distance[a];
       }
+      delete[] distance;
 }
 
 
@@ -351,10 +351,10 @@ template <class datatype>
 OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank)
       :Block<datatype>::Block(mDim, nDim), k(rank)
 {
-    Block<datatype>::indiceRange[kRangeI][kBottom] = iInd.front();
-    Block<datatype>::indiceRange[kRangeI][kTop] = iInd.back();
-    Block<datatype>::indiceRange[kRangeJ][kBottom] = jInd.front();
-    Block<datatype>::indiceRange[kRangeJ][kTop] = jInd.back();
+      Block<datatype>::indiceRange[kRangeI][kBottom] = iInd.front();
+      Block<datatype>::indiceRange[kRangeI][kTop] = iInd.back();
+      Block<datatype>::indiceRange[kRangeJ][kBottom] = jInd.front();
+      Block<datatype>::indiceRange[kRangeJ][kTop] = jInd.back();
 
       datatype* convertedBlock = new datatype[nDim*mDim];
       datatype* convertedU = new datatype[mDim*mDim];
@@ -424,10 +424,10 @@ template <class datatype>
 EntrywiseBlock<datatype>::EntrywiseBlock(datatype ** originalBlock, unsigned int nDim, unsigned int mDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd)
       :Block<datatype>::Block(mDim, nDim), block(originalBlock)
 {
-    Block<datatype>::indiceRange[kRangeI][kBottom] = iInd.front();
-    Block<datatype>::indiceRange[kRangeI][kTop] = iInd.back();
-    Block<datatype>::indiceRange[kRangeJ][kBottom] = jInd.front();
-    Block<datatype>::indiceRange[kRangeJ][kTop] = jInd.back();
+      Block<datatype>::indiceRange[kRangeI][kBottom] = iInd.front();
+      Block<datatype>::indiceRange[kRangeI][kTop] = iInd.back();
+      Block<datatype>::indiceRange[kRangeJ][kBottom] = jInd.front();
+      Block<datatype>::indiceRange[kRangeJ][kTop] = jInd.back();
 }
 
 
