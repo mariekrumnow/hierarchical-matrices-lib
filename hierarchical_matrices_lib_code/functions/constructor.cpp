@@ -2,7 +2,7 @@
 #include "../OuterProductBlock.hpp"
 #include "../EntrywiseBlock.hpp"
 
-#include "../user_settings.hpp"
+#include "../../user_settings.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -15,7 +15,6 @@
 // Nur noch Zeug dokumentieren, das neu aus anderen Branches kommt
 
 // TODO: coarse-Funktion
-// TODO: How to library?
 
 // FRAGE: clusterrparam auch >1 erlaubt?
 // FRAGE: float complex oder double complex?
