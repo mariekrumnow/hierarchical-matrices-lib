@@ -12,7 +12,8 @@
 
 #include <iostream> // For testing
 
-// Nur noch Zeug dokumentieren, das neu aus anderen Branches kommt
+// Fr: Neues aus Branches, dass Doku braucht?
+// Fr: Alle Branches mergen, Kompilierung/Logik prüfen
 
 // TODO: coarse-Funktion
 
