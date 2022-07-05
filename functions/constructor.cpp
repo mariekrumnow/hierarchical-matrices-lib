@@ -1,6 +1,7 @@
 #include "../HierarchicalMatrix.hpp"
 #include "../OuterProductBlock.hpp"
 #include "../EntrywiseBlock.hpp"
+#include "calcRank.hpp"
 
 #include "../user_settings.hpp"
 
@@ -260,53 +261,7 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
                               }
                         }
 
-                        // Berechnung des Rangs (k) des Blocks via
-                        // https://www.geeksforgeeks.org/program-for-rank-of-matrix/
-                        unsigned int k = newNdim;
-
-                        datatype copy[newMdim][newNdim]; // Kopie wird verändert!
-                        for(unsigned int c=0; c< newMdim; c++){
-                              for(unsigned int d=0; d < newNdim; d++){
-                                    copy[c][d] = cutMatrix[c][d];
-                              }
-                        }
-
-                        for (unsigned int row = 0; row < k; row++){
-                              if (copy[row][row]){
-                                    for (unsigned int col = 0; col < newMdim; col++){
-                                          if (col != row){
-                                                datatype mult = copy[col][row] / copy[row][row];
-                                                for (unsigned int i = 0; i < k; i++){
-                                                      copy[col][i] -= mult * copy[row][i];
-                                                }
-                                          }
-                                    }
-                              }
-                              else {
-                                    bool reduce = true;
-
-                                    for (unsigned int i = row + 1; i < newMdim; i++){
-                                          if (copy[i][row]) {
-                                                for (unsigned int j=0; j < k; j++){
-                                                      datatype temp = copy[row][j];
-                                                      copy[row][j] = copy[i][j];
-                                                      copy[i][j] = temp;
-                                                }
-                                                reduce = false;
-                                                break;
-                                          }
-                                    }
-
-                                    if (reduce) {
-                                          k--;
-                                          for (unsigned int i=0; i < newMdim; i++){
-                                                copy[i][row] = copy[i][k];
-                                          }
-                                    }
-
-                                    row--;
-                              }
-                        } // Rang k FERTIG
+                        unsigned int k = calcRank<datatype>(newMdim, newMdim, cutMatrix);
 
                         if ( k*(newMdim + newNdim) < newMdim*newNdim ) { // == Low-rank matrix
                              // std::cout << "OP1 ";
