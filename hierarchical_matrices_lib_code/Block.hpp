@@ -22,6 +22,7 @@ protected:
 public:
       /// Automatic initialization of attributes from subclasses
       Block(unsigned int m, unsigned int n): mDim(m), nDim(n) {}
+        Block(){}
 
       virtual Block* coarse( double accuracy ) =0;
 

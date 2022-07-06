@@ -15,8 +15,6 @@
 // Fr: Neues aus Branches, dass Doku braucht?
 // Fr: Alle Branches mergen, Kompilierung/Logik prüfen
 
-// TODO: coarse-Funktion
-
 // FRAGE: clusterrparam auch >1 erlaubt?
 // FRAGE: float complex oder double complex?
 
