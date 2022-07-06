@@ -47,6 +47,9 @@ int main(int argc, char** argv){
       // Initialization
       HierarchicalMatrix<double> exampleBlock(data, &indices, SIZE);
 
+      // Coarsening
+      exampleBlock.coarse(0.1);
+
       // Addition
       // exampleBlock + exampleBlock;
 

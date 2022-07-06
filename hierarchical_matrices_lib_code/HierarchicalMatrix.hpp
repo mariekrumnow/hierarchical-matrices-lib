@@ -39,7 +39,8 @@ public:
       ///
       /// \param accuracy Accuracy > 0 to be satisfied in each coarsening step, see  page 72: (2.13)
       /// \return The coarsened hierarchical matrix, nullptr if matrix couldn't be coarrsened
-      Block<datatype>* coarse( double accuracy ) final;
+      Block<datatype>* tryCoarse( double accuracy ) final;
+      void coarse( double accuracy );
 
       /// Rounded addition of two Hierarchical Matrices of the same size
       ///

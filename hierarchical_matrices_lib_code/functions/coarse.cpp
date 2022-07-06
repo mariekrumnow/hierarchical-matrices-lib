@@ -4,11 +4,13 @@
 
 // S.69/70, S.72-74
 
+// FRAGE: Lieber gecoarsened Matrix als Rückgabetyp oder nur in der Fkt geändert mit der Annahme, dass es nicht in einem einzigen Block endet?
+
 // TODO: ggf EW in Konstruktor den Rang übergeben & auch als Attr speichern !! nur wenn Rang für Storage oder neuen Rang wichtig
 // --> allen Block eine unsigned int getRank()-Fkt geben, bei EW/OP einfach return k, bei HM ui rank=0/for/notnull/+=matrix[a][b]->getRank()/return rank;
 // --> alternativ einfach storage-Fkt, die für HM Fehler, in anderen beiden m*n bzw k*(m+n) zurückgibt
 
-// Bool statt Pointer zurückgeben und Schnittstellenfkt machen?
+// Schnittstellenfkt nötig, da sonst nullptr zurückgegeben
 
 // Man schaut sich die Blätter an, wenn diese weniger Speicher verbrauchen als wenn man sie zsmfasst (coarse),
 // agglomeriert man die Blätter bis auf die Genauigkeit, die angegeben ist
@@ -24,15 +26,36 @@
 
 // HierarchicalMatrix
 template <class datatype>
-Block<datatype>* HierarchicalMatrix<datatype>::coarse( double accuracy ){
+void HierarchicalMatrix<datatype>::coarse( double accuracy ){
+    for(int a=0; a<2; a++){
+          for(int b=0; b<2; b++){
+                if( matrix[a][b] != nullptr ){
+                    matrix[a][b]->tryCoarse(accuracy);
+                }
+            }
+    }
+}
+
+
+template <class datatype>
+Block<datatype>* HierarchicalMatrix<datatype>::tryCoarse( double accuracy ){
       bool coarsable = true;
 
+      // Existing address returned = leaf, nullptr = HM, nothing changed
       // If not all matrices are leaves, coarsening was already not possible on a deeper level
       for(int a=0; a<2; a++){
             for(int b=0; b<2; b++){
                   if( matrix[a][b] != nullptr ){
-                        if( matrix[a][b]->coarse(accuracy) != nullptr ){
+                        Block<datatype>* temp = matrix[a][b]->tryCoarse(accuracy);
+                        if( temp == nullptr ){
                               coarsable = false;
+                        }
+                        else{
+                            if( matrix[a][b] != temp ){
+                                Block<datatype>* tempToDelete = matrix[a][b];
+                                matrix[a][b] = temp;
+                                delete tempToDelete;
+                            }
                         }
                   }
             }
@@ -49,15 +72,14 @@ Block<datatype>* HierarchicalMatrix<datatype>::coarse( double accuracy ){
                       }
                 }
           }
-          if( !(newRank*( this->mDim + this->nDim ) <= currStorageCost) ){
-                coarsable = false; // if Ausdruck auch einfach hier reinschreiben?
-          }
+        coarsable = newRank*( this->mDim + this->nDim ) <= currStorageCost;
 
           if( coarsable ){
                 // Agglomerate (add) all leaves
-                Block<datatype>* temp1; // Ist das bei init nullptr oder was anderes?
-                Block<datatype>* temp2;
-                if( matrix[1][1] != nullptr ){ // There's either a 2x1 division or a 1x2 division (if not 2x2), always including [0][0] but never [1][1]
+                Block<datatype>* temp1;
+                Block<datatype>* temp2 = nullptr;
+                // There's either a 2x1 division or a 1x2 division (if not 2x2), always including [0][0] but never [1][1]
+                if( matrix[1][1] != nullptr ){
                       temp1 = *matrix[0][0] + matrix[0][1];
                       temp2 = *matrix[1][0] + matrix[1][1];
                 }
@@ -73,33 +95,28 @@ Block<datatype>* HierarchicalMatrix<datatype>::coarse( double accuracy ){
                 }
 
                 // Blockwise coarse (SVD) the resulting Block if it's not a OP already
-                //temp1->actualCoarse(); // Bei OP nix machen, bei HM Fehler, bei EW SVD benutzen
-
-                HierarchicalMatrix<datatype>* tempToDelete = this;
-                //this = temp1;
-                delete tempToDelete;
-
-                return nullptr;
+                //temp1->actualCoarse(); // Bei OP nix machen, bei HM Fehler, bei EW SVD benutzen (aus Konstruktorr auslagern?)
+                return temp1;
           }
           else{
-                return this;
+                return nullptr;
           }
       }
       else{
-          return this;
+          return nullptr;
       }
 }
 
 
 // OuterProductBlock
 template <class datatype>
-Block<datatype>* OuterProductBlock<datatype>::coarse( double accuracy ){
-      return nullptr;
+Block<datatype>* OuterProductBlock<datatype>::tryCoarse( double accuracy ){
+      return this;
 }
 
 
 // EntrywiseBlock
 template <class datatype>
-Block<datatype>* EntrywiseBlock<datatype>::coarse( double accuracy ){
-      return nullptr;
+Block<datatype>* EntrywiseBlock<datatype>::tryCoarse( double accuracy ){
+      return this;
 }

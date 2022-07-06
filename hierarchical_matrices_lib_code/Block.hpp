@@ -24,7 +24,7 @@ public:
       Block(unsigned int m, unsigned int n): mDim(m), nDim(n) {}
         Block(){}
 
-      virtual Block* coarse( double accuracy ) =0;
+      virtual Block* tryCoarse( double accuracy ) =0;
 
       virtual datatype* operator*( const datatype vector[] ) =0;
 

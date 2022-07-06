@@ -18,7 +18,7 @@ public:
       /// Copies part of the matrix to be stored in a block
       EntrywiseBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd);
 
-      Block<datatype>* coarse( double accuracy ) final;
+      Block<datatype>* tryCoarse( double accuracy ) final;
 
       datatype* operator*( const datatype vector[] );
 
