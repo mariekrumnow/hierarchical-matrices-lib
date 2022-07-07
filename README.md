@@ -9,7 +9,7 @@ while making sure that the corresponding file is reachable from the code where y
 You will at least need the Lapacke library and at most the development tools listed below to compile your code now.
 
 The only file that should be changed is "user_settings", in which you will be able to switch between the datatypes  
-float, double and complex floats. If you are only using float, there is no need to change the settings  
+float, double, complex floats and complex doubles. If you are only using float, there is no need to change the settings  
 since it is the default datatype.
 
 Please see the included documentation file for further instructions on how to use this library.  
@@ -21,6 +21,7 @@ changing the paths in the Makefile should make you able to compile the code via 
 ## Available functions:
 
 * Constructor
+* Coarsening
 * Matrix-matrix addition
 * Matrix-vector multiplication
 
