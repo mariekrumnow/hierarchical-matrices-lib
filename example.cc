@@ -4,24 +4,25 @@
 
 #include "hierarchical_matrices_lib.cpp"
 
+#include <cmath>
 #include <iostream>
 #include <list>
 #include <vector>
 
-#define SIZE 2
+#define SIZE 4
 
 int main(int argc, char** argv){
       // Example matrices
       double dataArr[SIZE][SIZE]=
-                              { {1.0, 2.0},
-                              {2.0, 4.0}};
+                              // { {1.0, 2.0},
+                              // {2.0, 4.0}};
                               // { {1.0, 2.0, 3.0},
                               // {2.0, 4.0, 6.0},
                               // {3.0, 8.0, 9.0}};
-                            // { {1.0, 2.0, 0.0, 0.0},
-                            //   {2.0, 4.0, 6.0, 0.0},
-                            //   {0.0, 8.0, 9.0, 12.0},
-                            //   {0.0, 0.0, 12.0, 16.0}};
+                            { {1.0, 0.125, 0.037037, 0.0156},
+                              {0.125, 1.0, 0.125, 0.037037},
+                              {0.037037, 0.125, 1.0, 0.125},
+                              {0.0156, 0.037037, 0.125, 1.0}};
                               // { {1.0, 2.0, 0.0, 0.0, 0.0},
                               //  {2.0, 4.0, 6.0, 0.0, 0.0},
                               //  {0.0, 8.0, 9.0, 12.0, 0.0},
@@ -37,11 +38,13 @@ int main(int argc, char** argv){
       }
 
       std::list<std::vector<unsigned int>> indices;
-      // Puts 1 indice in each vector
-      std::vector<unsigned int> indice[SIZE];
-      for(int i=0; i<SIZE; i++){
-            indice[i].push_back(i);
-            indices.push_back(indice[i]);
+      // Puts 2 indices in each vector (as far as possible)
+      int bruh = ceil(SIZE /2);
+      std::vector<unsigned int> indice[bruh];
+      for(int i=0; i<SIZE; i+=2){
+            bruh = ceil(i/2);
+            indice[bruh].push_back(i);
+            indices.push_back(indice[bruh]);
       }
 
       // Initialization

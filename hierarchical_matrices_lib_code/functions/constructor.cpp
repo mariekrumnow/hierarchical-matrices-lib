@@ -6,22 +6,20 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <lapacke.h>
 #include <limits>
 #include <queue>
 
-#include <iostream> // For testing
+// Test-Matrizen in Matlab mit n=dim & k=wie klein die Zahlen sein sollen
+// A = eye(n); for i=1:n, for j=1:n, A(i,j) = 1./(1+abs(i-j)).^k; end; end;
 
 // Fr: Neues aus Branches, dass Doku braucht?
 // Fr: Alle Branches mergen, Kompilierung/Logik prüfen
 
-// FRAGE: clusterrparam auch >1 erlaubt?
-// FRAGE: float complex oder double complex?
-
-// FRAGE: Nach SVD-Aufruf Singulärwerte in s (convertedX) angucken & entsprechend Zeilen auf k runterkürzen
-// In d gucken wir welche singulärwerte kleiner als threshhold, u und v auf k spalten kürzen,
-// s der größe nach sortiert, wo es kleiner wird wegschmeißen.
-// --> alles über Rang k hinaus weggeschmissen?
+// TODO: Fehler bei clusterrparam >1
+// TODO: float complex & double complex in Makro einbauen
+// TODO: Lapack-Fkt in Mini-Programm testen, ggf 32 vs 64Bit Fehler
 
 // TODO: Testen von Konstruktor [geht: public Konstruktor, private Konstruktor, Mitte berechnen, neue dim berechnen]
 // --> Nochmal schauen, ob die Indizes auch in die passenden Quadranten gepackt werden
@@ -35,6 +33,11 @@ template <class datatype>
 HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int dim, double clusterParamEta)
       :Block<datatype>::Block(dim, dim)
 {
+      if( clusterParamEta <= 0.0 || clusterParamEta >= 1.0 ){
+            std::cerr << "Invalid or non-sensible cluster parameter chosen" << std::endl;
+            return;
+      }
+
       // Anzahl der Vektoren (= Anz Blöcke) speichern
       unsigned int indices[2][2] = { {1, originalIndices->size()},
                                     {1, originalIndices->size()} };
@@ -54,8 +57,8 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
 
       unsigned int a, b;
       for (a =0; a < dim; a++){
-          for (b =0; b < dim; b++){
-              if( originalMatrix[a][b] || originalMatrix[b][a] ){
+            for (b =0; b < dim; b++){
+                  if( originalMatrix[a][b] || originalMatrix[b][a] ){
                   vertices[0].push_back(a);
                   vertices[1].push_back(b);
                   if(node[a] == 0){
@@ -65,8 +68,8 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                         selfconnected[a] = true;
                   }
                   // std::cout << vertices[0].back() << " " << vertices[1].back() << std::endl;
-              }
-          }
+                  }
+            }
       }
       // for(a =0; a < dim; a++){
       //       std::cout << node[a] << std::endl;

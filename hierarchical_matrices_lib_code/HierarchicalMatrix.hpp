@@ -30,17 +30,17 @@ public:
       ///  each vector contains all the indices in ascending order, vectors are listed in ascending order
       ///  so the first vector always s withh 0 and the last ends with dim-1, see page 31: Fig 1.5
       /// \param dim Number of columns/rows of the input matrix
-      /// \param clusterParamEta Optional cluster parameter between 0 and 1, will be defaulted to 0.5 if no value is given, see page 24: (1.13)
+      /// \param clusterParamEta Optional cluster parameter ∈ (0.0, 1.0), will be defaulted to 0.5 if no value is given, see page 24: (1.13)
       HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int dim, double clusterParamEta =0.5);
 
 
       /// Coarsens the given hierarchical matrix until the given accuracy can no longer be held,
       /// usually keeping the same storage size while reducing the number of branches/blocks
       ///
-      /// \param accuracy Accuracy > 0 to be satisfied in each coarsening step, see  page 72: (2.13)
-      /// \return The coarsened hierarchical matrix, nullptr if matrix couldn't be coarrsened
-      Block<datatype>* tryCoarse( double accuracy ) final;
+      /// \param accuracy Accuracy ∈ (0.0, 1.0) to be satisfied in each coarsening step, see page 72: (2.13)
       void coarse( double accuracy );
+      Block<datatype>* tryCoarse( double accuracy ) final;
+      unsigned int getStorage() final;
 
       /// Rounded addition of two Hierarchical Matrices of the same size
       ///

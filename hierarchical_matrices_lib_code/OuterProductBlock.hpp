@@ -22,6 +22,7 @@ public:
       OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank);
 
       Block<datatype>* tryCoarse( double accuracy ) final;
+      unsigned int getStorage() final;
 
       datatype* operator*( const datatype vector[] );
 
