@@ -10,12 +10,17 @@
 template <class datatype>
 class OuterProductBlock: public Block<datatype> {
 
+friend class EntrywiseBlock<datatype>;
+friend class HierarchicalMatrix<datatype>;
+
 protected:
       datatype ** u; ///< mDim * k array
       datatype ** x; ///< k * k array
       datatype ** v; ///< nDim * k array
 
       unsigned int k; ///< rank of resulting matrix
+
+      OuterProductBlock(){}
 
 public:
       /// Transforms an entrywise matrix into it's outer product form

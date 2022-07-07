@@ -57,7 +57,7 @@ int main(int argc, char** argv){
       HierarchicalMatrix<double> exampleBlock(daten, &indices, SIZE);
 
       // Testing addition
-      // exampleBlock + exampleBlock;
+       exampleBlock + exampleBlock;
 
       // Testing matrix-vector-multiplication
       // double xVector[SIZE];

@@ -17,9 +17,16 @@ class HierarchicalMatrix: public Block<datatype> {
       friend class OuterProductBlock<datatype>;
       friend class EntrywiseBlock<datatype>;
 
+      HierarchicalMatrix(){}
+
 protected:
       // [0][0] = top left, [0][1] = top right / [1][0] = bottom left, [1][1] = bottom right
       Block<datatype>* matrix[2][2]; ///< Hierarchical matrix, recursively divided into quadrants, can be partially nullptr!
+
+      Block<datatype>* operator+( Block<datatype>* addedBlock );
+      Block<datatype>* operator+( HierarchicalMatrix* addedBlock );
+      Block<datatype>* operator+( OuterProductBlock<datatype>* addedBlock );
+      Block<datatype>* operator+( EntrywiseBlock<datatype>* addedBlock );
 
 public:
       /// Transforms an entrywise matrix into a hierarchical matrix
@@ -64,11 +71,6 @@ public:
 private:
       HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances);
       void constructHierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances);
-
-      Block<datatype>* operator+( Block<datatype>* addedBlock );
-      Block<datatype>* operator+( HierarchicalMatrix* addedBlock );
-      Block<datatype>* operator+( OuterProductBlock<datatype>* addedBlock );
-      Block<datatype>* operator+( EntrywiseBlock<datatype>* addedBlock );
 };
 
 #endif // HIERARCHICAL_MATRICES_HIERARCHICALMATRIX_H

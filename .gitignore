@@ -1,6 +1,7 @@
 # Own
 Doxyfile
 latex/*
+.vscode/*
 
 # Prerequisites
 *.d
