@@ -54,25 +54,25 @@ datatype* HierarchicalMatrix<datatype>::operator*( const datatype vector[] ){
       }
 
     for (unsigned int i = 0; i < 4; i++) {
-        if(i ==0) //A
+        if(i ==0 && matrix[0][0] != nullptr) //A
         {
             for (unsigned int j = 0; j < matrix[0][0]->indiceRange[0][1]; j++) {
                 mergMatrix[j] = tmpMatrix[i][j];
             }
         }
-        if(i == 1) //B
+        if(i == 1 && matrix[0][1] != nullptr) //B
         {
             for (unsigned int j = matrix[0][1]->indiceRange[0][0]; j < matrix[0][1]->indiceRange[0][1]; j++) {
                 mergMatrix[j] = tmpMatrix[i][j];
             }
         }
-        if(i == 2) //C
+        if(i == 2 && matrix[1][0] != nullptr) //C
         {
             for (unsigned int j = matrix[1][0]->indiceRange[0][0]; j < matrix[1][0]->indiceRange[0][1]; j++) {
                 mergMatrix[j] = tmpMatrix[i][j];
             }
         }
-        if(i == 3) //D
+        if(i == 3 && matrix[1][1] != nullptr) //D
         {
             for (unsigned int j = matrix[1][1]->indiceRange[0][0]; j < matrix[1][1]->indiceRange[0][1]; j++) {
                 mergMatrix[j] = tmpMatrix[i][j];
@@ -85,21 +85,33 @@ datatype* HierarchicalMatrix<datatype>::operator*( const datatype vector[] ){
     return mergMatrix;
 }
 // * OuterProduct Form
+
 template <class datatype>
+
 datatype* OuterProductBlock<datatype>::operator*( const datatype vector[] ){
       datatype* result = new datatype[Block<datatype>::mDim];                       // Results from the class
-      datatype** Ux [this->mDim][this->k];    // Ux = U * x, x U have to multiplie U with x
+      datatype Ux [this->mDim][this->k] = {};    // Ux = U * x, x U have to multiplie U with x
+
 
       datatype* vUx = new datatype[Block<datatype>::mDim];                          // vUx = Ux * v, v ist the Vector
       datatype* VvUx = new datatype[Block<datatype>::mDim];                           // VvUx = vUx * V
+    for (unsigned int i = 0; i < this->mDim; ++i) {
+        vUx[i] = 0;
+        VvUx[i] = 0;
+    }
                           //u*x*v, Range Ndim * k
 
-        for(unsigned int i = 0; i < this->mDim; i++)                 // Matrix Matrix Multiplication of u and x
+
+        for(unsigned int i = 0; i < this->mDim; i++){
+            // Matrix Matrix Multiplication of u and x
             for(unsigned int j = 0; j < this->k; j++)
                 for(unsigned int l = 0; l < this->k; l++)
                 {
-                   **Ux[i][j] += this->u[i][l] * this->x[l][j];
+                    Ux[i][j] += this->u[i][l] * this->x[l][j];
                 }
+
+        }
+
 
     /*for(unsigned int a=0; a < dim; a++){
         delete[] distance[a];
@@ -115,15 +127,17 @@ datatype* OuterProductBlock<datatype>::operator*( const datatype vector[] ){
     for (unsigned int i = 0;
     i < this->mDim; i++) { // Row
         for (unsigned int j = 0; j <  this->k; j++) { //Col
-            vUx[i] += **Ux[i][j] * vector[j];
+            vUx[i] += Ux[i][j] * vector[j];
         }
     }
 
     for (unsigned int i = 0; i < this->nDim; i++) {
         for (unsigned int j = 1; j < this->k; j++) {
             VvUx[i] += this->v[i][j] * vUx[j];
+
         }
     }
+
     return VvUx;
 }
 
@@ -132,7 +146,11 @@ datatype* OuterProductBlock<datatype>::operator*( const datatype vector[] ){
 template <class datatype>
 datatype* EntrywiseBlock<datatype>::operator*( const datatype vector[] ){
       datatype* result = new datatype[Block<datatype>::mDim];
+    for (unsigned int i = 0; i < this->mDim; i++) {
+        result[i] = 0;
+    }
 
+    std::cout<<"Hier klappt es!";
         for (unsigned int i = 0; i < this->mDim; i++) {
             for (unsigned int j = 0; j < this->nDim; j++) {
 
