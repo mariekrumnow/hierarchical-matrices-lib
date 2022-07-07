@@ -1,7 +1,7 @@
 #include "../HierarchicalMatrix.hpp"
 #include "../OuterProductBlock.hpp"
 #include "../EntrywiseBlock.hpp"
-#include "calcRank.hpp"
+#include "calcRank.hpp" 
 
 #include "../../user_settings.hpp"
 
