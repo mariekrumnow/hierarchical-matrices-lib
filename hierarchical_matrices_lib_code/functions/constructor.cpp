@@ -3,33 +3,24 @@
 #include "../EntrywiseBlock.hpp"
 #include "calcRank.hpp"
 
-#include "../user_settings.hpp"
+#include "../../user_settings.hpp"
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <lapacke.h>
 #include <limits>
 #include <queue>
 
-#include <iostream> // For testing
+// Fr: Neues aus Branches, dass Doku braucht?
+// Fr: Alle Branches mergen, Kompilierung/Logik prüfen, alles in HM in private packen was nicht in public darf
+// --> In coarse calcRank freischalten
 
-// TODO: coarse-Funktion machen
-// TODO: Fertige Funktionen+Attr dokumentieren (Anwender-Zeug genau, Rest grob)
-
-// TODO: Funktionsköpfe für mvm
-// TODO: Funktionen aus public raus, ggf friend-class machen um in protected?
-
-// FRAGE: Nach SVD-Aufruf Singulärwerte in s (convertedX) angucken & entsprechend Zeilen auf k runterkürzen
-// In d gucken wir welche singulärwerte kleiner als threshhold, u und v auf k spalten kürzen,
-// s der größe nach sortiert, wo es kleiner wird wegschmeißen.
-// --> alles über Rang k hinaus weggeschmissen?
-
-// TODO: Testen von Konstruktor [geht: public Konstruktor, private Konstruktor, Mitte berechnen, neue dim berechnen]
-
-// TODO: Nochmal schauen, ob die Indizes auch in die passenden Quadranten gepackt werden
+// Bugfix: LaPack function prohibits executable from being able to run, possibly 32 vs 64 bit error
+// Testing: constructHierarchicalMatrix, OuterProductBlock constructor
 
 
-// Helper function for HierarchicalMatrix, defined at bottom
+// Helper function for constructor, defined at bottom
 unsigned int diameter(std::vector<unsigned int> cluster, unsigned int ** distances);
 
 // HierarchicalMatrix
@@ -37,6 +28,11 @@ template <class datatype>
 HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int dim, double clusterParamEta)
       :Block<datatype>::Block(dim, dim)
 {
+      if( clusterParamEta <= 0.0 || clusterParamEta >= 1.0 ){
+            std::cerr << "Invalid or non-sensible cluster parameter chosen" << std::endl;
+            return;
+      }
+
       // Anzahl der Vektoren (= Anz Blöcke) speichern
       unsigned int indices[2][2] = { {1, originalIndices->size()},
                                     {1, originalIndices->size()} };
@@ -56,8 +52,8 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
 
       unsigned int a, b;
       for (a =0; a < dim; a++){
-          for (b =0; b < dim; b++){
-              if( originalMatrix[a][b] || originalMatrix[b][a] ){
+            for (b =0; b < dim; b++){
+                  if( originalMatrix[a][b] || originalMatrix[b][a] ){
                   vertices[0].push_back(a);
                   vertices[1].push_back(b);
                   if(node[a] == 0){
@@ -67,8 +63,8 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                         selfconnected[a] = true;
                   }
                   // std::cout << vertices[0].back() << " " << vertices[1].back() << std::endl;
-              }
-          }
+                  }
+            }
       }
       // for(a =0; a < dim; a++){
       //       std::cout << node[a] << std::endl;
@@ -118,6 +114,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
       for(a=0; a < dim; a++){
             delete[] distance[a];
       }
+      delete[] distance;
 }
 
 
@@ -278,13 +275,13 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
                               });
 
                               if( std::min(diameter(*iVector, distances), diameter(*jVector, distances)) <= clusterParamEta * minDistance ) {
-                                    // Matrix can be approximated by low-rank one --> coarse (admissible)
-                                     // std::cout << "OP2 ";
-                                    matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix/*.coarse()*/, newMdim, newNdim, *iVector, *jVector, k);
+                                    // Matrix can be approximated by low-rank one
+                                    // std::cout << "OP2 ";
+                                    matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector, k);
                               }
                               else{
                                     // Important info will be lost by approximation, has to be saved with more effort (non-admissible)
-                                     // std::cout << "EW ";
+                                    // std::cout << "EW ";
                                     matrix[a][b] = new EntrywiseBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector);
                               }
                         }
@@ -304,10 +301,10 @@ template <class datatype>
 OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank)
       :Block<datatype>::Block(mDim, nDim), k(rank)
 {
-    Block<datatype>::indiceRange[kRangeI][kBottom] = iInd.front();
-    Block<datatype>::indiceRange[kRangeI][kTop] = iInd.back();
-    Block<datatype>::indiceRange[kRangeJ][kBottom] = jInd.front();
-    Block<datatype>::indiceRange[kRangeJ][kTop] = jInd.back();
+      Block<datatype>::indiceRange[kRangeI][kBottom] = iInd.front();
+      Block<datatype>::indiceRange[kRangeI][kTop] = iInd.back();
+      Block<datatype>::indiceRange[kRangeJ][kBottom] = jInd.front();
+      Block<datatype>::indiceRange[kRangeJ][kTop] = jInd.back();
 
       datatype* convertedBlock = new datatype[nDim*mDim];
       datatype* convertedU = new datatype[mDim*mDim];
@@ -377,10 +374,10 @@ template <class datatype>
 EntrywiseBlock<datatype>::EntrywiseBlock(datatype ** originalBlock, unsigned int nDim, unsigned int mDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd)
       :Block<datatype>::Block(mDim, nDim), block(originalBlock)
 {
-    Block<datatype>::indiceRange[kRangeI][kBottom] = iInd.front();
-    Block<datatype>::indiceRange[kRangeI][kTop] = iInd.back();
-    Block<datatype>::indiceRange[kRangeJ][kBottom] = jInd.front();
-    Block<datatype>::indiceRange[kRangeJ][kTop] = jInd.back();
+      Block<datatype>::indiceRange[kRangeI][kBottom] = iInd.front();
+      Block<datatype>::indiceRange[kRangeI][kTop] = iInd.back();
+      Block<datatype>::indiceRange[kRangeJ][kBottom] = jInd.front();
+      Block<datatype>::indiceRange[kRangeJ][kTop] = jInd.back();
 }
 
 

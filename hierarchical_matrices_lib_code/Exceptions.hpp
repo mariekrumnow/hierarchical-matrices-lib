@@ -15,7 +15,7 @@
 // }
 
 
-/// Exception for divisions by zero
+// Exception for divisions by zero
 class DivByZeroException: public std::exception{
 public:
       virtual const char* what() const noexcept{
@@ -24,7 +24,7 @@ public:
 };
 
 
-/// Exception for when the matrix inversion fails due to unchecked invertibility
+// Exception for when the matrix inversion fails due to unchecked invertibility
 class NonInvertibleMatrixException: public std::exception{
 public:
       virtual const char* what() noexcept{

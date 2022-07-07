@@ -6,7 +6,7 @@
 #include <vector>
 
 
-/// Depicts an admissible part
+/// Depicts an admissible or low-rank part of the original matrix
 template <class datatype>
 class OuterProductBlock: public Block<datatype> {
 
@@ -14,34 +14,29 @@ friend class EntrywiseBlock<datatype>;
 friend class HierarchicalMatrix<datatype>;
 
 protected:
-      datatype ** u; ///< mDim * k array
-      datatype ** x; ///< k * k array
-      datatype ** v; ///< nDim * k array
+      datatype ** u; ///< mDim * k array / U
+      datatype ** x; ///< k * k array / X, similar to S
+      datatype ** v; ///< nDim * k array / V^H with complex entries, V^T with real entries
 
-      unsigned int k; ///< rank of resulting matrix
+      unsigned int k; ///< Rank of original matrix part
 
       OuterProductBlock(){}
 
 public:
-      /// Transforms an entrywise matrix into it's outer product form
-      ///
-      /// \param
+      /// Transforms an entrywise part of the matrix into its outer product form
       OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank);
 
-      ///
-      ///
-      /// \return
-      Block<datatype>& coarse() final;
+      Block<datatype>* coarse( double accuracy, bool checkForLeaf ) final;
+      unsigned int getStorageOrRank( bool getStorage ) final;
 
       datatype* operator*( const datatype vector[] );
-
-      // Block<datatype>& operator*( const Block<datatype>& multBlock );
 
       Block<datatype>* operator+( Block<datatype>* addedBlock );
       Block<datatype>* operator+( HierarchicalMatrix<datatype>* addedBlock );
       Block<datatype>* operator+( OuterProductBlock* addedBlock );
       Block<datatype>* operator+( EntrywiseBlock<datatype>* addedBlock );
 
+      /// Frees all memory allocated for the u, x and v arrays
       ~OuterProductBlock();
 };
 
