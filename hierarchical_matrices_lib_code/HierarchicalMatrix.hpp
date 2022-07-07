@@ -39,7 +39,7 @@ public:
       ///
       /// \param accuracy Accuracy ∈ (0.0, 1.0) to be satisfied in each coarsening step, see page 72: (2.13)
       void coarse( double accuracy );
-      Block<datatype>* tryCoarse( double accuracy ) final;
+      Block<datatype>* coarse( double accuracy, bool checkForLeaf ) final;
       unsigned int getStorage() final;
 
       /// Rounded addition of two Hierarchical Matrices of the same size

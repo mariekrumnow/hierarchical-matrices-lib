@@ -21,7 +21,7 @@ public:
       /// Transforms an entrywise part of the matrix into its outer product form
       OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank);
 
-      Block<datatype>* tryCoarse( double accuracy ) final;
+      Block<datatype>* coarse( double accuracy, bool checkForLeaf ) final;
       unsigned int getStorage() final;
 
       datatype* operator*( const datatype vector[] );

@@ -16,9 +16,9 @@
 
 // Fr: Neues aus Branches, dass Doku braucht?
 // Fr: Alle Branches mergen, Kompilierung/Logik prüfen
+// --> In coarse calcRank freischalten
 
-// TODO: Fehler bei clusterrparam >1
-// TODO: float complex & double complex in Makro einbauen
+// TODO: Makro 3 checken
 // TODO: Lapack-Fkt in Mini-Programm testen, ggf 32 vs 64Bit Fehler
 
 // TODO: Testen von Konstruktor [geht: public Konstruktor, private Konstruktor, Mitte berechnen, neue dim berechnen]
@@ -326,13 +326,13 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
                               });
 
                               if( std::min(diameter(*iVector, distances), diameter(*jVector, distances)) <= clusterParamEta * minDistance ) {
-                                    // Matrix can be approximated by low-rank one --> coarse (admissible)
-                                     // std::cout << "OP2 ";
-                                    matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix/*.coarse()*/, newMdim, newNdim, *iVector, *jVector, k);
+                                    // Matrix can be approximated by low-rank one
+                                    // std::cout << "OP2 ";
+                                    matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector, k);
                               }
                               else{
                                     // Important info will be lost by approximation, has to be saved with more effort (non-admissible)
-                                     // std::cout << "EW ";
+                                    // std::cout << "EW ";
                                     matrix[a][b] = new EntrywiseBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector);
                               }
                         }

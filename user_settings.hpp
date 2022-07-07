@@ -7,6 +7,7 @@
 // 0 = float
 // 1 = double
 // 2 = complex float
+// 3 = complex double
 #define USED_DATATYPE 1
 
 
@@ -19,6 +20,8 @@
       #define CALC_SVD LAPACKE_dgesvd_work
 #elif USED_DATATYPE == 2
       #define CALC_SVD LAPACKE_cgesvd_work
+#elif USED_DATATYPE == 3
+      #define CALC_SVD LAPACKE_zgesvd_work
 #else
       #define CALC_SVD LAPACKE_sgesvd_work
 #endif
