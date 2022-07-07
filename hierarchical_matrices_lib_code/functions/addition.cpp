@@ -4,6 +4,7 @@
 #include "calcRank.hpp"
 
 #include <iostream> // For testing
+#include <cmath>
 
 // Order of the functions: HM > OP > EW
 
@@ -375,14 +376,14 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatyp
       newD->nDim = newNDimR;
       newD->mDim = newMDimB;
 
-      //temporary martixies to save the new blocks
+      //temporary martices to save the new blocks
       datatype** A = new datatype*[newMDimT];
       for(a=0; a < newMDimT; a++){
             A[a] = new datatype[newNDimL];
       }
       datatype** B = new datatype*[newMDimT];
       for(a=0; a < newMDimT; a++){
-            B[a] = new datatype[addedBlock->nDim/2];
+            B[a] = new datatype[newNDimR];
       }
       datatype** C = new datatype*[newMDimB];
       for(a=0; a < newMDimB; a++){
@@ -390,7 +391,7 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatyp
       }
       datatype** D = new datatype*[newMDimB];
       for(a=0; a < newMDimB; a++){
-            D[a] = new datatype[addedBlock->nDim/2];
+            D[a] = new datatype[newNDimR];
       }
 
       //filling these blocks

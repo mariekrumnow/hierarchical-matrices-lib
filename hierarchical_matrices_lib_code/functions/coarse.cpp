@@ -138,7 +138,7 @@ Block<datatype>* EntrywiseBlock<datatype>::coarse( double accuracy, bool checkFo
             return this;
       }
       else{
-            unsigned int newk = 2; // calcRank(this->mDim, this->nDim, this->block);
+            unsigned int newk = calcRank(this->mDim, this->nDim, this->block);
 
             std::vector<unsigned int> iInd;
             iInd.push_back(this->indiceRange[kRangeI][kBottom]);

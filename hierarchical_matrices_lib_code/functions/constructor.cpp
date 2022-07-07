@@ -12,9 +12,9 @@
 #include <limits>
 #include <queue>
 
-// Fr: Neues aus Branches, dass Doku braucht?
-// Fr: Alle Branches mergen, Kompilierung/Logik prüfen, alles in HM in private packen was nicht in public darf
-// --> In coarse calcRank freischalten
+// TODO: Neues aus Branches, dass Doku braucht?
+// TODO: Alles in HM in private packen was nicht in public darf
+// TODO: Addition checken
 
 // Bugfix: LaPack function prohibits executable from being able to run, possibly 32 vs 64 bit error
 // Testing: constructHierarchicalMatrix, OuterProductBlock constructor

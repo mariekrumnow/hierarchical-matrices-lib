@@ -13,6 +13,10 @@ enum IndiceOrientation {kRangeI=0, kRangeJ=1, kBottom=0, kTop=1};
 template <class datatype>
 class Block {
 
+friend class OuterProductBlock<datatype>;
+friend class EntrywiseBlock<datatype>;
+friend class HierarchicalMatrix<datatype>;
+
 protected:
 
       unsigned int mDim; ///< Number of rows from the original matrix depicted within this block

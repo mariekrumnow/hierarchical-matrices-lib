@@ -59,11 +59,11 @@ int main(int argc, char** argv){
       // exampleBlock + exampleBlock;
 
       // Matrix-vector-multiplication
-      // double xVector[SIZE];
-      // for(int i=0; i<SIZE; i++){
-      //       xVector[i] = i;
-      // }
-      // double* result = exampleBlock * xVector;
+      double xVector[SIZE];
+      for(int i=0; i<SIZE; i++){
+            xVector[i] = i;
+      }
+      double* result = exampleBlock * xVector;
 
       std::cout << std::endl << "Success!";
 

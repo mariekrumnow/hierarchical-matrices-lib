@@ -32,7 +32,7 @@ public:
       /// \param dim Number of columns/rows of the input matrix
       /// \param clusterParamEta Optional cluster parameter ∈ (0.0, 1.0), will be defaulted to 0.5 if no value is given, see page 24: (1.13)
       HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int dim, double clusterParamEta =0.5);
-
+      HierarchicalMatrix(){}
 
       /// Coarsens the given hierarchical matrix until the given accuracy can no longer be held,
       /// usually keeping the same storage size while reducing the number of branches/blocks

@@ -9,7 +9,8 @@
 // Eingabevektor hat Größe Block<datatype>::nDim
 // Ausgabevektor hat Größe Block<datatype>::mDim
 
-// * Hierachische Matrix
+
+// HierarchicalMatrix
 template <class datatype>
 datatype* HierarchicalMatrix<datatype>::operator*( const datatype vector[] ){
     datatype* mergMatrix = new datatype[this->mDim];              //result
@@ -84,10 +85,10 @@ datatype* HierarchicalMatrix<datatype>::operator*( const datatype vector[] ){
     //mergMatrix[1] = tmpMatrix[1][0] + tmpMatrix[1][1]; //C+D
     return mergMatrix;
 }
-// * OuterProduct Form
 
+
+// OuterProductBlock
 template <class datatype>
-
 datatype* OuterProductBlock<datatype>::operator*( const datatype vector[] ){
       datatype* result = new datatype[Block<datatype>::mDim];                       // Results from the class
       datatype Ux [this->mDim][this->k] = {};    // Ux = U * x, x U have to multiplie U with x
@@ -150,7 +151,6 @@ datatype* EntrywiseBlock<datatype>::operator*( const datatype vector[] ){
         result[i] = 0;
     }
 
-    std::cout<<"Hier klappt es!";
         for (unsigned int i = 0; i < this->mDim; i++) {
             for (unsigned int j = 0; j < this->nDim; j++) {
 
