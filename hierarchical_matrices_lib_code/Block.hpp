@@ -22,18 +22,19 @@ protected:
 public:
       /// Automatic initialization of attributes from subclasses
       Block(unsigned int m, unsigned int n): mDim(m), nDim(n) {}
+      /// Empty constructor for calling empty subclass constructors
       Block(){}
 
+      /// Actual coarse functionality
       virtual Block* coarse( double accuracy, bool checkForLeaf ) =0;
-      virtual unsigned int getStorage() =0;
+      /// Helper function for coarse
+      /// \return Storage of EW or OP Block if getStorage = true, rank of OP if getStorage = false, error if called otherwise since it's not necessary
+      virtual unsigned int getStorageOrRank( bool getStorage ) =0;
 
       virtual datatype* operator*( const datatype vector[] ) =0;
 
-      // virtual Block& operator*(const Block& multBlock) =0;
-
       /// First layer of polymorphic addition, detects the first operand and calls swapped addition to detect the second operand through the second layer
       virtual Block* operator+( Block* addedBlock ) =0;
-
       /// Second layer of polymorphic addition, detects the second operand and actually calculates the correxponding sum
       virtual Block* operator+( HierarchicalMatrix<datatype>* addedBlock ) =0;
       /// Second layer of polymorphic addition, detects the second operand and actually calculates the correxponding sum
@@ -41,6 +42,7 @@ public:
       /// Second layer of polymorphic addition, detects the second operand and actually calculates the correxponding sum
       virtual Block* operator+( EntrywiseBlock<datatype>* addedBlock ) =0;
 
+      /// Empty virtual destructor to polymorphically destruct matrix attribute in HierarchicalMatrix
       virtual ~Block(){};
 };
 

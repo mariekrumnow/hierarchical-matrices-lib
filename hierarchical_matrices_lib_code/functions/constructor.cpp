@@ -11,21 +11,17 @@
 #include <limits>
 #include <queue>
 
-// Test-Matrizen in Matlab mit n=dim & k=wie klein die Zahlen sein sollen
-// A = eye(n); for i=1:n, for j=1:n, A(i,j) = 1./(1+abs(i-j)).^k; end; end;
-
 // Fr: Neues aus Branches, dass Doku braucht?
-// Fr: Alle Branches mergen, Kompilierung/Logik prüfen
+// Fr: Alle Branches mergen, Kompilierung/Logik prüfen, alles in HM in private packen was nicht in public darf
 // --> In coarse calcRank freischalten
 
-// TODO: Makro 3 checken
 // TODO: Lapack-Fkt in Mini-Programm testen, ggf 32 vs 64Bit Fehler
 
 // TODO: Testen von Konstruktor [geht: public Konstruktor, private Konstruktor, Mitte berechnen, neue dim berechnen]
 // --> Nochmal schauen, ob die Indizes auch in die passenden Quadranten gepackt werden
 
 
-// Helper function for HierarchicalMatrix, defined at bottom
+// Helper function for constructor, defined at bottom
 unsigned int diameter(std::vector<unsigned int> cluster, unsigned int ** distances);
 
 // HierarchicalMatrix

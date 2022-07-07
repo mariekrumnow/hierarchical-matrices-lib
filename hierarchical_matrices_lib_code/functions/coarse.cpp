@@ -7,7 +7,23 @@
 
 // S.69/70, S.72-74
 
-// TODO: Neuen Rang anschauen ~Z.83
+// TODO: Statt Rang der Matrix berechnen den Rang aus den Singulärwerten bestimmen?
+
+// Kein Rang übergeben/vorher berechnen, dann erst SVD machen, aus Sigma den Rang bestimmen, dann erst die
+
+// Gegeben: convertedX[std::min(mDim, nDim)]
+//
+// datatype compare = accuracy * convertedX[0];
+// unsigned int minIndice = std::min(mDim, nDim);
+// for(int a=1; a < std::min(mDim, nDim); a++){
+//       if( (convertedX[a] < compare) && (a-1 < minIndice) ){
+//             minIndice = a-1;
+//       }
+// }
+// if( minIndice == std::min(mDim, nDim) ){
+//       // no rank found
+// }
+
 
 // HierarchicalMatrix
 template <class datatype>
@@ -80,16 +96,15 @@ Block<datatype>* HierarchicalMatrix<datatype>::coarse( double accuracy, bool che
                   Block<datatype>* coarsenedBlock = agglo1->coarse(accuracy, false);
 
                   // Was storage reduced by putting the leaves into one Block?
-                  unsigned int newRank = 1; //Estimate??
                   unsigned int currStorageCost = 0;
                   for(int a=0; a<2; a++){
                         for(int b=0; b<2; b++){
                               if( matrix[a][b] != nullptr ){
-                                    currStorageCost += matrix[a][b]->getStorage();
+                                    currStorageCost += matrix[a][b]->getStorageOrRank(true);
                               }
                         }
                   }
-                  coarsable = newRank*( this->mDim + this->nDim ) <= currStorageCost;
+                  coarsable = coarsenedBlock->getStorageOrRank(false)*( this->mDim + this->nDim ) <= currStorageCost;
 
                   if( coarsable ){
                         return coarsenedBlock;
@@ -140,17 +155,28 @@ Block<datatype>* EntrywiseBlock<datatype>::coarse( double accuracy, bool checkFo
 
 // Helper function that returns storage used by matrix representation
 template <class datatype>
-unsigned int HierarchicalMatrix<datatype>::getStorage(){
-      std::cerr << "Tried to get Storage from non-leaf Block" << std::endl;
+unsigned int HierarchicalMatrix<datatype>::getStorageOrRank( bool getStorage ){
+      std::cerr << "Logic Error, Tried to get storage or rank from non-leaf Block" << std::endl;
       return 0;
 }
 
 template <class datatype>
-unsigned int OuterProductBlock<datatype>::getStorage(){
-      return k*( this->mDim + this->nDim );
+unsigned int OuterProductBlock<datatype>::getStorageOrRank( bool getStorage ){
+      if(getStorage){
+            return k*( this->mDim + this->nDim );
+      }
+      else{
+            return k;
+      }
 }
 
 template <class datatype>
-unsigned int EntrywiseBlock<datatype>::getStorage(){
-      return this->mDim * this->nDim;
+unsigned int EntrywiseBlock<datatype>::getStorageOrRank( bool getStorage ){
+      if(getStorage){
+            return this->mDim * this->nDim;
+      }
+      else{
+            std::cerr << "Logic Error, this should be called from OP" << std::endl;
+            return 0;
+      }
 }

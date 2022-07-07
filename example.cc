@@ -13,6 +13,8 @@
 
 int main(int argc, char** argv){
       // Example matrices
+      // Generated via MatLab with n = dim, k = how small data is
+      // A = eye(n); for i=1:n, for j=1:n, A(i,j) = 1./(1+abs(i-j)).^k; end; end;
       double dataArr[SIZE][SIZE]=
                               // { {1.0, 2.0},
                               // {2.0, 4.0}};

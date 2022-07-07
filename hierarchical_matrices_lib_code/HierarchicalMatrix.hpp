@@ -40,7 +40,7 @@ public:
       /// \param accuracy Accuracy ∈ (0.0, 1.0) to be satisfied in each coarsening step, see page 72: (2.13)
       void coarse( double accuracy );
       Block<datatype>* coarse( double accuracy, bool checkForLeaf ) final;
-      unsigned int getStorage() final;
+      unsigned int getStorageOrRank( bool getStorage ) final;
 
       /// Rounded addition of two Hierarchical Matrices of the same size
       ///
@@ -56,13 +56,13 @@ public:
 
       /// Matrix-vector multiplication
       ///
-      /// \param vector One-dimensional array with size equaling the number of columns(=rows) of the input matrix
-      /// \return Resulting vector with size equaling the number of rows(=columns) of the input matrix, nullptr if vector couldn't be calculated
+      /// \param vector One-dimensional array with size equaling the number of columns of the input matrix
+      /// \return Resulting vector with size equaling the number of rows of the input matrix, nullptr if vector couldn't be calculated
       datatype* operator*( const datatype vector[] );
 
       // Matrix-matrix multiplication
-      // Block<datatype>& operator*( const Block<datatype>& multMatrix );
-      // Block<datatype>& operator*=( const HierarchicalMatrix& multMatrix );
+      // HierarchicalMatrix* operator*( const HierarchicalMatrix& multMatrix );
+      // HierarchicalMatrix* operator*=( const HierarchicalMatrix& multMatrix );
 
       // Inversion
       // HierarchicalMatrix& invert();

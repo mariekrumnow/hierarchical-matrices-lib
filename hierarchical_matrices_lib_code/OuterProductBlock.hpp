@@ -22,11 +22,9 @@ public:
       OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank);
 
       Block<datatype>* coarse( double accuracy, bool checkForLeaf ) final;
-      unsigned int getStorage() final;
+      unsigned int getStorageOrRank( bool getStorage ) final;
 
       datatype* operator*( const datatype vector[] );
-
-      // Block<datatype>& operator*( const Block<datatype>& multBlock );
 
       Block<datatype>* operator+( Block<datatype>* addedBlock );
       Block<datatype>* operator+( HierarchicalMatrix<datatype>* addedBlock );
