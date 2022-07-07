@@ -67,5 +67,23 @@ int main(int argc, char** argv){
 
       std::cout << std::endl << "Success!";
 
+      // ----------------------------------------------------
+
+      // double daten[] = {3.0,2.0,2.0,2.0,3.0,-2.0};
+      // int mDim =2, nDim=3;
+      //
+      // double* convertedU = new double[mDim*mDim];
+      // double* convertedV  = new double[nDim*nDim];
+      // double* convertedX = new double[std::min(mDim, nDim)];
+      //
+      // unsigned int workArrSize = 5*std::max(mDim, nDim);
+      // double* workArr = new double[workArrSize];
+      //
+      // int info = LAPACKE_dgesvd_work(LAPACK_COL_MAJOR, 'A', 'A', mDim, nDim, daten, mDim, convertedX, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
+      // if (info){
+      //        std::cerr<<"Lapack error occured in dgesdd. error code :" << info << std::endl;
+      // }
+
+
       return 0;
 }

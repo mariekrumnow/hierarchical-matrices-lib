@@ -9,7 +9,7 @@
 
 // TODO: Statt Rang der Matrix berechnen den Rang aus den Singulärwerten bestimmen?
 
-// Kein Rang übergeben/vorher berechnen, dann erst SVD machen, aus Sigma den Rang bestimmen, dann erst die
+// Kein Rang übergeben/vorher berechnen, erst SVD machen, aus Sigma den Rang bestimmen, dann wie normal im Konstruktor weiter
 
 // Gegeben: convertedX[std::min(mDim, nDim)]
 //

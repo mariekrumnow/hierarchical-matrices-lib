@@ -15,10 +15,8 @@
 // Fr: Alle Branches mergen, Kompilierung/Logik prüfen, alles in HM in private packen was nicht in public darf
 // --> In coarse calcRank freischalten
 
-// TODO: Lapack-Fkt in Mini-Programm testen, ggf 32 vs 64Bit Fehler
-
-// TODO: Testen von Konstruktor [geht: public Konstruktor, private Konstruktor, Mitte berechnen, neue dim berechnen]
-// --> Nochmal schauen, ob die Indizes auch in die passenden Quadranten gepackt werden
+// Bugfix: LaPack function prohibits executable from being able to run, possibly 32 vs 64 bit error
+// Testing: constructHierarchicalMatrix, OuterProductBlock constructor
 
 
 // Helper function for constructor, defined at bottom
