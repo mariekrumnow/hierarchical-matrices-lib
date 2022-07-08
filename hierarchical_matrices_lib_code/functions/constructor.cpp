@@ -321,12 +321,10 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
 
       // Call SVD with the Block
       // example: https://cpp.hotexamples.com/de/examples/-/-/dgesvd_/cpp-dgesvd_-function-examples.html#0xf71dbdc59dc1ab38f7a86d6f008277708cc941285db6708f1275a020eacb3fe9-177,,209,
-      // http://www.netlib.org/lapack/double/
-      // http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing.html
-      // Option 'S' für geringere Dim von U/VT?
+      // documentation: http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing.html
       // int info = CALC_SVD(LAPACK_COL_MAJOR, 'A', 'A', mDim, nDim, convertedBlock, mDim, convertedX, convertedU, mDim, convertedV, nDim, workArr, workArrSize);
-      // if (info){
-      //        std::cerr<<"Lapack error occured in dgesdd. error code :" << info << std::endl;
+      // if(info){
+      //        std::cerr << "Lapack error occured in ?gesvd. Error code: " << info << std::endl;
       // }
 
       // Transform attributes back from LaPack format

@@ -16,7 +16,7 @@
 template <class datatype>
 HierarchicalMatrix<datatype>* HierarchicalMatrix<datatype>::operator+( const HierarchicalMatrix<datatype>& addedMatrix ){
 
-      HierarchicalMatrix<datatype>* temp = new HierarchicalMatrix<datatype>(); // create a empty HM to return later
+      HierarchicalMatrix<datatype>* temp = new HierarchicalMatrix<datatype>(); // create an empty HM to return later
 
       temp->nDim = this->nDim;      // filling in the values
       temp->mDim = this->mDim;
@@ -32,15 +32,15 @@ HierarchicalMatrix<datatype>* HierarchicalMatrix<datatype>::operator+( const Hie
 
                   if(matrix[a][b] != nullptr && addedMatrix.matrix[a][b] != nullptr)
                   {
-                  temp->matrix[a][b] = *matrix[a][b] + addedMatrix.matrix[a][b];
+                        temp->matrix[a][b] = *matrix[a][b] + addedMatrix.matrix[a][b];
                   }
                   else if(matrix[a][b] != nullptr && addedMatrix.matrix[a][b] == nullptr)
                   {
-                  temp->matrix[a][b] = matrix[a][b];
+                        temp->matrix[a][b] = matrix[a][b];
                   }
                   else if(matrix[a][b] == nullptr && addedMatrix.matrix[a][b] != nullptr)
                   {
-                  temp->matrix[a][b] = addedMatrix.matrix[a][b];
+                        temp->matrix[a][b] = addedMatrix.matrix[a][b];
                   }
                   else
                   {
@@ -57,7 +57,7 @@ HierarchicalMatrix<datatype>* HierarchicalMatrix<datatype>::operator+( const Hie
 template <class datatype>
 HierarchicalMatrix<datatype>* HierarchicalMatrix<datatype>::operator+=( const HierarchicalMatrix<datatype>& addedMatrix ){
 
-      this = this + addedMatrix;
+      *this = *(*this + addedMatrix);
 
       return this;
 }
@@ -586,7 +586,7 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
             tempV[a] = new datatype[addedBlock->nDim];
       }
 
-      // Filling the temporary, witch also calculates the result
+      // Filling the temporary variables, which also calculates the result
 
       // Filling tempu
       for(a = 0; a < k; a++)
@@ -596,11 +596,12 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
                   tempU[a][b] = u[a][b];
             }
       }
+
       for(a = 0; a < addedBlock->k; a++)
       {
             for(b = 0; b < addedBlock->mDim; b++)
             {
-                  tempU[a + k][b] = addedBlock->u[a][b];
+                  tempU[b][a+k] = addedBlock->u[b][a];
             }
       }
 
@@ -644,30 +645,41 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
       }
 
       // Filling U of new OP
+      temp->u = new datatype*[addedBlock->mDim];
+      for(a=0; a < addedBlock->mDim; a++){
+            temp->u[a] = new datatype[k + addedBlock->k];
+      }
       for(a = 0; a < (k + addedBlock->k); a++)
       {
             for(b = 0; b < addedBlock->mDim; b++)
             {
-                  temp->u[a][b] = tempU[a][b];
+                  temp->u[b][a] = tempU[b][a];
             }
       }
 
-
       // Filling V of new OP
+      temp->v = new datatype*[addedBlock->nDim];
+      for(a=0; a < addedBlock->nDim; a++){
+            temp->v[a] = new datatype[k + addedBlock->k];
+      }
       for(a = 0; a < addedBlock->nDim; a++)
       {
             for(b = 0; b < (k + addedBlock->k); b++)
             {
-                  temp->v[a][b] = v[a][b];
+                  temp->v[a][b] = tempV[a][b];
             }
       }
 
       // Filling X of new OP
+      temp->x = new datatype*[k + addedBlock->k];
+      for(a=0; a < k + addedBlock->k; a++){
+            temp->x[a] = new datatype[k + addedBlock->k];
+      }
       for(a = 0; a < (k + addedBlock->k); a++)
       {
             for(b = 0; b < (k + addedBlock->k); b++)
             {
-                  temp->x[a][b] = x[a][b];
+                  temp->x[a][b] = tempX[a][b];
             }
       }
 
