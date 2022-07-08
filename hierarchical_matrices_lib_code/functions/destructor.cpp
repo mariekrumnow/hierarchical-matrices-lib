@@ -2,8 +2,6 @@
 #include "../OuterProductBlock.hpp"
 #include "../EntrywiseBlock.hpp"
 
-#include <iostream>
-
 
 // HierarchicalMatrix
 template <class datatype>

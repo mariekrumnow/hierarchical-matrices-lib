@@ -3,8 +3,8 @@
 #include "../EntrywiseBlock.hpp"
 #include "calcRank.hpp"
 
-#include <iostream> // For testing
 #include <cmath>
+#include <iostream> // For testing
 
 // Order of the functions: HM > OP > EW
 
@@ -12,7 +12,8 @@
 // EW + HM / EW + OP / OP + HM / HM + HM
 // all the other combinations fall back on these
 
-template <class datatype> // HM + HM public
+// HM + HM interface
+template <class datatype>
 HierarchicalMatrix<datatype>* HierarchicalMatrix<datatype>::operator+( const HierarchicalMatrix<datatype>& addedMatrix ){
 
       HierarchicalMatrix<datatype>* temp = new HierarchicalMatrix<datatype>(); // create a empty HM to return later
@@ -48,10 +49,12 @@ HierarchicalMatrix<datatype>* HierarchicalMatrix<datatype>::operator+( const Hie
             }
       }
 
-      return temp; 
+      return temp;
 }
 
-template <class datatype> // inclusion of += operator, calls the + function
+
+// Inclusion of += operator, calls the + function
+template <class datatype>
 HierarchicalMatrix<datatype>* HierarchicalMatrix<datatype>::operator+=( const HierarchicalMatrix<datatype>& addedMatrix ){
 
       this = this + addedMatrix;
@@ -59,12 +62,17 @@ HierarchicalMatrix<datatype>* HierarchicalMatrix<datatype>::operator+=( const Hi
       return this;
 }
 
-template <class datatype> // HM + Block 
+
+// HM + Block
+template <class datatype>
 Block<datatype>* HierarchicalMatrix<datatype>::operator+( Block<datatype>* addedBlock ){
-      return *addedBlock + this; // Block is of unknown type so we call the funktion "backwards" to find out
+      // Block is of unknown type so we call the funktion "backwards" to find out
+      return *addedBlock + this;
 }
 
-template <class datatype> // HM + HM private (works the same as l.14)
+
+// HM + HM (works the same as l.14)
+template <class datatype>
 Block<datatype>* HierarchicalMatrix<datatype>::operator+( HierarchicalMatrix<datatype>* addedMatrix ){
 
       HierarchicalMatrix<datatype>* temp = new HierarchicalMatrix<datatype>();
@@ -99,21 +107,23 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( HierarchicalMatrix<dat
                   temp->indiceRange[a][b] = this->indiceRange[a][b];
             }
       }
-      return temp; 
+      return temp;
 }
 
-template <class datatype> // HM + OP
+
+// HM + OP
+template <class datatype>
 Block<datatype>* HierarchicalMatrix<datatype>::operator+( OuterProductBlock<datatype>* addedBlock ){
 
       unsigned int a, b;
 
-      //calculating the new Dimensions of the smaller Blocks to create matching Blocks
+      // Calculating the new Dimensions of the smaller Blocks to create matching Blocks
       unsigned int newNDimL = (matrix[0][0]->indiceRange[kRangeI][kTop] - matrix[0][0]->indiceRange[kRangeI][kBottom]);
       unsigned int newNDimR = (this->indiceRange[kRangeI][kTop] - matrix[0][0]->indiceRange[kRangeI][kTop]);
       unsigned int newMDimT = (matrix[0][0]->indiceRange[kRangeJ][kTop] - matrix[0][0]->indiceRange[kRangeJ][kBottom]);
       unsigned int newMDimB = (this->indiceRange[kRangeJ][kTop] - matrix[0][0]->indiceRange[kRangeI][kTop]);
 
-      //creating the U and V of these Blocks; still empty
+      // Creating the U and V of these Blocks; still empty
       datatype** Utop = new datatype*[addedBlock->k];
       for(a=0; a < addedBlock->k; a++){
             Utop[a] = new datatype[newMDimT];
@@ -131,7 +141,7 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( OuterProductBlock<data
             Vright[a] = new datatype[addedBlock->k];
       }
 
-      //filling U 
+      // Filling U
       for(a = 0; a < addedBlock->k; a++)
       {
             for(b = 0; b < newMDimT; b++)
@@ -148,7 +158,7 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( OuterProductBlock<data
             }
       }
 
-      //filling V
+      // Filling V
       for(a = 0; a < newNDimL; a++)
       {
             for(b = 0; b < addedBlock->k; b++)
@@ -165,7 +175,7 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( OuterProductBlock<data
             }
       }
 
-      //creation and filling of new OP-Objects
+      // Creation and filling of new OP-Objects
       OuterProductBlock<datatype>* newA = new OuterProductBlock<datatype>();
 
       newA->nDim = newNDimL;
@@ -274,7 +284,7 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( OuterProductBlock<data
             }
       }
 
-      //creating a new HM to return later
+      // Creating a new HM to return later
       HierarchicalMatrix<datatype>* temp = new HierarchicalMatrix<datatype>();
 
       temp->nDim = this->nDim;
@@ -284,9 +294,9 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( OuterProductBlock<data
             for(b = 0; b < 2; b++){
                   temp->indiceRange[a][b] = this->indiceRange[a][b];
             }
-      } 
+      }
 
-      //filling it with the sum of the blocks of the HM and the new OP-blocks, while checking for empty blocks
+      // Filling it with the sum of the blocks of the HM and the new OP-blocks, while checking for empty blocks
       if(matrix[0][0] != nullptr)
       {
             temp->matrix[0][0] = *matrix[0][0] + newA;
@@ -323,7 +333,7 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( OuterProductBlock<data
             temp->matrix[1][1] = newD;
       }
 
-      //cleanup of temporay objects
+      // Cleanup of temporay objects
       for(a=0; a < newMDimT; a++){
             delete[] Utop[a];
       }
@@ -351,18 +361,20 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( OuterProductBlock<data
       return temp;
 }
 
-template <class datatype> // HM + EW 
-Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){ 
+
+// HM + EW
+template <class datatype>
+Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){
 
       unsigned int a, b;
 
-      //calculating the new Dimensions of the smaller Blocks to create matching blocks
+      // Calculating the new Dimensions of the smaller Blocks to create matching blocks
       unsigned int newNDimL = (matrix[0][0]->indiceRange[kRangeI][kTop] - matrix[0][0]->indiceRange[kRangeI][kBottom]);
       unsigned int newNDimR = (this->indiceRange[kRangeI][kTop] - matrix[0][0]->indiceRange[kRangeI][kTop]);
       unsigned int newMDimT = (matrix[0][0]->indiceRange[kRangeJ][kTop] - matrix[0][0]->indiceRange[kRangeJ][kBottom]);
       unsigned int newMDimB = (this->indiceRange[kRangeJ][kTop] - matrix[0][0]->indiceRange[kRangeI][kTop]);
 
-      //creating these blocks
+      // Creating these blocks
       EntrywiseBlock<datatype>* newA = new EntrywiseBlock<datatype>();
       newA->nDim = newNDimL;
       newA->mDim = newMDimT;
@@ -376,7 +388,7 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatyp
       newD->nDim = newNDimR;
       newD->mDim = newMDimB;
 
-      //temporary martices to save the new blocks
+      // Temporary martices to save the new blocks
       datatype** A = new datatype*[newMDimT];
       for(a=0; a < newMDimT; a++){
             A[a] = new datatype[newNDimL];
@@ -394,7 +406,7 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatyp
             D[a] = new datatype[newNDimR];
       }
 
-      //filling these blocks
+      // Filling these blocks
       for(a = 0; a < newMDimT; a++)
       {
             for(b = 0; b < newNDimL; b++)
@@ -427,7 +439,7 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatyp
             }
       }
 
-      //tranfering blocks into the new EW-objects
+      // Tranfering blocks into the new EW-objects
       for(a = 0; a < newMDimT; a++)
       {
             for(b = 0; b < newNDimL; b++)
@@ -460,13 +472,13 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatyp
             }
       }
 
-      //creating a new HM to return later
+      // Creating a new HM to return later
       HierarchicalMatrix<datatype>* temp = new HierarchicalMatrix<datatype>();
 
       temp->nDim = this->nDim;
       temp->mDim = this->mDim;
 
-      //filling it with the sum of the blocks of the HM and the new EW-blocks, while checking for empty blocks
+      // Filling it with the sum of the blocks of the HM and the new EW-blocks, while checking for empty blocks
       for(a = 0; a < 2; a++){
             for(b = 0; b < 2; b++){
                   temp->indiceRange[a][b] = this->indiceRange[a][b];
@@ -509,7 +521,7 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatyp
             temp->matrix[1][1] = newD;
       }
 
-      //cleanup of temporary objects
+      // Cleanup of temporary objects
       delete newA;
       delete newB;
       delete newC;
@@ -534,28 +546,33 @@ Block<datatype>* HierarchicalMatrix<datatype>::operator+( EntrywiseBlock<datatyp
       return temp;
 }
 
-template <class datatype>// OP + Block
-Block<datatype>* OuterProductBlock<datatype>::operator+( Block<datatype>* addedBlock ){ 
 
-      return *addedBlock + this; // Block is of unknown type so we call the funktion "backwards" to find out
+// OP + Block
+template <class datatype>
+Block<datatype>* OuterProductBlock<datatype>::operator+( Block<datatype>* addedBlock ){
+      // Block is of unknown type so we call the funktion "backwards" to find out
+      return *addedBlock + this;
 }
+
 
 template <class datatype>
 Block<datatype>* OuterProductBlock<datatype>::operator+( HierarchicalMatrix<datatype>* addedBlock ){
-
-      return *addedBlock + this;// OP + HM == HM + OP | call function with swapped parameters
+      // OP + HM == HM + OP | call function with swapped parameters
+      return *addedBlock + this;
 }
 
-template <class datatype>// OP + OP
-Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datatype>* addedBlock ){ 
+
+// OP + OP
+template <class datatype>
+Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datatype>* addedBlock ){
 
       unsigned int a = 0;
       unsigned int b = 0;
 
-      //creating a new OP to return later
+      // Creating a new OP to return later
       OuterProductBlock<datatype>* temp = new OuterProductBlock<datatype>();
 
-      //creating temporay U X V 
+      // Creating temporay U X V
       datatype** tempU = new datatype*[addedBlock->mDim];
       for(a=0; a < addedBlock->mDim; a++){
             tempU[a] = new datatype[k + addedBlock->k];
@@ -569,9 +586,9 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
             tempV[a] = new datatype[addedBlock->nDim];
       }
 
-      //filling the temporary, witch also calculates the result
+      // Filling the temporary, witch also calculates the result
 
-      //filling tempu 
+      // Filling tempu
       for(a = 0; a < k; a++)
       {
             for(b = 0; b < addedBlock->mDim; b++)
@@ -587,7 +604,7 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
             }
       }
 
-      //filling tempv
+      // Filling tempv
       for(a = 0; a < addedBlock->nDim; a++)
       {
             for(b = 0; b < k; b++)
@@ -603,7 +620,7 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
             }
       }
 
-      //filling tempx
+      // Filling tempx
       for(a = 0; a < (k + addedBlock->k); a++)
       {
             for(b = 0; b < (k + addedBlock->k); b++)
@@ -626,7 +643,7 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
             }
       }
 
-      //filling U of new OP
+      // Filling U of new OP
       for(a = 0; a < (k + addedBlock->k); a++)
       {
             for(b = 0; b < addedBlock->mDim; b++)
@@ -634,9 +651,9 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
                   temp->u[a][b] = tempU[a][b];
             }
       }
-     
 
-      //filling V of new OP
+
+      // Filling V of new OP
       for(a = 0; a < addedBlock->nDim; a++)
       {
             for(b = 0; b < (k + addedBlock->k); b++)
@@ -644,8 +661,8 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
                   temp->v[a][b] = v[a][b];
             }
       }
-      
-      //filling X of new OP
+
+      // Filling X of new OP
       for(a = 0; a < (k + addedBlock->k); a++)
       {
             for(b = 0; b < (k + addedBlock->k); b++)
@@ -665,13 +682,13 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
 
       temp->k = k + addedBlock->k;
 
-      //cleanup of temporary objects
+      // Cleanup of temporary objects
       for(a=0; a < addedBlock->mDim; a++){
             delete[] tempU[a];
       }
       delete[] tempU;
       for(a=0; a < (k + addedBlock->k); a++){
-            delete[] tempX[a]; 
+            delete[] tempX[a];
       }
       delete[] tempX;
       for(a=0; a < addedBlock->nDim; a++){
@@ -682,12 +699,14 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( OuterProductBlock<datat
       return temp;
 }
 
-template <class datatype>// OP + EW
-Block<datatype>* OuterProductBlock<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){ 
 
-      //since OP + EW is not simply possible we transform the EW into OP  
-      //calculating the nesesary params      
-      unsigned int newk = calcRank(addedBlock->mDim, addedBlock->nDim, addedBlock->block);  
+// OP + EW
+template <class datatype>
+Block<datatype>* OuterProductBlock<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){
+
+      // Since OP + EW is not simply possible we transform the EW into OP
+      // Calculating the nesesary params
+      unsigned int newk = calcRank(addedBlock->mDim, addedBlock->nDim, addedBlock->block);
 
       std::vector<unsigned int> iInd;
       iInd.push_back(this->indiceRange[kRangeI][kBottom]);
@@ -697,22 +716,26 @@ Block<datatype>* OuterProductBlock<datatype>::operator+( EntrywiseBlock<datatype
       jInd.push_back(this->indiceRange[kRangeJ][kBottom]);
       jInd.push_back(this->indiceRange[kRangeJ][kTop]);
 
-      OuterProductBlock<datatype>* temp = new OuterProductBlock<datatype>(addedBlock->block, addedBlock->mDim, addedBlock->nDim, iInd, jInd, 7); 
+      OuterProductBlock<datatype>* temp = new OuterProductBlock<datatype>(addedBlock->block, addedBlock->mDim, addedBlock->nDim, iInd, jInd, 7);
 
-      //calling OP + OP
+      // Calling OP + OP
       return *this + temp;
 }
 
-template <class datatype>//EW + Block
-Block<datatype>* EntrywiseBlock<datatype>::operator+( Block<datatype>* addedBlock ){ 
+
+// EW + Block
+template <class datatype>
+Block<datatype>* EntrywiseBlock<datatype>::operator+( Block<datatype>* addedBlock ){
       return *addedBlock + this; // Block is of unknown type so we call the funktion "backwards" to find out
 }
 
+
 template <class datatype>
-Block<datatype>* EntrywiseBlock<datatype>::operator+( HierarchicalMatrix<datatype>* addedBlock ){ 
+Block<datatype>* EntrywiseBlock<datatype>::operator+( HierarchicalMatrix<datatype>* addedBlock ){
       // EW + HM == HM + EW | call function with swapped parameters
       return *addedBlock + this;
 }
+
 
 template <class datatype>
 Block<datatype>* EntrywiseBlock<datatype>::operator+( OuterProductBlock<datatype>* addedBlock ){
@@ -720,11 +743,12 @@ Block<datatype>* EntrywiseBlock<datatype>::operator+( OuterProductBlock<datatype
       return *addedBlock + this;
 }
 
-template <class datatype>
-Block<datatype>* EntrywiseBlock<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){ 
-      // EW + EW
 
-      //creating a new EW to return later
+// EW + EW
+template <class datatype>
+Block<datatype>* EntrywiseBlock<datatype>::operator+( EntrywiseBlock<datatype>* addedBlock ){
+
+      // Creating a new EW to return later
       EntrywiseBlock<datatype>* temp = new EntrywiseBlock<datatype>();
 
       temp->nDim = this->nDim;
@@ -736,7 +760,7 @@ Block<datatype>* EntrywiseBlock<datatype>::operator+( EntrywiseBlock<datatype>* 
             }
       }
 
-      //adding the both EW into the new one
+      // Adding the both EW into the new one
       for(unsigned int a = 0; a < addedBlock->mDim; a++)
       {
             for(unsigned int b = 0; b < addedBlock->nDim; b++)
@@ -745,6 +769,6 @@ Block<datatype>* EntrywiseBlock<datatype>::operator+( EntrywiseBlock<datatype>* 
             }
       }
 
-      
-      return temp; 
+
+      return temp;
 }

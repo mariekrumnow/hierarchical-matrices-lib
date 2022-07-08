@@ -5,12 +5,10 @@
 #include <iostream>
 #include <vector>
 
-// S.69/70, S.72-74
+// Bebendorf p.69/70, p.72-74
 
 // TODO: Statt Rang der Matrix berechnen den Rang aus den Singulärwerten bestimmen?
-
-// Kein Rang übergeben/vorher berechnen, erst SVD machen, aus Sigma den Rang bestimmen, dann wie normal im Konstruktor weiter
-
+// --> Kein Rang übergeben/vorher berechnen, erst SVD machen, aus Sigma den Rang bestimmen, dann wie normal im Konstruktor weiter
 // Gegeben: convertedX[std::min(mDim, nDim)]
 //
 // datatype compare = accuracy * convertedX[0];

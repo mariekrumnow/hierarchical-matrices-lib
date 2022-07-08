@@ -1,7 +1,7 @@
 #include "../HierarchicalMatrix.hpp"
 #include "../OuterProductBlock.hpp"
 #include "../EntrywiseBlock.hpp"
-#include "calcRank.hpp" 
+#include "calcRank.hpp"
 
 #include "../../user_settings.hpp"
 
@@ -12,9 +12,6 @@
 #include <limits>
 #include <queue>
 
-// TODO: Neues aus Branches, dass Doku braucht?
-// TODO: Alles in HM in private packen was nicht in public darf
-// TODO: Addition checken
 
 // Bugfix: LaPack function prohibits executable from being able to run, possibly 32 vs 64 bit error
 // Testing: constructHierarchicalMatrix, OuterProductBlock constructor
@@ -33,7 +30,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
             return;
       }
 
-      // Anzahl der Vektoren (= Anz Blöcke) speichern
+      // Save number of vectors (= num of Blocks)
       unsigned int indices[2][2] = { {1, originalIndices->size()},
                                     {1, originalIndices->size()} };
 
@@ -42,7 +39,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
       Block<datatype>::indiceRange[kRangeJ][kBottom] = 0;
       Block<datatype>::indiceRange[kRangeJ][kTop] = dim-1;
 
-      // Matrix-Graph durch existierende Kanten aufstellen
+      // Construct matrix graph from existing vertices
       std::vector< std::vector<unsigned int> > vertices; // [0] begin & [1] end node for each vertice
       vertices.push_back( std::vector<unsigned int>() );
       vertices.push_back( std::vector<unsigned int>() );
@@ -70,7 +67,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
       //       std::cout << node[a] << std::endl;
       // }
 
-      // Distanzen zwischen allen Knoten berechnen (Moore)
+      // Calculate distance between all nodes (Moore algorithm)
       unsigned int ** distance = new unsigned int*[dim];
       for(a=0; a < dim; a++){
             distance[a] = new unsigned int[dim];
@@ -79,15 +76,15 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
             }
       }
 
-      for(a=0; a < dim; a++){ // Jeder Knoten muss einmal Knoten sein, zu dem Distanz berechnet wird
+      for(a=0; a < dim; a++){ // Every node has to be the one to calcute the distance from once
             std::queue<unsigned int> nextNode;
             nextNode.push(a);
             unsigned int next;
             while( nextNode.size() !=0 ){
                   next = nextNode.front();
                   nextNode.pop();
-                  if( node[next] != 0 ){ // Gibt es zu dem Knoten überhaupt eine Kante?
-                        unsigned int nextVertice = node[next] -1; // Erste garantierte Kante in Tabelle
+                  if( node[next] != 0 ){ // Is there even a vertice to this node?
+                        unsigned int nextVertice = node[next] -1; // First guaranteed vertice in table
                         do{
                               unsigned int endNode = vertices[1][nextVertice];
                               if( distance[a][endNode] == std::numeric_limits<unsigned int>::max() ){
@@ -95,7 +92,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
                                     nextNode.push(endNode);
                               }
                               nextVertice++;
-                        }while( vertices[0][nextVertice] == next ); // Startknoten muss noch der richtige sein
+                        }while( vertices[0][nextVertice] == next ); // starting node still needs to be the correct one
                   }
             }
             if( !selfconnected[a] ){
@@ -122,10 +119,10 @@ template <class datatype>
 HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances)
       :Block<datatype>::Block(0, 0)
 {
-      // Dimension der enthaltenen Blöcke berechnen
-
       // std::cout << std::endl << indices[kRangeI][kBottom] << " < " << indices[kRangeI][kTop];
       // std::cout << std::endl << indices[kRangeJ][kBottom] << " < " << indices[kRangeJ][kTop] << std::endl;
+
+      // Calculate dimension of contained Blocks
       unsigned int vectorIndice = 1;
       std::list<std::vector<unsigned int>>::iterator currentVector = originalIndices->begin();
       while( currentVector != originalIndices->end() ) {
@@ -161,7 +158,7 @@ HierarchicalMatrix<datatype>::HierarchicalMatrix(datatype ** originalMatrix, std
 template <class datatype>
 void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances)
 {
-      // Mitte der Indizes zum Aufteilen in Quadranten berechnen
+      // Middle of the indices to calculate division into quadrants
       unsigned int iMiddle = indices[kRangeI][kBottom] + floor((indices[kRangeI][kTop]-indices[kRangeI][kBottom]) /2);
       unsigned int jMiddle = indices[kRangeJ][kBottom] + floor((indices[kRangeJ][kTop]-indices[kRangeJ][kBottom]) /2);
       // std::cout  << std::endl << "i: " << indices[kRangeI][kBottom] << " - " << indices[kRangeI][kTop] << " Mitte: " << iMiddle << std::endl;
@@ -177,7 +174,7 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
             jMiddle = indices[kRangeJ][kTop];
       }
 
-      // Prüfen, ob nur noch je 1 Indize vorhanden ist --> Blatt erreicht
+      // Check if there's only one indice left in vectors --> Leaf reached
       bool splittable[2][2] = {
             { !(indices[kRangeI][kBottom] == iMiddle && indices[kRangeJ][kBottom] == jMiddle),
                   !(indices[kRangeI][kBottom] == iMiddle && jMiddle+1 == indices[kRangeJ][kTop]) },
@@ -205,8 +202,8 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
       for (a=0; a< maxBlockI; a++) {
             for (b=0; b< maxBlockJ; b++) {
                   if (splittable[a][b]) {
-                      // std::cout << "HM ";
-                        // Indizes aufteilen
+                        // std::cout << "HM ";
+                        // Split indices
                         unsigned int newInd[2][2];
                         if( a==0 ) {
                               newInd[kRangeI][kBottom] = indices[kRangeI][kBottom];
@@ -229,7 +226,7 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
                         matrix[a][b] = new HierarchicalMatrix<datatype>(originalMatrix, originalIndices, newInd, clusterParamEta, distances);
                   }
                   else {
-                        // Vektoren anhand der Indize raussuchen
+                        // Find vector by its indice
                         unsigned int iVectorNum = a==0 ? iMiddle : iMiddle+1;
                         std::list<std::vector<unsigned int>>::iterator iVector = originalIndices->begin();
                         while( iVectorNum != 1 ) {
@@ -248,7 +245,7 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
                         unsigned int newNdim = jVector->size();
                         // std::cout << " " << iVector->size() << " " << jVector->size() << " ";
 
-                        // Indizes entsprechend der Vektoren in die gekappte Matrix kopieren
+                        // Copy corresponding indices from the original matrix
                         datatype ** cutMatrix = new datatype*[newMdim];
                         for(unsigned int c=0; c < newMdim; c++){
                               cutMatrix[c] = new datatype[newNdim];
@@ -261,7 +258,7 @@ void HierarchicalMatrix<datatype>::constructHierarchicalMatrix(datatype ** origi
                         unsigned int k = calcRank<datatype>(newMdim, newMdim, cutMatrix);
 
                         if ( k*(newMdim + newNdim) < newMdim*newNdim ) { // == Low-rank matrix
-                             // std::cout << "OP1 ";
+                              // std::cout << "OP1 ";
                               matrix[a][b] = new OuterProductBlock<datatype>(cutMatrix, newMdim, newNdim, *iVector, *jVector, k);
                         }
                         else {
@@ -322,7 +319,7 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
       unsigned int workArrSize = 5*std::max(mDim, nDim);
       datatype* workArr = new datatype[workArrSize];
 
-      // SVD mit Block aufrufen
+      // Call SVD with the Block
       // example: https://cpp.hotexamples.com/de/examples/-/-/dgesvd_/cpp-dgesvd_-function-examples.html#0xf71dbdc59dc1ab38f7a86d6f008277708cc941285db6708f1275a020eacb3fe9-177,,209,
       // http://www.netlib.org/lapack/double/
       // http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing.html
@@ -332,8 +329,8 @@ OuterProductBlock<datatype>::OuterProductBlock(datatype ** originalBlock, unsign
       //        std::cerr<<"Lapack error occured in dgesdd. error code :" << info << std::endl;
       // }
 
-      // Attribute aus Format von Lapack rausholen
-      // --> Zeilen über Rang k hinaus einfach weggeschmissen
+      // Transform attributes back from LaPack format
+      // --> Just throw out all rows over rank k
       pos = convertedU;
       u = new datatype*[mDim];
       for(a=0; a < mDim; a++){

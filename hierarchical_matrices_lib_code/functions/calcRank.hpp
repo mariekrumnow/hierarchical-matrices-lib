@@ -1,11 +1,11 @@
 #ifndef HIERARCHICAL_MATRICES_CALCRANK_H
 #define HIERARCHICAL_MATRICES_CALCRANK_H
 
-// Berechnung des Rangs (k) des Blocks via
+// Calculation of rank (k) via
 // https://www.geeksforgeeks.org/program-for-rank-of-matrix/
 
 template <class datatype>
-unsigned int calcRank(unsigned int newMdim, unsigned int newNdim, datatype** cutMatrix){  
+unsigned int calcRank(unsigned int newMdim, unsigned int newNdim, datatype** cutMatrix){
 
     unsigned int k = newNdim;
 
@@ -51,8 +51,8 @@ unsigned int calcRank(unsigned int newMdim, unsigned int newNdim, datatype** cut
 
                 row--;
             }
-    } 
-    
+    }
+
 }
 
 #endif //HIERARCHICAL_MATRICES_CALCRANK_H

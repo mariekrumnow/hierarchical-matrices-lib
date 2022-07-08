@@ -3,7 +3,7 @@
 #include "../EntrywiseBlock.hpp"
 
 // template <class datatype>
-// HierarchicalMatrix<datatype>& HierarchicalMatrix<datatype>::invert(){
+// HierarchicalMatrix<datatype>* HierarchicalMatrix<datatype>::invert(){
 
       // Nur in erstem Aufruf: Tiefe Kopie mit der selben Block-Struktur anlegen
       // --> Copy-Konstruktor + darin polymorpher clone-"Konstruktor"(Funktion), siehe https://stackoverflow.com/questions/4122789/copy-object-keep-polymorphism
@@ -50,9 +50,6 @@
       //
       // }
 
-      //Alles noch nicht kompiliert und nicht funktionsfähig, da mir noch folgende Dinge fehlen:
-      // - Operator Multiplikation
-      // - Operator Addition + Operator Subtraktion
-
-
 // }
+// 
+// Functions for EW and OP

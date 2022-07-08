@@ -14,12 +14,11 @@ class EntrywiseBlock: public Block<datatype>{
 friend class OuterProductBlock<datatype>;
 friend class HierarchicalMatrix<datatype>;
 
-protected:
+private:
       datatype ** block; ///< mDim * nDim array / Exact part of the original matrix
 
+protected:
       EntrywiseBlock(){}
-
-public:
       /// Copies part of the matrix to be stored in a block
       EntrywiseBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd);
 

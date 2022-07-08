@@ -13,16 +13,15 @@ class OuterProductBlock: public Block<datatype> {
 friend class EntrywiseBlock<datatype>;
 friend class HierarchicalMatrix<datatype>;
 
-protected:
+private:
       datatype ** u; ///< mDim * k array / U
       datatype ** x; ///< k * k array / X, similar to S
       datatype ** v; ///< nDim * k array / V^H with complex entries, V^T with real entries
 
       unsigned int k; ///< Rank of original matrix part
 
+protected:
       OuterProductBlock(){}
-
-public:
       /// Transforms an entrywise part of the matrix into its outer product form
       OuterProductBlock(datatype ** originalBlock, unsigned int mDim, unsigned int nDim, std::vector<unsigned int> iInd, std::vector<unsigned int> jInd, unsigned int rank);
 

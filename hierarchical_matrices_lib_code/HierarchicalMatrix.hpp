@@ -17,7 +17,7 @@ class HierarchicalMatrix: public Block<datatype> {
 friend class OuterProductBlock<datatype>;
 friend class EntrywiseBlock<datatype>;
 
-protected:
+private:
       // [0][0] = top left, [0][1] = top right / [1][0] = bottom left, [1][1] = bottom right
       Block<datatype>* matrix[2][2]; ///< Hierarchical matrix, recursively divided into quadrants until one of the other Block types is reached, can also hold nullptr if a 2x1 or 1x2 division is reached
 
@@ -30,17 +30,14 @@ public:
       ///  each vector contains all the indices in ascending order, vectors are listed in ascending order
       ///  so the first vector always s withh 0 and the last ends with dim-1, see page 31: Fig 1.5
       /// \param dim Number of columns/rows of the input matrix
-      /// \param clusterParamEta Optional cluster parameter ∈ (0.0, 1.0), will be defaulted to 0.5 if no value is given, see page 24: (1.13)
+      /// \param clusterParamEta Optional cluster parameter = (0.0, 1.0), will be defaulted to 0.5 if no value is given, see page 24: (1.13)
       HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int dim, double clusterParamEta =0.5);
-      HierarchicalMatrix(){}
 
       /// Coarsens the given hierarchical matrix until the given accuracy can no longer be held,
       /// usually keeping the same storage size while reducing the number of branches/blocks
       ///
-      /// \param accuracy Accuracy ∈ (0.0, 1.0) to be satisfied in each coarsening step, see page 72: (2.13)
+      /// \param accuracy Accuracy = (0.0, 1.0) to be satisfied in each coarsening step, see page 72: (2.13)
       void coarse( double accuracy );
-      Block<datatype>* coarse( double accuracy, bool checkForLeaf ) final;
-      unsigned int getStorageOrRank( bool getStorage ) final;
 
       /// Rounded addition of two Hierarchical Matrices of the same size
       ///
@@ -65,7 +62,7 @@ public:
       // HierarchicalMatrix* operator*=( const HierarchicalMatrix& multMatrix );
 
       // Inversion
-      // HierarchicalMatrix& invert();
+      // HierarchicalMatrix* invert();
 
       // LU-decomposition
       // std::array<HierarchicalMatrix*,2> luDecomposition();
@@ -74,10 +71,14 @@ public:
       ~HierarchicalMatrix();
 
 private:
+      HierarchicalMatrix(){}
       /// Internal connstructor for all other layers except the outside constructor call
       HierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances);
       /// Outsourced part of the constructor that holds code to be executed in both the public and private one
       void constructHierarchicalMatrix(datatype ** originalMatrix, std::list<std::vector<unsigned int>>* originalIndices, unsigned int indices[2][2], double clusterParamEta, unsigned int ** distances);
+
+      Block<datatype>* coarse( double accuracy, bool checkForLeaf ) final;
+      unsigned int getStorageOrRank( bool getStorage ) final;
 
       Block<datatype>* operator+( Block<datatype>* addedBlock );
       Block<datatype>* operator+( HierarchicalMatrix* addedBlock );

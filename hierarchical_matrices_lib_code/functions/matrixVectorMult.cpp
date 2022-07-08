@@ -1,13 +1,13 @@
 #include "../HierarchicalMatrix.hpp"
 #include "../OuterProductBlock.hpp"
 #include "../EntrywiseBlock.hpp"
-#include <iostream> // For testing
+
 #include <cmath>
+#include <iostream> // For testing
 
-// Bitte nicht mehr die Funktionsköpfe ändern oder falls nötig Bescheid geben!
 
-// Eingabevektor hat Größe Block<datatype>::nDim
-// Ausgabevektor hat Größe Block<datatype>::mDim
+// Input vector of size Block<datatype>::nDim
+// Input vector of size Block<datatype>::mDim
 
 
 // HierarchicalMatrix

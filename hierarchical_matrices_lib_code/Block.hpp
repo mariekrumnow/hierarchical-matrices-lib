@@ -17,13 +17,13 @@ friend class OuterProductBlock<datatype>;
 friend class EntrywiseBlock<datatype>;
 friend class HierarchicalMatrix<datatype>;
 
-protected:
+private:
 
       unsigned int mDim; ///< Number of rows from the original matrix depicted within this block
       unsigned int nDim; ///< Number of columns from the original matrix depicted within this block
       unsigned int indiceRange[2][2]; ///< Lower and upper bound of row and column indices from the original matrix depicted within this block, see enum InndiceOrientation
 
-public:
+protected:
       /// Automatic initialization of attributes from subclasses
       Block(unsigned int m, unsigned int n): mDim(m), nDim(n) {}
       /// Empty constructor for calling empty subclass constructors
